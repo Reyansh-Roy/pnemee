@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Project Nemesis: Psychological Fingerprinting Initiated</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --offwhite: #e6e6dc;
+      --text: #d6d6c6;
+      --subtle: #9ca09d;
+      --accent: #e94a57;
+      --dark: #151b1b;
+      --panel: #161b1c;
+      --panel2: #1b2322;
+      --brainglow: #3980b6;
+    }
+    html, body {
+      background: var(--dark);
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      font-family: 'Roboto Condensed', 'Oswald', Arial, sans-serif;
+      color: var(--offwhite);
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .mainwrap {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      background: var(--dark);
+    }
+    .panel-left, .panel-right {
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+    }
+    .panel-left {
+      flex: 1.1;
+      background: linear-gradient(90deg, #101515 80%, transparent 100%);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3vw 2vw 3vw 4vw;
+    }
+    .scanlines {
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.16;
+      background: repeating-linear-gradient(
+        to bottom, #fff2 0px, #fff2 1px, transparent 3px, transparent 6px
+      );
+    }
+    .datastream {
+      position: absolute;
+      left: 0; top: 0; bottom: 0; width: 100px;
+      z-index: 0;
+      background: linear-gradient(90deg, #0a2a2a 0%, #233f4f44 55%, transparent 100%);
+      background-size: 100% 100%;
+      animation: stream 2.4s linear infinite;
+      opacity: 0.18;
+    }
+    @keyframes stream {
+      0% { background-position-y: 0; }
+      100% { background-position-y: 100px;}
+    }
+    .panel-content {
+      z-index: 1;
+      position: relative;
+      max-width: 510px;
+    }
+    .nemesis-title {
+      font-family: 'Oswald', 'Roboto Condensed', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 2.7vw;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--offwhite);
+      line-height: 1.02;
+      margin-bottom: 0.5vw;
+    }
+    .nemesis-sub {
+      font-size: 1.05vw;
+      margin-bottom: 1.7vw;
+      font-weight: 400;
+      color: var(--text);
+    }
+    .nemesis-body {
+      font-size: 1.02vw;
+      margin-bottom: 2vw;
+      color: var(--text);
+      line-height: 1.58;
+    }
+    .nemesis-meta {
+      font-size: 1.04vw;
+      margin-bottom: 1.5vw;
+      display: flex;
+      align-items: center;
+      gap: 1.7vw;
+      flex-wrap: wrap;
+    }
+    .nemesis-meta .icon {
+      margin-right: 0.65vw;
+      font-size: 1.2vw;
+      vertical-align: middle;
+      opacity: 0.85;
+    }
+    .nemesis-meta .meta-block {
+      display: flex;
+      align-items: center;
+    }
+    .nemesis-meta .meta-warn {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .nemesis-fp {
+      font-size: 1.03vw;
+      margin-top: 3.5vw;
+      color: var(--subtle);
+      letter-spacing: 0.04em;
+      font-family: 'Roboto Mono', 'Roboto Condensed', monospace;
+    }
+    .nemesis-fp b {
+      color: #fff;
+      letter-spacing: 0.09em;
+      font-family: 'Roboto Mono', monospace;
+    }
+    .panel-right {
+      flex: 1.2;
+      position: relative;
+      background: linear-gradient(90deg, #151a1d 60%, #181c23 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .brain-container {
+      position: relative;
+      width: 75%;
+      height: 82%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+    }
+    .brain-video-bg {
+      position: absolute;
+      left: 0; top: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0.93;
+      filter: brightness(1.12) contrast(1.17) drop-shadow(0 0 40px #36b5e7cc);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .brain-overlay {
+      position: absolute;
+      left: 5%; bottom: 4%;
+      font-size: 1.05vw;
+      color: var(--offwhite);
+      font-family: 'Roboto Mono', 'Roboto Condensed', monospace;
+      background: rgba(13,16,17,0.78);
+      border-left: 2px solid var(--subtle);
+      padding: 0.38vw 1.2vw;
+      border-radius: 5px;
+      box-shadow: 0 0 14px #23282f66;
+      letter-spacing: 0.02em;
+      z-index: 2;
+    }
+    @media (max-width: 900px) {
+      .mainwrap {
+        flex-direction: column;
+        height: 100vh;
+        min-height: 600px;
+      }
+      .panel-left, .panel-right {
+        min-width: 0; min-height: 0;
+        height: 48vh;
+        padding: 0;
+      }
+      .panel-left {padding: 6vw 6vw 2vw 6vw;}
+      .nemesis-title {font-size: 2rem;}
+      .nemesis-sub, .nemesis-body, .nemesis-fp, .brain-overlay { font-size: 1rem;}
+      .brain-container { width: 95%; height: 95%; }
+    }
+    @media (max-width: 560px) {
+      .mainwrap { min-height: 0;}
+      .panel-left, .panel-right {height: auto;}
+      .nemesis-title {font-size: 1.19rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="mainwrap" tabindex="0">
+    <div class="panel-left">
+      <div class="scanlines"></div>
+      <div class="datastream"></div>
+      <div class="panel-content">
+        <div class="nemesis-title">PROJECT NEMESIS<br/>PSYCHOLOGICAL FINGERPRINTING INITIATED</div>
+        <div class="nemesis-sub">Day 1: Deep Profile Initiation</div>
+        <div class="nemesis-body">
+          You will be asked <b>5 questions.</b> <b>Do not lie.</b><br>
+          <br>
+          These answers will shape your adversary.
+        </div>
+        <div class="nemesis-meta">
+          <div class="meta-block">
+            <span class="icon">⏳</span> Estimated Time: <span id="timer">7:00</span>
+          </div>
+          <div class="meta-block meta-warn">
+            <span class="icon">☠️</span> Warning: Emotional inconsistencies will be used against you.
+          </div>
+        </div>
+        <div class="nemesis-fp">Cognitive Fingerprint: <b>[INCOMPLETE]</b></div>
+      </div>
+    </div>
+    <div class="panel-right">
+      <div class="brain-container">
+        <video class="brain-video-bg" src="brain.mp4" autoplay loop muted playsinline></video>
+        <div class="brain-overlay">Cognitive Fingerprint: <b>[INCOMPLETE]</b></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Timer logic
+    let totalSeconds = 7*60;
+    let timerDisplay = document.getElementById('timer');
+    function formatTime(secs) {
+      let m = Math.floor(secs/60).toString().padStart(1,'0');
+      let s = (secs%60).toString().padStart(2,'0');
+      return `${m}:${s}`;
+    }
+    function updateTimer() {
+      timerDisplay.textContent = formatTime(totalSeconds);
+      totalSeconds--;
+      if (totalSeconds >= 0) setTimeout(updateTimer, 1000);
+      else timerDisplay.textContent = "0:00";
+    }
+    updateTimer();
+    // Universal input detector for next page
+    let inputHandled = false, touchCount = 0, touchLast = 0;
+    function goToPage2() {
+      if (!inputHandled) {
+        inputHandled = true;
+        window.location.href = 'page2.html';
+      }
+    }
+    document.addEventListener('keydown', goToPage2);
+    document.addEventListener('mousedown', goToPage2);
+    document.addEventListener('touchstart', function(e) {
+      let now = Date.now();
+      if (now - touchLast < 1200) touchCount++;
+      else touchCount = 1;
+      touchLast = now;
+      if (touchCount >= 2) goToPage2();
+    });
+  </script>
+</body>
+</html>
