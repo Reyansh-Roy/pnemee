@@ -5,109 +5,220 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Project Nemesis: Psychological Fingerprinting Initiated</title>
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto+Condensed:wght@400;700&family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
       --offwhite: #e6e6dc;
       --text: #d6d6c6;
       --subtle: #9ca09d;
       --accent: #e94a57;
+      --timer: #b8ffe2;
+      --timer-bg: #1d2626;
+      --timer-bar: #19e6be;
+      --timer-shadow: #1affc3cc;
       --dark: #151b1b;
-      --panel: #161b1c;
-      --panel2: #1b2322;
-      --brainglow: #3980b6;
+      --brainglow: #36b5e7cc;
     }
     html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto Condensed', Arial, sans-serif;
       background: var(--dark);
-      margin: 0; padding: 0;
-      width: 100vw; height: 100vh;
-      font-family: 'Roboto Condensed', 'Oswald', Arial, sans-serif;
-      color: var(--offwhite);
-      box-sizing: border-box;
       overflow: hidden;
+      color: var(--offwhite);
+    }
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      position: relative;
+    }
+    /* Unique timer bar HUD */
+    .timer-topbar {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 54px;
+      background: var(--timer-bg);
+      box-shadow: 0 3px 22px -2px var(--timer-shadow);
+      display: flex;
+      align-items: center;
+      z-index: 999;
+      border-bottom: 2px solid var(--accent);
+      overflow: visible;
+    }
+    .timer-progress {
+      position: absolute;
+      top: 0; left: 0; height: 5px;
+      background: linear-gradient(90deg, var(--timer-bar) 60%, #28ffe8 100%);
+      box-shadow: 0 2px 10px var(--timer-bar), 0 0 15px #19e6be77;
+      border-radius: 0 8px 8px 0;
+      z-index: 1;
+      transition: width 0.6s cubic-bezier(.76,.08,.33,.95);
+    }
+    .timer-hud-inner {
+      position: relative;
+      z-index: 2;
+      margin-left: 40px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-family: 'Roboto Mono', monospace;
+      font-weight: 700;
+      font-size: 1.37rem;
+      color: var(--timer);
+      letter-spacing: 0.08em;
+      text-shadow: 0 2px 10px #102017, 0 1px 0 #111;
+    }
+    .timer-hud-inner .timer-icon {
+      font-size: 1.5rem;
+      margin-right: 6px;
+      vertical-align: middle;
+      color: var(--timer-bar);
+      text-shadow: 0 2px 8px #1bffe7a0;
+    }
+    @media (max-width: 900px) {
+      .timer-topbar {height: 44px;}
+      .timer-hud-inner {font-size: 1.02rem; margin-left: 20px;}
+      .timer-hud-inner .timer-icon {font-size: 1.19rem;}
+    }
+    @media (max-width: 540px) {
+      .timer-topbar {height: 34px;}
+      .timer-hud-inner {font-size: 0.89rem; margin-left: 9px;}
+      .timer-hud-inner .timer-icon {font-size: 1.01rem;}
+    }
+    /* The rest: scanlines, vignette, main layout, etc. */
+    .scanlines {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      opacity: 0.12;
+      z-index: 1;
+      background: repeating-linear-gradient(
+        to bottom, #fff2 0px, #fff2 1px, transparent 3px, transparent 6px
+      );
+      mix-blend-mode: lighten;
+    }
+    .vignette {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 2;
+      background: radial-gradient(ellipse at 65% 50%, rgba(0,0,0,0) 60%, #080b0f 100%);
+      opacity: 0.54;
     }
     .mainwrap {
       display: flex;
       height: 100vh;
       width: 100vw;
-      background: var(--dark);
-    }
-    .panel-left, .panel-right {
-      height: 100%;
-      min-width: 0;
-      min-height: 0;
-    }
-    .panel-left {
-      flex: 1.1;
-      background: linear-gradient(90deg, #101515 80%, transparent 100%);
       position: relative;
+      z-index: 3;
+      align-items: stretch;
+    }
+    .left-section {
+      flex: 1.1;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 3vw 2vw 3vw 4vw;
+      padding: 54px 5vw 0 7vw; /* add padding for top bar */
+      min-width: 0;
     }
-    .scanlines {
+    .right-section {
+      flex: 1.3;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      overflow: hidden;
+      background: #101218;
+    }
+    /* Brain video styling */
+    .brain-bg-video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(1.10) contrast(1.20) blur(0px) drop-shadow(0 0 54px var(--brainglow));
+      z-index: 0;
+      pointer-events: none;
+      transition: filter 0.5s;
+    }
+    .brain-darken {
       position: absolute;
       left: 0; top: 0;
       width: 100%; height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.16;
-      background: repeating-linear-gradient(
-        to bottom, #fff2 0px, #fff2 1px, transparent 3px, transparent 6px
-      );
-    }
-    .datastream {
-      position: absolute;
-      left: 0; top: 0; bottom: 0; width: 100px;
-      z-index: 0;
-      background: linear-gradient(90deg, #0a2a2a 0%, #233f4f44 55%, transparent 100%);
-      background-size: 100% 100%;
-      animation: stream 2.4s linear infinite;
-      opacity: 0.18;
-    }
-    @keyframes stream {
-      0% { background-position-y: 0; }
-      100% { background-position-y: 100px;}
-    }
-    .panel-content {
+      background: linear-gradient(0deg,rgba(10,14,22,0.57) 80%,rgba(5,7,11,0.9) 100%);
       z-index: 1;
-      position: relative;
-      max-width: 510px;
+    }
+    .brain-fingerprint {
+      position: absolute;
+      left: 50%;
+      bottom: 4vw;
+      transform: translateX(-50%);
+      background: rgba(21,21,24,0.82);
+      padding: 0.7vw 2.3vw 0.7vw 1.5vw;
+      border-radius: 8px;
+      border-left: 3px solid #b9f7f3;
+      font-size: 1.12vw;
+      font-family: 'Roboto Mono', monospace;
+      color: var(--offwhite);
+      font-weight: 700;
+      letter-spacing: 0.11em;
+      box-shadow: 0 0 22px #39a2d533;
+      z-index: 2;
+      text-shadow: 0 2px 18px #0c0f12;
+      pointer-events: none;
+      white-space: pre;
+    }
+    .brain-fingerprint b {
+      color: #fff;
+      letter-spacing: 0.16em;
+    }
+    .contentwrap {
+      max-width: 650px;
+      margin-left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 74vh;
     }
     .nemesis-title {
       font-family: 'Oswald', 'Roboto Condensed', Arial, sans-serif;
       font-weight: 700;
-      font-size: 2.7vw;
-      letter-spacing: 0.03em;
+      font-size: 2.5vw;
+      letter-spacing: 0.01em;
       text-transform: uppercase;
       color: var(--offwhite);
-      line-height: 1.02;
-      margin-bottom: 0.5vw;
+      line-height: 1.06;
+      margin-bottom: 0.8vw;
     }
     .nemesis-sub {
-      font-size: 1.05vw;
-      margin-bottom: 1.7vw;
+      font-size: 1.07vw;
+      margin-bottom: 2.1vw;
       font-weight: 400;
-      color: var(--text);
+      color: var(--subtle);
     }
     .nemesis-body {
-      font-size: 1.02vw;
-      margin-bottom: 2vw;
-      color: var(--text);
-      line-height: 1.58;
+      font-size: 1.16vw;
+      margin-bottom: 1.7vw;
+      color: var(--offwhite);
+      line-height: 1.6;
     }
+    .nemesis-body b { color: #fff; font-weight: 600;}
     .nemesis-meta {
-      font-size: 1.04vw;
-      margin-bottom: 1.5vw;
+      font-size: 1.18vw;
+      margin-bottom: 2vw;
       display: flex;
       align-items: center;
-      gap: 1.7vw;
+      gap: 2vw;
       flex-wrap: wrap;
+      margin-top: 1vw;
     }
     .nemesis-meta .icon {
-      margin-right: 0.65vw;
-      font-size: 1.2vw;
+      margin-right: 0.45vw;
+      font-size: 1.25vw;
       vertical-align: middle;
       opacity: 0.85;
     }
@@ -118,11 +229,12 @@
     .nemesis-meta .meta-warn {
       color: var(--accent);
       font-weight: 500;
+      margin-left: 2vw;
     }
     .nemesis-fp {
-      font-size: 1.03vw;
-      margin-top: 3.5vw;
-      color: var(--subtle);
+      font-size: 1.15vw;
+      margin-top: 2.5vw;
+      color: var(--offwhite);
       letter-spacing: 0.04em;
       font-family: 'Roboto Mono', 'Roboto Condensed', monospace;
     }
@@ -131,50 +243,10 @@
       letter-spacing: 0.09em;
       font-family: 'Roboto Mono', monospace;
     }
-    .panel-right {
-      flex: 1.2;
-      position: relative;
-      background: linear-gradient(90deg, #151a1d 60%, #181c23 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      overflow: hidden;
-    }
-    .brain-container {
-      position: relative;
-      width: 75%;
-      height: 82%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: none;
-    }
-    .brain-video-bg {
-      position: absolute;
-      left: 0; top: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      opacity: 0.93;
-      filter: brightness(1.12) contrast(1.17) drop-shadow(0 0 40px #36b5e7cc);
-      z-index: 0;
-      pointer-events: none;
-    }
-    .brain-overlay {
-      position: absolute;
-      left: 5%; bottom: 4%;
-      font-size: 1.05vw;
-      color: var(--offwhite);
-      font-family: 'Roboto Mono', 'Roboto Condensed', monospace;
-      background: rgba(13,16,17,0.78);
-      border-left: 2px solid var(--subtle);
-      padding: 0.38vw 1.2vw;
-      border-radius: 5px;
-      box-shadow: 0 0 14px #23282f66;
-      letter-spacing: 0.02em;
-      z-index: 2;
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .nemesis-title { font-size: 2rem; }
+      .contentwrap { max-width: 90vw;}
     }
     @media (max-width: 900px) {
       .mainwrap {
@@ -182,39 +254,52 @@
         height: 100vh;
         min-height: 600px;
       }
-      .panel-left, .panel-right {
+      .left-section, .right-section {
         min-width: 0; min-height: 0;
-        height: 48vh;
-        padding: 0;
+        height: 52vh;
+        padding: 44px 5vw 0 5vw; /* for timer bar */
       }
-      .panel-left {padding: 6vw 6vw 2vw 6vw;}
-      .nemesis-title {font-size: 2rem;}
-      .nemesis-sub, .nemesis-body, .nemesis-fp, .brain-overlay { font-size: 1rem;}
-      .brain-container { width: 95%; height: 95%; }
+      .nemesis-title {font-size: 1.35rem;}
+      .nemesis-sub, .nemesis-body, .nemesis-fp, .brain-fingerprint { font-size: 1rem;}
+      .contentwrap { min-height: 0; max-width: 98vw;}
+      .brain-fingerprint { padding: 8px 18px 8px 12px; }
     }
-    @media (max-width: 560px) {
-      .mainwrap { min-height: 0;}
-      .panel-left, .panel-right {height: auto;}
-      .nemesis-title {font-size: 1.19rem;}
+    @media (max-width: 650px) {
+      .mainwrap { flex-direction: column; min-height: 0;}
+      .left-section, .right-section {height: auto; padding: 34px 2vw 0 2vw;}
+      .nemesis-title {font-size: 1.03rem;}
+      .nemesis-fp {font-size: 0.95rem;}
+      .brain-fingerprint { font-size: 0.9rem;}
+      .timer-hud-inner { font-size: 0.88rem;}
+    }
+    @media (max-width: 430px) {
+      .nemesis-title {font-size: 0.99rem;}
     }
   </style>
 </head>
 <body>
+  <!-- Top Timer Bar -->
+  <div class="timer-topbar">
+    <div class="timer-progress" id="timer-progress"></div>
+    <div class="timer-hud-inner">
+      <span class="timer-icon">⏳</span>
+      <span id="timer-topbar">7:00</span>
+    </div>
+  </div>
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
   <div class="mainwrap" tabindex="0">
-    <div class="panel-left">
-      <div class="scanlines"></div>
-      <div class="datastream"></div>
-      <div class="panel-content">
+    <div class="left-section">
+      <div class="contentwrap">
         <div class="nemesis-title">PROJECT NEMESIS<br/>PSYCHOLOGICAL FINGERPRINTING INITIATED</div>
         <div class="nemesis-sub">Day 1: Deep Profile Initiation</div>
         <div class="nemesis-body">
-          You will be asked <b>5 questions.</b> <b>Do not lie.</b><br>
-          <br>
+          You will be asked <b>5 questions.</b> <b>Do not lie.</b><br><br>
           These answers will shape your adversary.
         </div>
         <div class="nemesis-meta">
           <div class="meta-block">
-            <span class="icon">⏳</span> Estimated Time: <span id="timer">7:00</span>
+            <span class="icon">⏳</span> Estimated Time:<span id="timer-inline">7:00</span>
           </div>
           <div class="meta-block meta-warn">
             <span class="icon">☠️</span> Warning: Emotional inconsistencies will be used against you.
@@ -223,17 +308,19 @@
         <div class="nemesis-fp">Cognitive Fingerprint: <b>[INCOMPLETE]</b></div>
       </div>
     </div>
-    <div class="panel-right">
-      <div class="brain-container">
-        <video class="brain-video-bg" src="brain.mp4" autoplay loop muted playsinline></video>
-        <div class="brain-overlay">Cognitive Fingerprint: <b>[INCOMPLETE]</b></div>
-      </div>
+    <div class="right-section">
+      <video class="brain-bg-video" src="brain.mp4" autoplay loop muted playsinline></video>
+      <div class="brain-darken"></div>
+      <div class="brain-fingerprint">Cognitive Fingerprint: <b>[INCOMPLETE]</b></div>
     </div>
   </div>
   <script>
-    // Timer logic
-    let totalSeconds = 7*60;
-    let timerDisplay = document.getElementById('timer');
+    // Timer logic for HUD and inline timer + progress bar
+    const TIMER_TOTAL = 7*60; // 7 minutes
+    let totalSeconds = TIMER_TOTAL;
+    let timerDisplay = document.getElementById('timer-topbar');
+    let timerInline = document.getElementById('timer-inline');
+    let timerProgress = document.getElementById('timer-progress');
     function formatTime(secs) {
       let m = Math.floor(secs/60).toString().padStart(1,'0');
       let s = (secs%60).toString().padStart(2,'0');
@@ -241,9 +328,16 @@
     }
     function updateTimer() {
       timerDisplay.textContent = formatTime(totalSeconds);
+      timerInline.textContent = formatTime(totalSeconds);
+      let pct = (totalSeconds / TIMER_TOTAL);
+      timerProgress.style.width = `calc(${pct * 100}% + 20px)`;
       totalSeconds--;
       if (totalSeconds >= 0) setTimeout(updateTimer, 1000);
-      else timerDisplay.textContent = "0:00";
+      else {
+        timerDisplay.textContent = "0:00";
+        timerInline.textContent = "0:00";
+        timerProgress.style.width = "0%";
+      }
     }
     updateTimer();
     // Universal input detector for next page
