@@ -3,52 +3,54 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nemesis: Deep Profile Initiation — Q1</title>
+  <title>Project Nemesis — Psychological Fingerprinting (Q1)</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #18181b;
-      --card: rgba(22,23,28,0.85);
-      --glass-blur: blur(10px);
+      --card: rgba(20,22,28,0.93);
+      --blur: blur(13px);
+      --glass: rgba(36,38,46,0.56);
       --red: #ff334b;
       --glitch: #00e0ff;
-      --bubble: #dad5cd;
-      --bubble-text: #232324;
-      --bubble-shadow: #06091a44;
+      --white: #f3f7fa;
       --mono: 'JetBrains Mono', monospace;
-      --white: #f4f7fa;
-      --console: 'JetBrains Mono', 'Fira Mono', monospace;
-      --ai-cyan: #16ffe0;
-      --ai-cyan-shadow: #00e0ff77;
-      --ai-box: rgba(28,32,38,0.97);
-      --ai-box-glow: 0 0 36px 0 var(--ai-cyan-shadow), 0 2px 34px 0 #001d1d66;
+      --bubble: #ebe8e2;
+      --bubble-text: #2a2b2e;
+      --bubble-shadow: #01090b29;
+      --cyanglow: #08fff5;
+      --cyanglow-shadow: #19e3ea44;
     }
     html, body {
       margin: 0; padding: 0; width: 100vw; height: 100vh;
       background: var(--bg);
       color: var(--white);
       font-family: var(--mono);
-      overflow: hidden;
+      overflow-x: hidden;
+    }
+    body {
+      min-height: 100vh; min-width: 100vw;
+      background: var(--bg);
     }
     .scanlines {
       pointer-events: none;
       position: fixed; z-index: 2;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      opacity: 0.10;
+      opacity: 0.09;
       background: repeating-linear-gradient(
         to bottom, #fff2 0px, #fff2 1px, transparent 4px, transparent 7px
       );
       mix-blend-mode: lighten;
     }
     .timer-bar {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 32px;
-      background: linear-gradient(90deg, #1d212a 90%, #202e3e 100%);
-      z-index: 30;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 34px;
+      background: linear-gradient(90deg, #1d212a 94%, #222c34 100%);
+      z-index: 100;
       display: flex; align-items: center; 
-      font-family: var(--console);
-      font-size: 1.1rem;
+      font-family: var(--mono);
+      font-size: 1.12rem;
       color: var(--glitch);
-      letter-spacing: 0.11em;
+      letter-spacing: 0.10em;
       border-bottom: 2px solid var(--red);
       box-shadow: 0 2px 24px 0 #000c;
       user-select: none;
@@ -57,266 +59,246 @@
       margin-left: 20px;
       display: flex;
       align-items: center;
-      gap: 13px;
-      font-family: var(--console);
+      gap: 15px;
+      font-family: var(--mono);
+      font-size: 1.13rem;
     }
     .timer-bar-progress {
       position: absolute; left: 0; top: 0; height: 4px; 
       background: linear-gradient(90deg, var(--glitch) 80%, #42f2ff 100%);
       box-shadow: 0 0 8px #15edffcc;
-      z-index: 31;
-      transition: width 0.5s;
+      z-index: 102;
+      transition: width 0.4s;
     }
     .main {
       width: 100vw; height: 100vh;
       display: flex; align-items: center; justify-content: center;
       z-index: 3; position: relative;
+      min-height: 100vh;
     }
     .glass-card {
       position: relative;
       background: var(--card);
-      box-shadow: 0 0 44px 4px #14191e, 0 0 40px 5px var(--ai-cyan-shadow);
+      box-shadow: 0 0 44px 4px #11191e, 0 0 44px 3px var(--cyanglow-shadow);
       border-radius: 22px;
-      border: 2.2px solid var(--ai-cyan);
-      outline: 2.5px solid #ff334b30;
+      border: 2.2px solid var(--cyanglow);
+      outline: 2.5px solid #ff334b33;
       outline-offset: 2px;
       max-width: 540px;
-      width: 92vw;
+      width: 98vw;
       min-height: 640px;
-      padding: 38px 38px 60px 38px;
+      padding: 40px 40px 50px 40px;
       display: flex; flex-direction: column;
       align-items: stretch;
-      backdrop-filter: var(--glass-blur);
+      backdrop-filter: var(--blur);
       animation: fadeIn 1.2s cubic-bezier(.52,1.3,.38,.89);
-      overflow: visible;
-      margin-top: 28px;
-      margin-bottom: 28px;
+      margin-top: 42px;
+      margin-bottom: 34px;
       transition: box-shadow 0.3s, border 0.25s;
     }
     @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(44px) scale(0.94);}
+      0% { opacity: 0; transform: translateY(50px) scale(0.96);}
       100% { opacity: 1; transform: none;}
     }
-    .header {
-      font-size: 1.3rem;
-      font-family: var(--console);
-      letter-spacing: 0.01em;
+    .question {
+      font-size: 1.17rem;
+      font-family: var(--mono);
       font-weight: 700;
-      margin-bottom: 12px;
-      display: flex; align-items: center;
-      gap: 10px;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      min-height: 60px;
       color: var(--white);
-      justify-content: center;
-    }
-    .header .qicon {
-      font-size: 2.1rem;
-      color: var(--glitch);
-      vertical-align: middle;
-      margin-right: 8px;
-      margin-bottom: 2px;
-    }
-    .prompt {
-      font-size: 1.03rem;
-      margin-bottom: 22px;
-      color: #c4e2f3;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-    }
-    .sim-panel {
-      font-family: var(--console);
-      font-size: 1.09rem;
-      background: #121419ea;
-      color: #b7f3ff;
-      border-radius: 12px;
-      border-left: 3px solid var(--glitch);
-      padding: 20px 19px 16px 22px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 18px #00e0ff22;
-      min-height: 62px;
+      text-align: center;
+      animation: typingQ 1.3s steps(38) 0s 1 normal both;
       overflow: hidden;
-      white-space: pre-line;
-      opacity: 1;
-      transition: opacity 0.26s;
+      border-right: 2.5px solid var(--glitch);
+      white-space: nowrap;
+      width: 100%;
+      box-sizing: border-box;
+      margin-left: auto; margin-right: auto;
+      max-width: 99%;
     }
-    .sim-panel.hide { opacity: 0.08; pointer-events: none; height: 0; margin: 0; padding: 0;}
-    .silhouette-box {
-      width: 98%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 22px 0 16px 0;
-      min-height: 210px;
+    @keyframes typingQ {
+      from { width: 0 }
+      to { width: 100% }
+    }
+    .bubbles-silhouette {
       position: relative;
+      width: 100%;
+      min-height: 228px;
+      margin-top: 13px;
+      margin-bottom: 9px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
     }
     .silhouette {
-      max-width: 210px; width: 100%; min-width: 90px;
-      max-height: 280px;
+      position: relative;
+      z-index: 1;
+      max-width: 172px; min-width: 92px;
+      height: 222px;
       display: block;
       margin: 0 auto;
-      opacity: 0.89;
-      filter: blur(0.1px) drop-shadow(0 2px 30px #0cf6  ) grayscale(0.22) brightness(0.98);
-      z-index: 2;
-      position: relative;
+      filter: drop-shadow(0 4px 42px #00ffe6cc) grayscale(0.08) brightness(0.92);
+      opacity: 0.94;
+      animation: popSil 1.25s cubic-bezier(.42,1.61,.53,.99);
       user-select: none;
       pointer-events: none;
-      animation: popSil 1.25s cubic-bezier(.42,1.61,.53,.99);
     }
     @keyframes popSil {
-      0% {opacity:0;transform:scale(0.8);}
-      80% {opacity:0.95;transform:scale(1.07);}
-      100% {opacity:0.89;transform:scale(1);}
+      0% {opacity:0;transform:scale(0.83);}
+      90% {opacity:0.97;transform:scale(1.09);}
+      100% {opacity:0.94;transform:scale(1);}
     }
     .bubbles {
-      position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none;
     }
     .bubble {
       position: absolute;
       background: var(--bubble);
       color: var(--bubble-text);
       padding: 9px 19px;
-      font-size: 1.06rem;
-      font-family: var(--console);
+      font-size: 1.03rem;
+      font-family: var(--mono);
       border-radius: 30px;
       box-shadow: 0 2px 10px var(--bubble-shadow);
       font-weight: 700;
       opacity: 0;
-      transform: scale(0.95) translateY(12px);
-      animation: fadeBubble 0.92s forwards;
-      pointer-events: auto;
+      transform: scale(0.95) translateY(10px);
+      animation: fadeBubble 0.99s forwards;
       transition: filter 0.2s, box-shadow 0.23s;
-      cursor: pointer;
       border: 2px solid #dedad0;
       user-select: none;
-    }
-    .bubble:hover {
-      filter: brightness(1.14) drop-shadow(0 0 13px #ff334b85);
-      box-shadow: 0 2px 18px #ff334b27;
-      border-color: #ff334b;
     }
     @keyframes fadeBubble {
       0% {opacity:0; transform:scale(0.89) translateY(22px);}
       60% {opacity:1;}
       100% {opacity:1; transform:scale(1) translateY(0);}
     }
-    .response-section {
-      margin-top: 22px;
-      display: flex; flex-direction: column;
-      gap: 12px;
-      align-items: stretch;
-    }
-    .response-label {
-      color: var(--glitch);
-      font-size: 1.02rem;
-      font-family: var(--console);
-      font-weight: 700;
-      margin-bottom: 4px;
-      letter-spacing: 0.04em;
+    /* Simulated input in textarea */
+    .input-area {
+      margin: 25px 0 0 0;
+      width: 100%;
+      position: relative;
     }
     .response-box {
       width: 100%;
-      min-height: 120px;
-      max-height: 300px;
-      background: #0e1118f1;
-      border-radius: 12px;
-      border: 2.2px solid #313a47;
+      min-height: 128px;
+      max-height: 260px;
+      background: #0e1118f8;
+      border-radius: 13px;
+      border: 2.2px solid #1bded8;
       color: var(--white);
-      font-size: 1.19rem;
-      font-family: var(--console);
-      padding: 20px 14px 17px 18px;
+      font-size: 1.17rem;
+      font-family: var(--mono);
+      padding: 21px 15px 17px 18px;
       box-sizing: border-box;
       resize: vertical;
       outline: none;
-      transition: border 0.14s;
+      transition: border 0.15s;
       margin-bottom: 0;
       margin-top: 0;
-      box-shadow: 0 2px 22px 0 #00e0ff21;
-      z-index: 8;
+      box-shadow: 0 2px 25px 0 #00e0ff21;
+      z-index: 7;
     }
     .response-box:focus {
       border: 2.2px solid var(--glitch);
       box-shadow: 0 0 16px #00e0ff7a;
     }
+    .sim-placeholder {
+      position: absolute;
+      left: 21px; top: 19px; right: 17px;
+      font-family: var(--mono);
+      color: #5ae7ff;
+      opacity: 0.55;
+      font-size: 1.13rem;
+      pointer-events: none;
+      z-index: 9;
+      white-space: pre-line;
+      transition: opacity 0.23s;
+      user-select: none;
+      animation: fadeInSimInput 1.1s;
+    }
+    @keyframes fadeInSimInput { 0%{opacity:0;} 100%{opacity:0.55;}}
     .advance-btn {
       display: none;
-      margin: 24px auto 0 auto;
-      padding: 15px 54px;
-      font-size: 1.21rem;
-      font-family: var(--console);
+      margin: 28px auto 0 auto;
+      padding: 16px 60px;
+      font-size: 1.19rem;
+      font-family: var(--mono);
       font-weight: 700;
       color: #fff;
-      background: linear-gradient(90deg, var(--glitch), #008c8b 120%);
+      background: linear-gradient(90deg, var(--glitch) 45%, #008c8b 120%);
       border: none;
-      border-radius: 9px;
-      box-shadow: 0 2px 24px #00e0ff3d;
+      border-radius: 10px;
+      box-shadow: 0 2px 24px #00e0ff2d;
       cursor: pointer;
-      letter-spacing: 0.14em;
-      text-shadow: 0 2px 14px #1b1b44, 0 1px 0 #13ffed22;
-      transition: opacity 0.23s, box-shadow 0.16s, filter 0.12s;
+      letter-spacing: 0.15em;
+      text-shadow: 0 2px 14px #10113b, 0 1px 0 #0cfff126;
+      transition: opacity 0.22s, box-shadow 0.16s, filter 0.12s;
       z-index: 100;
-      animation: fadeIn 1.5s;
+      animation: fadeIn 1.2s;
     }
     .advance-btn:active { filter: brightness(0.86);}
-    .loading-bar {
-      width: 97%;
-      margin: 32px auto 16px auto;
-      display: flex; align-items: center; justify-content: center;
-      height: 42px;
+    .loader-bar {
+      width: 98%; margin: 30px auto 0 auto; display: flex; align-items: center; justify-content: center; height: 44px;
+      flex-direction: column;
     }
-    .lds-ellipsis {
-      display: inline-block; position: relative; width: 64px; height: 22px;
+    .loader-spinner {
+      border: 4px solid #21ecec36;
+      border-top: 4px solid var(--cyanglow);
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 10px;
     }
-    .lds-ellipsis div {
-      position: absolute; top: 7px; width: 11px; height: 11px;
-      border-radius: 50%; background: var(--ai-cyan); opacity: 0.92;
-      animation-timing-function: cubic-bezier(0, 1, 1, 0);
-    }
-    .lds-ellipsis div:nth-child(1) { left: 6px; animation: lds-ellipsis1 0.65s infinite; }
-    .lds-ellipsis div:nth-child(2) { left: 6px; animation: lds-ellipsis2 0.65s infinite; }
-    .lds-ellipsis div:nth-child(3) { left: 26px; animation: lds-ellipsis2 0.65s infinite; }
-    .lds-ellipsis div:nth-child(4) { left: 45px; animation: lds-ellipsis3 0.65s infinite; }
-    @keyframes lds-ellipsis1 { 0%{transform:scale(0);} 100%{transform:scale(1);} }
-    @keyframes lds-ellipsis2 { 0%{transform:translateX(0);} 100%{transform:translateX(20px);} }
-    @keyframes lds-ellipsis3 { 0%{transform:scale(1);} 100%{transform:scale(0);} }
-    .annotation-bottom {
-      position: static;
-      margin: 38px auto 0 auto;
-      font-family: var(--console);
-      color: var(--ai-cyan);
-      font-size: 1.12rem;
-      background: var(--ai-box);
-      border-radius: 11px 17px 17px 11px;
-      padding: 18px 34px;
-      box-shadow: var(--ai-box-glow);
-      border-left: 5px solid var(--ai-cyan);
-      letter-spacing: 0.09em;
-      opacity: 0.95;
-      z-index: 40;
-      animation: fadeInAnno 0.9s cubic-bezier(.37,2.1,.53,.87);
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+    .system-label {
+      font-size: 1.06rem;
+      color: #00e0ff;
+      font-family: var(--mono);
+      opacity: 0.7;
+      margin-bottom: 8px;
       text-align: center;
-      margin-bottom: 17px;
+      letter-spacing: 0.12em;
+    }
+    .annotation-bottom {
+      margin: 42px auto 0 auto;
+      font-family: var(--mono);
+      color: var(--cyanglow);
+      font-size: 1.19rem;
+      background: #132627e1;
+      border-radius: 12px 17px 17px 12px;
+      padding: 18px 36px;
+      box-shadow: 0 0 36px #00f5ff33;
+      border-left: 5px solid var(--cyanglow);
+      letter-spacing: 0.09em;
+      opacity: 0.96;
+      z-index: 40;
+      animation: fadeInAnno 0.7s cubic-bezier(.37,2.1,.53,.87);
+      text-align: center;
+      margin-bottom: 21px;
     }
     @keyframes fadeInAnno {
-      0% {opacity:0;filter:blur(8px) brightness(1.6);}
-      70% {opacity:0.95;filter:blur(0.6px) brightness(1.3);}
-      100% {opacity:0.95;filter:none;}
+      0% {opacity:0;filter:blur(10px) brightness(1.9);}
+      70% {opacity:0.97;filter:blur(0.7px) brightness(1.3);}
+      100% {opacity:0.96;filter:none;}
     }
     @media (max-width: 700px) {
-      .glass-card { padding: 18px 4vw 30px 4vw; min-width: 0; max-width: 98vw;}
-      .header { font-size: 1.04rem; }
-      .prompt { font-size: 0.98rem;}
-      .response-label, .sim-panel { font-size: 1rem;}
-      .annotation-bottom { font-size: 0.98rem;}
-      .silhouette { max-width: 150px; min-width: 80px; max-height: 190px;}
+      .glass-card { padding: 12px 1vw 18px 1vw; min-width: 0; max-width: 99vw;}
+      .question { font-size: 1.01rem;}
+      .response-box, .sim-placeholder { font-size: 0.97rem;}
+      .annotation-bottom { font-size: 0.99rem;}
+      .silhouette { max-width: 120px; height: 120px;}
     }
     @media (max-width: 490px) {
-      .glass-card { padding: 7px 1vw 13px 1vw;}
+      .glass-card { padding: 6px 1vw 7px 1vw;}
       .annotation-bottom {padding: 8px 7px;}
-      .silhouette-box { min-height: 120px;}
+      .bubbles-silhouette { min-height: 80px;}
     }
     /* Hide printscreen */
-    @media print {
-      body, html { display: none !important; }
-    }
+    @media print { body, html { display: none !important; } }
   </style>
 </head>
 <body>
@@ -324,158 +306,155 @@
   <div class="timer-bar">
     <div class="timer-bar-progress" id="timer-bar-progress"></div>
     <div class="timer-bar-inner">
-      <span style="font-size:1.16em;vertical-align:middle;line-height:0;">⏳</span>
-      <span id="timer-text">0:20</span>
-      <span style="font-size:0.93em;color:#ff334b;margin-left:16px;">Next question in</span>
+      <span style="font-size:1.1em;vertical-align:middle;line-height:0;">⏳</span>
+      <span id="timer-text">7:00</span>
+      <span style="font-size:0.93em;color:#ff334b;margin-left:16px;">Total time remaining</span>
     </div>
   </div>
   <div class="main">
     <div class="glass-card" id="main-card">
-      <div class="header">
-        <span class="qicon">🧠</span>
-        <span>Question 1: What’s the worst thing someone could say about you publicly?</span>
-      </div>
-      <div class="prompt">SIMULATED INPUT:</div>
-      <div class="sim-panel" id="sim-panel"></div>
-      <div class="silhouette-box">
+      <div class="question" id="question"></div>
+      <div class="bubbles-silhouette">
         <img class="silhouette" src="silhouette.png" alt="Person silhouette"/>
         <div class="bubbles" id="bubbles"></div>
       </div>
-      <div class="response-section">
-        <div class="response-label">Your response:</div>
-        <textarea class="response-box" id="response-box" placeholder="Type your true answer..."></textarea>
+      <div class="input-area">
+        <div class="sim-placeholder" id="sim-placeholder"></div>
+        <textarea class="response-box" id="response-box" placeholder="" autocomplete="off"></textarea>
         <button class="advance-btn" id="advance-btn">Advance</button>
+        <div id="loader-area"></div>
       </div>
-      <div id="loader-area"></div>
     </div>
   </div>
   <script>
-    // Simulated input typing animation in textarea preview
-    const simPanel = document.getElementById('sim-panel');
-    const previewLines = [
-      `"He’s just a brand, not a builder."`,
-      `"Everything he made was hype — no substance."`
-    ];
-    let simIdx = 0, charIdx = 0;
-    let typing = true;
-    function typeSim() {
-      if (simIdx < previewLines.length) {
-        let line = previewLines[simIdx];
-        simPanel.innerHTML = previewLines.slice(0, simIdx).join("<br>") + "<br>" +
-          line.slice(0, charIdx) + `<span class="cursor"></span>`;
-        if (charIdx < line.length) {
-          charIdx++;
-          setTimeout(typeSim, 25 + Math.random()*25);
-        } else {
-          simPanel.innerHTML = previewLines.slice(0, simIdx+1).join("<br>");
-          simIdx++;
-          charIdx = 0;
-          setTimeout(typeSim, 390);
-        }
-      } else {
-        typing = false;
-        simPanel.innerHTML = previewLines.join("<br>");
+    // 7 minute countdown, updates globally if stored
+    let totalSeconds = 7 * 60;
+    let timerDisplay = document.getElementById('timer-text');
+    let timerBar = document.getElementById('timer-bar-progress');
+    function formatTime(secs) {
+      let m = Math.floor(secs / 60).toString();
+      let s = (secs % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+    function updateTimer() {
+      timerDisplay.textContent = formatTime(totalSeconds);
+      timerBar.style.width = (totalSeconds/(7*60)*100) + "%";
+      totalSeconds--;
+      if (totalSeconds >= 0) setTimeout(updateTimer, 1000);
+      else {
+        timerDisplay.textContent = "0:00";
+        timerBar.style.width = "0%";
       }
     }
-    typeSim();
+    updateTimer();
 
-    // Bubbles
+    // Animate question text letter by letter
+    const questionEl = document.getElementById('question');
+    const questionStr = `Question 1: What’s the worst thing someone could say about you publicly?`;
+    let qidx = 0;
+    function animateQuestion() {
+      if (qidx <= questionStr.length) {
+        questionEl.textContent = questionStr.slice(0, qidx);
+        qidx++;
+        setTimeout(animateQuestion, 14);
+      }
+    }
+    animateQuestion();
+
+    // Simulated input as placeholder in textarea
+    const simExamples = `"He’s just a brand, not a builder."
+"Everything he made was hype — no substance."`;
+    let simPlaceholder = document.getElementById('sim-placeholder');
+    let respBox = document.getElementById('response-box');
+    let advanceBtn = document.getElementById('advance-btn');
+    let showingSim = true, typingSim = true;
+    let spidx = 0, charDelay = 18, lineDelay = 800;
+    function typeSimPlaceholder() {
+      if (spidx < simExamples.length) {
+        simPlaceholder.textContent = simExamples.slice(0, spidx);
+        spidx++;
+        setTimeout(typeSimPlaceholder, charDelay);
+      } else {
+        typingSim = false;
+      }
+    }
+    typeSimPlaceholder();
+
+    respBox.value = "";
+    respBox.addEventListener('focus', function() {
+      if (showingSim) simPlaceholder.style.opacity = 0.19;
+    });
+    respBox.addEventListener('input', function() {
+      if (respBox.value.length > 0) {
+        simPlaceholder.style.display = "none";
+        showingSim = false;
+        advanceBtn.style.display = "block";
+      } else {
+        simPlaceholder.style.display = "";
+        showingSim = true;
+        advanceBtn.style.display = "none";
+      }
+    });
+
+    // Speech bubbles
     const bubbleData = [
-      {txt:"fraud", x:8, y:16, delay:210},
-      {txt:"wannabe", x:330, y:32, delay:430},
-      {txt:"overrated", x:355, y:97, delay:900},
-      {txt:"fraud", x:25, y:65, delay:670},
-      {txt:"phony", x:295, y:170, delay:1120},
-      {txt:"poser", x:33, y:180, delay:1280}
+      {txt:"fraud", x:7, y:7, delay:210},
+      {txt:"wannabe", x:210, y:23, delay:470},
+      {txt:"overrated", x:250, y:83, delay:880},
+      {txt:"fraud", x:20, y:57, delay:640},
+      {txt:"phony", x:195, y:150, delay:1150},
+      {txt:"poser", x:38, y:156, delay:1330}
     ];
     const bubblesDiv = document.getElementById('bubbles');
     function layoutBubbles() {
-      // Responsive, mobile tweaks
-      let mobile = window.innerWidth < 700;
+      let mobile = window.innerWidth < 600;
       bubblesDiv.innerHTML = "";
-      let w = bubblesDiv.offsetWidth || 380, h = bubblesDiv.offsetHeight || 230;
+      let w = bubblesDiv.offsetWidth || 380, h = bubblesDiv.offsetHeight || 210;
       bubbleData.forEach((b, i) => {
         let span = document.createElement('span');
         span.className = 'bubble';
         span.innerText = b.txt;
         if(mobile){
-          // stack more downward
-          let spread = (w-120)/5;
-          span.style.left = (40+spread*i)+"px";
-          span.style.top = (30+38*i)+"px";
+          let spread = (w-100)/5;
+          span.style.left = (25+spread*i)+"px";
+          span.style.top = (18+28*i)+"px";
         } else {
           span.style.left = b.x+"px";
           span.style.top = b.y+"px";
         }
-        span.style.animationDelay = (b.delay || i*110)+"ms";
+        span.style.animationDelay = (b.delay || i*120)+"ms";
         bubblesDiv.appendChild(span);
       });
     }
-    setTimeout(layoutBubbles, 120); // After DOM
-    window.addEventListener("resize", ()=>setTimeout(layoutBubbles,60));
+    setTimeout(layoutBubbles, 100); window.addEventListener("resize", ()=>setTimeout(layoutBubbles,80));
 
-    // Timer bar logic (20s countdown for effect, not real question time)
-    let seconds = 20;
-    let timerText = document.getElementById('timer-text');
-    let timerBar = document.getElementById('timer-bar-progress');
-    function updateTimerBar() {
-      timerText.textContent = `0:${seconds.toString().padStart(2,'0')}`;
-      timerBar.style.width = (seconds/20*100) + "%";
-      if (seconds > 0) {
-        seconds--;
-        setTimeout(updateTimerBar, 1000);
-      } else {
-        timerText.textContent = "0:00";
-        timerBar.style.width = "0%";
-      }
-    }
-    updateTimerBar();
-
-    // UX: Hide preview and show "Advance" when user types
-    const textarea = document.getElementById('response-box');
-    const advanceBtn = document.getElementById('advance-btn');
-    textarea.value = "";
-    textarea.addEventListener('input', function(e){
-      if(textarea.value.length>0) {
-        simPanel.classList.add("hide");
-        advanceBtn.style.display = "block";
-      } else {
-        simPanel.classList.remove("hide");
-        advanceBtn.style.display = "none";
-      }
+    // Block copy/paste/cut/contextmenu in textarea, silently
+    ['copy','paste','cut','contextmenu'].forEach(evt=>{
+      respBox.addEventListener(evt, e => e.preventDefault());
     });
-
-    // Block copy/paste/cut in textarea, but NO big warning
-    ['copy','paste','cut'].forEach(evt=>{
-      textarea.addEventListener(evt, e => e.preventDefault());
-    });
-    textarea.addEventListener('contextmenu', e => e.preventDefault());
 
     // Prevent screenshots (not 100% foolproof)
     document.addEventListener('visibilitychange', function() {
-      if(document.hidden) {
-        document.body.style.filter = "blur(18px) brightness(0.68)";
-      } else {
-        document.body.style.filter = "";
-      }
+      if(document.hidden) { document.body.style.filter = "blur(18px) brightness(0.68)"; }
+      else { document.body.style.filter = ""; }
     });
     window.addEventListener('keydown', function(e) {
       if (e.key === "PrintScreen") {
-        document.body.style.filter = "blur(30px) brightness(0.41)";
-        setTimeout(()=>{document.body.style.filter=""}, 1500);
+        document.body.style.filter = "blur(28px) brightness(0.42)";
+        setTimeout(()=>{document.body.style.filter=""}, 1200);
       }
     });
 
-    // AI "processing" after clicking Advance
+    // Advance button logic
     advanceBtn.addEventListener('click', function(){
-      textarea.disabled = true;
+      respBox.disabled = true;
       advanceBtn.style.display = "none";
-      // Show loader
+      // Show subtle loader (spinner + "system running" label)
       let loaderArea = document.getElementById("loader-area");
       loaderArea.innerHTML = `
-        <div class="loading-bar">
-          <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-          <span style="color:#00e0ff;font-size:1.05rem;font-family:'JetBrains Mono',monospace;margin-left:16px;letter-spacing:0.09em;">AI processing vulnerability…</span>
+        <div class="loader-bar">
+          <div class="loader-spinner"></div>
+          <div class="system-label">system: processing input…</div>
         </div>
       `;
       // Random 1-20s, then show annotation bottom
