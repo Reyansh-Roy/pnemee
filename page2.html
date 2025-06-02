@@ -9,16 +9,19 @@
     :root {
       --bg: #18181b;
       --card: rgba(22,23,28,0.85);
-      --frost: rgba(36,38,46,0.56);
-      --blur: blur(9px);
+      --glass-blur: blur(10px);
       --red: #ff334b;
       --glitch: #00e0ff;
-      --white: #f3f7fa;
       --bubble: #dad5cd;
       --bubble-text: #232324;
       --bubble-shadow: #06091a44;
       --mono: 'JetBrains Mono', monospace;
+      --white: #f4f7fa;
       --console: 'JetBrains Mono', 'Fira Mono', monospace;
+      --ai-cyan: #16ffe0;
+      --ai-cyan-shadow: #00e0ff77;
+      --ai-box: rgba(28,32,38,0.97);
+      --ai-box-glow: 0 0 36px 0 var(--ai-cyan-shadow), 0 2px 34px 0 #001d1d66;
     }
     html, body {
       margin: 0; padding: 0; width: 100vw; height: 100vh;
@@ -29,16 +32,16 @@
     }
     .scanlines {
       pointer-events: none;
-      position: fixed; z-index: 5;
+      position: fixed; z-index: 2;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      opacity: 0.11;
+      opacity: 0.10;
       background: repeating-linear-gradient(
         to bottom, #fff2 0px, #fff2 1px, transparent 4px, transparent 7px
       );
       mix-blend-mode: lighten;
     }
     .timer-bar {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 34px;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 32px;
       background: linear-gradient(90deg, #1d212a 90%, #202e3e 100%);
       z-index: 30;
       display: flex; align-items: center; 
@@ -51,10 +54,11 @@
       user-select: none;
     }
     .timer-bar-inner {
-      margin-left: 23px;
+      margin-left: 20px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 13px;
+      font-family: var(--console);
     }
     .timer-bar-progress {
       position: absolute; left: 0; top: 0; height: 4px; 
@@ -66,32 +70,35 @@
     .main {
       width: 100vw; height: 100vh;
       display: flex; align-items: center; justify-content: center;
-      z-index: 2; position: relative;
+      z-index: 3; position: relative;
     }
     .glass-card {
       position: relative;
       background: var(--card);
-      box-shadow: 0 0 44px 4px #11191e, 0 0 24px 4px var(--glitch);
+      box-shadow: 0 0 44px 4px #14191e, 0 0 40px 5px var(--ai-cyan-shadow);
       border-radius: 22px;
-      border: 2.2px solid #00e0ff;
-      outline: 2.5px solid #ff334b33;
-      outline-offset: 3px;
-      max-width: 485px;
-      width: 94vw;
-      min-height: 590px;
-      padding: 40px 34px 48px 34px;
+      border: 2.2px solid var(--ai-cyan);
+      outline: 2.5px solid #ff334b30;
+      outline-offset: 2px;
+      max-width: 540px;
+      width: 92vw;
+      min-height: 640px;
+      padding: 38px 38px 60px 38px;
       display: flex; flex-direction: column;
       align-items: stretch;
-      backdrop-filter: var(--blur);
+      backdrop-filter: var(--glass-blur);
       animation: fadeIn 1.2s cubic-bezier(.52,1.3,.38,.89);
       overflow: visible;
+      margin-top: 28px;
+      margin-bottom: 28px;
+      transition: box-shadow 0.3s, border 0.25s;
     }
     @keyframes fadeIn {
-      0% { opacity: 0; transform: translateY(34px) scale(0.94);}
+      0% { opacity: 0; transform: translateY(44px) scale(0.94);}
       100% { opacity: 1; transform: none;}
     }
     .header {
-      font-size: 1.45rem;
+      font-size: 1.3rem;
       font-family: var(--console);
       letter-spacing: 0.01em;
       font-weight: 700;
@@ -99,159 +106,212 @@
       display: flex; align-items: center;
       gap: 10px;
       color: var(--white);
+      justify-content: center;
     }
     .header .qicon {
-      font-size: 2.15rem;
+      font-size: 2.1rem;
       color: var(--glitch);
       vertical-align: middle;
       margin-right: 8px;
       margin-bottom: 2px;
     }
     .prompt {
-      font-size: 1.04rem;
-      margin-bottom: 28px;
-      color: #d2d8df;
+      font-size: 1.03rem;
+      margin-bottom: 22px;
+      color: #c4e2f3;
+      font-weight: 600;
+      letter-spacing: 0.07em;
     }
     .sim-panel {
       font-family: var(--console);
-      font-size: 1.13rem;
-      background: #121419ee;
-      color: #d3f8ff;
-      border-radius: 9px;
-      border-left: 3.7px solid var(--glitch);
-      padding: 19px 16px 19px 21px;
-      margin-bottom: 30px;
-      box-shadow: 0 0 18px #0e2e3a1f;
-      min-height: 85px;
+      font-size: 1.09rem;
+      background: #121419ea;
+      color: #b7f3ff;
+      border-radius: 12px;
+      border-left: 3px solid var(--glitch);
+      padding: 20px 19px 16px 22px;
+      margin-bottom: 25px;
+      box-shadow: 0 0 18px #00e0ff22;
+      min-height: 62px;
       overflow: hidden;
       white-space: pre-line;
+      opacity: 1;
+      transition: opacity 0.26s;
     }
-    .sim-panel .cursor {
-      display: inline-block;
-      width: 1ch;
-      background: #00e0ff;
-      height: 1.1em;
-      margin-left: 3px;
-      animation: blink 0.9s steps(2) infinite;
-      vertical-align: bottom;
-    }
-    @keyframes blink { 0%,100% {opacity:1;} 50% {opacity:0;}}
-    .silhouette {
-      width: 160px; min-height: 200px;
-      display: block;
-      margin: 0 auto 18px auto;
-      opacity: 0.78;
-      filter: blur(0.8px) drop-shadow(0 2px 18px #0008) grayscale(0.22);
-      z-index: 2;
+    .sim-panel.hide { opacity: 0.08; pointer-events: none; height: 0; margin: 0; padding: 0;}
+    .silhouette-box {
+      width: 98%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 22px 0 16px 0;
+      min-height: 210px;
       position: relative;
     }
-    .bubbles {
-      position: absolute;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
+    .silhouette {
+      max-width: 210px; width: 100%; min-width: 90px;
+      max-height: 280px;
+      display: block;
+      margin: 0 auto;
+      opacity: 0.89;
+      filter: blur(0.1px) drop-shadow(0 2px 30px #0cf6  ) grayscale(0.22) brightness(0.98);
+      z-index: 2;
+      position: relative;
+      user-select: none;
       pointer-events: none;
-      z-index: 10;
+      animation: popSil 1.25s cubic-bezier(.42,1.61,.53,.99);
+    }
+    @keyframes popSil {
+      0% {opacity:0;transform:scale(0.8);}
+      80% {opacity:0.95;transform:scale(1.07);}
+      100% {opacity:0.89;transform:scale(1);}
+    }
+    .bubbles {
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;
     }
     .bubble {
       position: absolute;
       background: var(--bubble);
       color: var(--bubble-text);
-      padding: 10px 19px;
+      padding: 9px 19px;
       font-size: 1.06rem;
       font-family: var(--console);
       border-radius: 30px;
       box-shadow: 0 2px 10px var(--bubble-shadow);
       font-weight: 700;
       opacity: 0;
-      transform: scale(0.95) translateY(16px);
-      animation: fadeBubble 0.9s forwards;
+      transform: scale(0.95) translateY(12px);
+      animation: fadeBubble 0.92s forwards;
       pointer-events: auto;
       transition: filter 0.2s, box-shadow 0.23s;
       cursor: pointer;
       border: 2px solid #dedad0;
+      user-select: none;
     }
     .bubble:hover {
-      filter: brightness(1.17) drop-shadow(0 0 14px #ff334b77);
-      box-shadow: 0 2px 20px #ff334b33;
+      filter: brightness(1.14) drop-shadow(0 0 13px #ff334b85);
+      box-shadow: 0 2px 18px #ff334b27;
       border-color: #ff334b;
     }
     @keyframes fadeBubble {
-      0% {opacity:0; transform:scale(0.85) translateY(22px);}
+      0% {opacity:0; transform:scale(0.89) translateY(22px);}
       60% {opacity:1;}
       100% {opacity:1; transform:scale(1) translateY(0);}
     }
-    .annotation {
-      position: absolute;
-      right: 34px; bottom: 28px;
-      font-family: var(--console);
-      color: var(--glitch);
-      font-size: 1.06rem;
-      background: rgba(16,18,26,0.93);
-      border-radius: 10px 17px 17px 10px;
-      padding: 12px 24px;
-      box-shadow: 0 2px 18px #00e0ff33;
-      border-left: 4px solid var(--glitch);
-      letter-spacing: 0.09em;
-      opacity: 0.93;
-      z-index: 20;
-      transition: filter 0.25s;
-    }
-    .annotation.pulse {
-      filter: brightness(1.8) drop-shadow(0 0 16px #ff334b88);
-      animation: pulseAnno 0.7s;
-    }
-    @keyframes pulseAnno {
-      0% { filter:brightness(1.9) drop-shadow(0 0 19px #ff334b88);}
-      70% { filter:brightness(1.2);}
-      100% { filter:none;}
-    }
     .response-section {
-      margin-top: 45px;
+      margin-top: 22px;
       display: flex; flex-direction: column;
       gap: 12px;
       align-items: stretch;
     }
     .response-label {
       color: var(--glitch);
-      font-size: 1.03rem;
+      font-size: 1.02rem;
       font-family: var(--console);
       font-weight: 700;
-      margin-bottom: 5px;
-      letter-spacing: 0.03em;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
     }
     .response-box {
       width: 100%;
-      min-height: 60px;
-      max-height: 170px;
-      background: #11131aeb;
-      border-radius: 8px;
-      border: 2px solid #313a47;
+      min-height: 120px;
+      max-height: 300px;
+      background: #0e1118f1;
+      border-radius: 12px;
+      border: 2.2px solid #313a47;
       color: var(--white);
-      font-size: 1.13rem;
+      font-size: 1.19rem;
       font-family: var(--console);
-      padding: 17px 12px 15px 15px;
+      padding: 20px 14px 17px 18px;
       box-sizing: border-box;
       resize: vertical;
       outline: none;
-      transition: border 0.15s;
+      transition: border 0.14s;
       margin-bottom: 0;
+      margin-top: 0;
+      box-shadow: 0 2px 22px 0 #00e0ff21;
+      z-index: 8;
     }
     .response-box:focus {
-      border: 2px solid var(--glitch);
-      box-shadow: 0 0 14px #00e0ff66;
+      border: 2.2px solid var(--glitch);
+      box-shadow: 0 0 16px #00e0ff7a;
     }
-    .response-warning {
-      color: var(--red);
-      font-size: 0.97rem;
-      margin-top: 2px;
+    .advance-btn {
+      display: none;
+      margin: 24px auto 0 auto;
+      padding: 15px 54px;
+      font-size: 1.21rem;
       font-family: var(--console);
-      opacity: 0.8;
-      min-height: 18px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(90deg, var(--glitch), #008c8b 120%);
+      border: none;
+      border-radius: 9px;
+      box-shadow: 0 2px 24px #00e0ff3d;
+      cursor: pointer;
+      letter-spacing: 0.14em;
+      text-shadow: 0 2px 14px #1b1b44, 0 1px 0 #13ffed22;
+      transition: opacity 0.23s, box-shadow 0.16s, filter 0.12s;
+      z-index: 100;
+      animation: fadeIn 1.5s;
     }
-    /* Mobile/Tablet tweaks */
-    @media (max-width: 600px) {
-      .glass-card {padding: 22px 3vw 20px 3vw; min-width: 0; max-width: 99vw;}
-      .annotation {right: 7vw; bottom: 16px; font-size: 0.93rem; padding: 9px 12px;}
+    .advance-btn:active { filter: brightness(0.86);}
+    .loading-bar {
+      width: 97%;
+      margin: 32px auto 16px auto;
+      display: flex; align-items: center; justify-content: center;
+      height: 42px;
+    }
+    .lds-ellipsis {
+      display: inline-block; position: relative; width: 64px; height: 22px;
+    }
+    .lds-ellipsis div {
+      position: absolute; top: 7px; width: 11px; height: 11px;
+      border-radius: 50%; background: var(--ai-cyan); opacity: 0.92;
+      animation-timing-function: cubic-bezier(0, 1, 1, 0);
+    }
+    .lds-ellipsis div:nth-child(1) { left: 6px; animation: lds-ellipsis1 0.65s infinite; }
+    .lds-ellipsis div:nth-child(2) { left: 6px; animation: lds-ellipsis2 0.65s infinite; }
+    .lds-ellipsis div:nth-child(3) { left: 26px; animation: lds-ellipsis2 0.65s infinite; }
+    .lds-ellipsis div:nth-child(4) { left: 45px; animation: lds-ellipsis3 0.65s infinite; }
+    @keyframes lds-ellipsis1 { 0%{transform:scale(0);} 100%{transform:scale(1);} }
+    @keyframes lds-ellipsis2 { 0%{transform:translateX(0);} 100%{transform:translateX(20px);} }
+    @keyframes lds-ellipsis3 { 0%{transform:scale(1);} 100%{transform:scale(0);} }
+    .annotation-bottom {
+      position: static;
+      margin: 38px auto 0 auto;
+      font-family: var(--console);
+      color: var(--ai-cyan);
+      font-size: 1.12rem;
+      background: var(--ai-box);
+      border-radius: 11px 17px 17px 11px;
+      padding: 18px 34px;
+      box-shadow: var(--ai-box-glow);
+      border-left: 5px solid var(--ai-cyan);
+      letter-spacing: 0.09em;
+      opacity: 0.95;
+      z-index: 40;
+      animation: fadeInAnno 0.9s cubic-bezier(.37,2.1,.53,.87);
+      text-align: center;
+      margin-bottom: 17px;
+    }
+    @keyframes fadeInAnno {
+      0% {opacity:0;filter:blur(8px) brightness(1.6);}
+      70% {opacity:0.95;filter:blur(0.6px) brightness(1.3);}
+      100% {opacity:0.95;filter:none;}
+    }
+    @media (max-width: 700px) {
+      .glass-card { padding: 18px 4vw 30px 4vw; min-width: 0; max-width: 98vw;}
+      .header { font-size: 1.04rem; }
+      .prompt { font-size: 0.98rem;}
+      .response-label, .sim-panel { font-size: 1rem;}
+      .annotation-bottom { font-size: 0.98rem;}
+      .silhouette { max-width: 150px; min-width: 80px; max-height: 190px;}
+    }
+    @media (max-width: 490px) {
+      .glass-card { padding: 7px 1vw 13px 1vw;}
+      .annotation-bottom {padding: 8px 7px;}
+      .silhouette-box { min-height: 120px;}
     }
     /* Hide printscreen */
     @media print {
@@ -264,90 +324,97 @@
   <div class="timer-bar">
     <div class="timer-bar-progress" id="timer-bar-progress"></div>
     <div class="timer-bar-inner">
-      <span style="font-size:1.24em;vertical-align:middle;line-height:0;">⏳</span>
+      <span style="font-size:1.16em;vertical-align:middle;line-height:0;">⏳</span>
       <span id="timer-text">0:20</span>
-      <span style="font-size:0.94em;color:#ff334b;margin-left:18px;">Next question in</span>
+      <span style="font-size:0.93em;color:#ff334b;margin-left:16px;">Next question in</span>
     </div>
   </div>
   <div class="main">
-    <div class="glass-card">
+    <div class="glass-card" id="main-card">
       <div class="header">
         <span class="qicon">🧠</span>
-        Question 1: <span style="font-weight:400;margin-left:6px;">What’s the worst thing someone could say about you publicly?</span>
+        <span>Question 1: What’s the worst thing someone could say about you publicly?</span>
       </div>
       <div class="prompt">SIMULATED INPUT:</div>
       <div class="sim-panel" id="sim-panel"></div>
-      <img class="silhouette" src="silhouette.png" alt="Person silhouette"/>
-      <div class="bubbles" id="bubbles"></div>
-      <div class="annotation" id="annotation">→ Core Vulnerability: Reputation Fragility</div>
-      <div class="response-section">
-        <div class="response-label">Your response (Type freely, but no copy/paste/screenshots):</div>
-        <textarea class="response-box" id="response-box" placeholder="Type your true answer..."></textarea>
-        <div class="response-warning" id="response-warning"></div>
+      <div class="silhouette-box">
+        <img class="silhouette" src="silhouette.png" alt="Person silhouette"/>
+        <div class="bubbles" id="bubbles"></div>
       </div>
+      <div class="response-section">
+        <div class="response-label">Your response:</div>
+        <textarea class="response-box" id="response-box" placeholder="Type your true answer..."></textarea>
+        <button class="advance-btn" id="advance-btn">Advance</button>
+      </div>
+      <div id="loader-area"></div>
     </div>
   </div>
   <script>
-    // Simulated input typing animation
+    // Simulated input typing animation in textarea preview
     const simPanel = document.getElementById('sim-panel');
-    const simLines = [
+    const previewLines = [
       `"He’s just a brand, not a builder."`,
       `"Everything he made was hype — no substance."`
     ];
     let simIdx = 0, charIdx = 0;
     let typing = true;
     function typeSim() {
-      if (simIdx < simLines.length) {
-        let line = simLines[simIdx];
-        simPanel.innerHTML = simLines.slice(0, simIdx).join("<br>") + "<br>" +
+      if (simIdx < previewLines.length) {
+        let line = previewLines[simIdx];
+        simPanel.innerHTML = previewLines.slice(0, simIdx).join("<br>") + "<br>" +
           line.slice(0, charIdx) + `<span class="cursor"></span>`;
         if (charIdx < line.length) {
           charIdx++;
-          setTimeout(typeSim, 29 + Math.random()*35);
+          setTimeout(typeSim, 25 + Math.random()*25);
         } else {
-          simPanel.innerHTML = simLines.slice(0, simIdx+1).join("<br>");
+          simPanel.innerHTML = previewLines.slice(0, simIdx+1).join("<br>");
           simIdx++;
           charIdx = 0;
-          setTimeout(typeSim, 420);
+          setTimeout(typeSim, 390);
         }
       } else {
         typing = false;
-        simPanel.innerHTML = simLines.join("<br>");
+        simPanel.innerHTML = previewLines.join("<br>");
       }
     }
     typeSim();
 
     // Bubbles
     const bubbleData = [
-      {txt:"fraud", top:56, left:18, delay:200},
-      {txt:"wannabe", top:74, left:350, delay:430},
-      {txt:"overrated", top:165, left:390, delay:880},
-      {txt:"fraud", top:120, left:52, delay:630},
-      {txt:"phony", top:199, left:340, delay:1080},
-      {txt:"poser", top:220, left:60, delay:1220}
+      {txt:"fraud", x:8, y:16, delay:210},
+      {txt:"wannabe", x:330, y:32, delay:430},
+      {txt:"overrated", x:355, y:97, delay:900},
+      {txt:"fraud", x:25, y:65, delay:670},
+      {txt:"phony", x:295, y:170, delay:1120},
+      {txt:"poser", x:33, y:180, delay:1280}
     ];
     const bubblesDiv = document.getElementById('bubbles');
-    bubbleData.forEach((b, i) => {
-      setTimeout(()=>{
+    function layoutBubbles() {
+      // Responsive, mobile tweaks
+      let mobile = window.innerWidth < 700;
+      bubblesDiv.innerHTML = "";
+      let w = bubblesDiv.offsetWidth || 380, h = bubblesDiv.offsetHeight || 230;
+      bubbleData.forEach((b, i) => {
         let span = document.createElement('span');
         span.className = 'bubble';
-        span.style.top = b.top+"px";
-        span.style.left = b.left+"px";
         span.innerText = b.txt;
-        span.style.animationDelay = (i*0.05)+"s";
-        span.addEventListener('mouseenter', ()=>{
-          document.getElementById('annotation').classList.add('pulse');
-          setTimeout(()=>document.getElementById('annotation').classList.remove('pulse'), 400);
-        });
-        span.addEventListener('click', ()=>{
-          document.getElementById('annotation').classList.add('pulse');
-          setTimeout(()=>document.getElementById('annotation').classList.remove('pulse'), 400);
-        });
+        if(mobile){
+          // stack more downward
+          let spread = (w-120)/5;
+          span.style.left = (40+spread*i)+"px";
+          span.style.top = (30+38*i)+"px";
+        } else {
+          span.style.left = b.x+"px";
+          span.style.top = b.y+"px";
+        }
+        span.style.animationDelay = (b.delay || i*110)+"ms";
         bubblesDiv.appendChild(span);
-      }, b.delay);
-    });
+      });
+    }
+    setTimeout(layoutBubbles, 120); // After DOM
+    window.addEventListener("resize", ()=>setTimeout(layoutBubbles,60));
 
-    // Timer bar logic (20s countdown)
+    // Timer bar logic (20s countdown for effect, not real question time)
     let seconds = 20;
     let timerText = document.getElementById('timer-text');
     let timerBar = document.getElementById('timer-bar-progress');
@@ -364,61 +431,62 @@
     }
     updateTimerBar();
 
-    // Disable copy, paste, cut on textarea
+    // UX: Hide preview and show "Advance" when user types
     const textarea = document.getElementById('response-box');
-    textarea.addEventListener('copy', e => {
-      e.preventDefault();
-      warn("Copying is disabled. Enter your own thoughts.");
+    const advanceBtn = document.getElementById('advance-btn');
+    textarea.value = "";
+    textarea.addEventListener('input', function(e){
+      if(textarea.value.length>0) {
+        simPanel.classList.add("hide");
+        advanceBtn.style.display = "block";
+      } else {
+        simPanel.classList.remove("hide");
+        advanceBtn.style.display = "none";
+      }
     });
-    textarea.addEventListener('paste', e => {
-      e.preventDefault();
-      warn("Pasting is disabled. Type your answer.");
+
+    // Block copy/paste/cut in textarea, but NO big warning
+    ['copy','paste','cut'].forEach(evt=>{
+      textarea.addEventListener(evt, e => e.preventDefault());
     });
-    textarea.addEventListener('cut', e => {
-      e.preventDefault();
-      warn("Cut is disabled.");
-    });
-    // Optional: disable right-click/context menu in textarea
-    textarea.addEventListener('contextmenu', e => {
-      e.preventDefault();
-      warn("No shortcuts allowed.");
-    });
-    // Warn function
-    function warn(msg) {
-      const el = document.getElementById('response-warning');
-      el.textContent = msg;
-      setTimeout(()=>{el.textContent=""}, 1800);
-    }
-    // Screenshot block: blur if tab loses focus
+    textarea.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Prevent screenshots (not 100% foolproof)
     document.addEventListener('visibilitychange', function() {
       if(document.hidden) {
-        document.body.style.filter = "blur(16px) brightness(0.65)";
+        document.body.style.filter = "blur(18px) brightness(0.68)";
       } else {
         document.body.style.filter = "";
       }
     });
-    // Prevent printscreen as best as browser allows
     window.addEventListener('keydown', function(e) {
       if (e.key === "PrintScreen") {
-        document.body.style.filter = "blur(30px) brightness(0.45)";
-        setTimeout(()=>{document.body.style.filter=""}, 1600);
+        document.body.style.filter = "blur(30px) brightness(0.41)";
+        setTimeout(()=>{document.body.style.filter=""}, 1500);
       }
     });
 
-    // Prevent submit until typing and timer done
-    let timerUnlocked = false;
-    setTimeout(()=>{ timerUnlocked = true; }, 20000);
-    textarea.addEventListener('keydown', function(e) {
-      if(!timerUnlocked || typing) {
-        warn("Wait for the question...");
-        e.preventDefault();
-      }
-    });
-    textarea.addEventListener('focus', function(e) {
-      if(!timerUnlocked || typing) {
-        warn("Wait for the question...");
-        textarea.blur();
-      }
+    // AI "processing" after clicking Advance
+    advanceBtn.addEventListener('click', function(){
+      textarea.disabled = true;
+      advanceBtn.style.display = "none";
+      // Show loader
+      let loaderArea = document.getElementById("loader-area");
+      loaderArea.innerHTML = `
+        <div class="loading-bar">
+          <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+          <span style="color:#00e0ff;font-size:1.05rem;font-family:'JetBrains Mono',monospace;margin-left:16px;letter-spacing:0.09em;">AI processing vulnerability…</span>
+        </div>
+      `;
+      // Random 1-20s, then show annotation bottom
+      let rand = Math.floor(Math.random()*20)+1;
+      setTimeout(()=>{
+        loaderArea.innerHTML = `
+          <div class="annotation-bottom">
+            → Core Vulnerability: Reputation Fragility
+          </div>
+        `;
+      }, rand*1000);
     });
   </script>
 </body>
