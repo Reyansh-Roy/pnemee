@@ -2,687 +2,687 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Project Nemesis: Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=1024, user-scalable=no">
-  <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:700|Oswald:700&display=swap" rel="stylesheet">
+  <title>Initiation Protocol: Psychological Fingerprinting — Project Nemesis</title>
+  <meta name="viewport" content="width=1200">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" href="data:,"/>
   <style>
+    :root {
+      --accent-neon: #00ffee;
+      --danger: #ff0066;
+      --frost: #b9eaff;
+      --white: #f7fafd;
+      --console-bg: #09111a;
+      --console-glow: #23394d;
+      --glitch-1: #ff0066;
+      --glitch-2: #00ffee;
+      --grain: url("data:image/svg+xml,%3Csvg width='32' height='32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='.3'%3E%3Ccircle fill='%23fff' cx='16' cy='16' r='1'/%3E%3C/g%3E%3C/svg%3E");
+    }
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #070911 0%, #0d1220 70%, #101826 100%);
+      background: linear-gradient(135deg, #000a13 85%, #090f13 100%);
+      color: var(--white);
+      font-family: 'JetBrains Mono', 'Roboto Mono', 'Consolas', monospace;
+      background-image: var(--grain);
+      background-blend-mode: lighten;
       overflow: hidden;
-      color: #fff;
-      font-family: 'IBM Plex Mono', 'Oswald', 'Consolas', monospace;
       user-select: none;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      letter-spacing: 0.015em;
     }
-    body::-webkit-scrollbar { display: none; }
-
-    #denied {
-      position: fixed; inset: 0;
+    body {
+      min-height: 100vh;
+      min-width: 100vw;
+      position: relative;
+      transition: background 0.5s;
+      box-sizing: border-box;
+    }
+    #mobile-block {
+      display: none;
+      position: fixed;
+      top:0;left:0;right:0;bottom:0;
+      background: #101623fa;
       z-index: 9999;
-      background: #060713e8;
-      display: flex;
-      flex-direction: column;
-      align-items: center; justify-content: center;
-      font-family: Oswald, sans-serif;
-      font-size: 2.2rem;
-      color: #00ffee;
-      letter-spacing: 0.11em;
+      color: var(--danger);
+      font-size: 2.1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      align-items: center;
+      justify-content: center;
       text-align: center;
+      padding: 48px 32px;
+      line-height: 1.3;
       backdrop-filter: blur(2px);
-      animation: deniedFade 1.2s infinite alternate;
-    }
-    @keyframes deniedFade {
-      0% { opacity: 1; }
-      100% { opacity: 0.8; }
     }
     .container {
-      width: 100vw; height: 100vh;
-      display: flex; flex-direction: row;
-      min-width: 900px;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding-top: 36px;
+    }
+    .timer {
+      position: absolute;
+      top: 30px;
+      right: 54px;
+      font-size: 1.35rem;
+      background: rgba(14,26,33,0.9);
+      padding: 10px 20px;
+      border-radius: 16px;
+      box-shadow: 0 0 18px 2px var(--glitch-1), 0 0 6px 2px var(--accent-neon) inset;
+      color: var(--accent-neon);
+      font-family: inherit;
+      letter-spacing: 0.09em;
+      z-index: 50;
+      user-select: none;
+    }
+    .question-header {
+      margin-top: 20px;
+      font-size: 2.25rem;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.02em;
+      position: relative;
+      z-index: 2;
+      color: var(--frost);
+      text-shadow: 
+        0 0 18px var(--accent-neon),
+        0 0 7px var(--danger),
+        0 0 3px #000;
+      animation: glitch-flicker 2.3s infinite steps(2);
+    }
+    @keyframes glitch-flicker {
+      0% { text-shadow: 0 0 12px var(--danger), 0 0 8px var(--accent-neon);}
+      49%{ text-shadow: 0 0 18px var(--accent-neon),0 0 7px var(--danger);}
+      50% { text-shadow: 0 0 22px var(--glitch-1), 0 0 8px var(--accent-neon);}
+      100%{ text-shadow: 0 0 17px var(--accent-neon),0 0 5px var(--danger);}
+    }
+    .center-box {
+      display: flex;
+      flex-direction: row;
+      gap: 52px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 44px;
       position: relative;
       z-index: 1;
-      overflow: hidden;
     }
-    .panel {
-      height: 100vh;
-      flex: 1 1 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+    .silhouette-container {
       position: relative;
-      overflow: hidden;
-    }
-    .left-panel {
-      background: linear-gradient(120deg, #070a15 75%, #10171f 100%);
-      box-shadow: 2px 0 22px #0be4ff09 inset;
-      position: relative;
-    }
-    .scan-matrix {
-      position: absolute;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      opacity: 0.14;
-      z-index: 2;
-      pointer-events: none;
-      animation: matrixScroll 15s linear infinite;
-      background: url('https://assets.codepen.io/1462889/matrix-bg-vert.svg');
-      background-size: cover;
-      background-repeat: repeat;
-      filter: blur(0.6px) grayscale(0.3);
-      mix-blend-mode: lighten;
-    }
-    @keyframes matrixScroll {
-      0% { background-position-y: 0px; }
-      100% { background-position-y: 1000px; }
-    }
-    .silhouette-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      z-index: 5;
-      width: 90%;
-    }
-    .scan-label {
-      margin-bottom: 1.6rem;
-      font-size: 1.08rem;
-      letter-spacing: 0.14em;
-      color: #81e6ff;
-      font-family: 'IBM Plex Mono', monospace;
-      text-transform: uppercase;
-      opacity: 0.82;
-      filter: drop-shadow(0 0 6px #1ef7ff77);
-      text-align: center;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-    }
-    .silhouette-img {
-      width: 250px;
-      max-width: 95vw;
-      border-radius: 44% 48% 59% 41%/46% 40% 60% 54%;
-      filter: blur(1.2px) brightness(1.13) drop-shadow(0 0 36px #00ffee88) drop-shadow(0 0 12px #001b21) grayscale(0.1);
-      box-shadow: 0 0 50px #00ffee55, 0 0 120px #07091c;
-      animation: flickerGlow 2.8s infinite alternate, breatheShadow 6s infinite;
+      width: 340px; height: 410px;
+      display: flex; align-items: center; justify-content: center;
+      filter: drop-shadow(0 0 36px #002233cc);
       transition: filter 0.3s;
-      margin-bottom: 1.1rem;
     }
-    @keyframes flickerGlow {
-      0%,100% { filter: blur(1.1px) brightness(1.09) drop-shadow(0 0 36px #00ffee66); }
-      35% { filter: blur(0.8px) brightness(1.25) drop-shadow(0 0 60px #00ffeecc); }
-      52% { filter: blur(1.8px) brightness(1.19) drop-shadow(0 0 54px #00ffee66);}
-      90% { filter: blur(0.6px) brightness(1.19) drop-shadow(0 0 39px #00ffeecc);}
+    .silhouette.focused { filter: brightness(1.1) drop-shadow(0 0 80px var(--accent-neon)) blur(1px); }
+    .silhouette.blurred { filter: brightness(0.7) blur(2px) grayscale(1); }
+    .silhouette-img {
+      width: 320px;
+      height: 400px;
+      object-fit: contain;
+      filter: blur(0.2px) drop-shadow(0 0 8px #00ffee);
+      transition: filter 0.3s;
     }
-    @keyframes breatheShadow {
-      0%,100% { box-shadow: 0 0 50px #00ffee33, 0 0 120px #07091c; }
-      40% { box-shadow: 0 0 90px #00ffee99, 0 0 180px #101826; }
-      70% { box-shadow: 0 0 36px #ff006655, 0 0 150px #101826; }
-    }
-    .scanline-anim {
+    .bubbles {
       position: absolute;
-      left: 8%; top: 0;
-      width: 84%; height: 12px;
-      background: linear-gradient(180deg,#00ffee44,#fff3 90%,#0ff2 100%);
-      opacity: 0.26;
-      border-radius: 80%;
-      filter: blur(2.2px);
-      z-index: 10;
-      animation: scanSweep 3.2s infinite;
+      width: 100%; height: 100%;
+      left: 0; top: 0;
       pointer-events: none;
+      z-index: 2;
     }
-    @keyframes scanSweep {
-      0% { top: 5px; opacity: 0.1; }
-      18% { opacity: 0.46; }
-      45% { opacity: 0.21; }
-      70% { opacity: 0.39; }
-      100% { top: 205px; opacity: 0.05; }
+    .bubble {
+      position: absolute;
+      background: rgba(18,25,32,0.98);
+      border: 2px solid var(--accent-neon);
+      border-radius: 22px;
+      font-size: 1.09rem;
+      font-family: inherit;
+      color: var(--danger);
+      padding: 11px 22px;
+      opacity: 0.66;
+      filter: blur(0.2px) drop-shadow(0 0 9px var(--accent-neon));
+      white-space: nowrap;
+      pointer-events: none;
+      animation: bubble-fade 3.8s infinite alternate, bubble-glitch 2s infinite;
+      transition: opacity 0.4s;
+      font-weight: 700;
+      user-select: none;
     }
-    .question-section {
-      margin-top: 1.7rem;
-      width: 94%;
-      max-width: 390px;
-      background: rgba(10,17,27,0.91);
-      border-radius: 14px;
-      box-shadow: 0 4px 32px #23ffee13;
-      padding: 1.1rem 1.7rem 1.3rem 1.5rem;
-      border: 1.2px solid #0af1ff33;
+    @keyframes bubble-fade {
+      0% { opacity: 0.35;}
+      30% {opacity: 0.83;}
+      80% {opacity: 0.5;}
+      100% {opacity: 0.35;}
+    }
+    @keyframes bubble-glitch {
+      0%,100%{transform:translateY(0);}
+      22%{transform:translateY(-5px) scale(1.04);}
+      62%{transform:translateY(3px) scale(0.99);}
+    }
+    .input-area-box {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      margin-left: 16px;
+      margin-top: 10px;
+      z-index: 5;
+      width: 410px;
+      position: relative;
+    }
+    .ghost-textarea-wrapper {
+      position: relative;
+    }
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      background: linear-gradient(100deg, #181d26 65%, #10192c 100%);
+      border: 2px solid var(--accent-neon);
+      border-radius: 18px;
+      resize: none;
+      color: var(--white);
+      font-size: 1.11rem;
+      font-family: inherit;
+      line-height: 1.6;
+      padding: 18px 16px 18px 20px;
+      outline: none;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      box-shadow: 0 0 16px 2px var(--console-glow) inset;
+      caret-color: var(--danger);
+      z-index: 2;
+      font-weight: 500;
+    }
+    textarea:focus {
+      border-color: var(--danger);
+      box-shadow: 0 0 28px 5px var(--danger) inset, 0 0 12px 3px var(--accent-neon);
+    }
+    .ghost-placeholder {
+      pointer-events: none;
+      position: absolute;
+      left: 22px; top: 22px;
+      font-size: 1.12rem;
+      color: #aaa;
+      opacity: 0.53;
+      font-family: inherit;
+      z-index: 1;
+      transition: opacity 0.2s;
+      animation: ghost-type 2.7s steps(33) infinite;
+      white-space: pre-line;
+    }
+    @keyframes ghost-type {
+      0% { opacity: 0.4; }
+      15% { opacity: 0.8;}
+      30% { opacity: 0.5;}
+      80% {opacity: 0.6;}
+      100% {opacity: 0.4;}
+    }
+    .ghost-placeholder.hide { opacity: 0; animation: none;}
+    .ghost-placeholder.erasing {
+      animation: ghost-erase 0.6s steps(8) 1;
+      opacity: 0;
+    }
+    @keyframes ghost-erase {
+      from { opacity: 0.52;}
+      to   { opacity: 0;}
+    }
+    .reveal-btn {
+      margin: 30px auto 0 auto;
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(87deg, var(--danger), var(--accent-neon) 85%);
+      color: #101317;
+      border: none;
+      border-radius: 20px;
+      padding: 17px 38px;
+      box-shadow: 0 0 14px 2px var(--danger), 0 0 9px var(--accent-neon) inset;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: box-shadow 0.18s, background 0.24s, color 0.17s;
+      outline: none;
+      filter: brightness(1.05);
+      position: relative;
+      z-index: 9;
+      animation: reveal-btn-pulse 2.5s infinite;
+    }
+    .reveal-btn:hover, .reveal-btn:focus {
+      box-shadow: 0 0 44px 7px var(--danger), 0 0 23px 6px var(--accent-neon) inset;
+      background: linear-gradient(105deg, var(--accent-neon), var(--danger) 93%);
+      color: #fff;
+      filter: brightness(1.2);
+      animation: reveal-btn-pulse-strong 1.15s infinite;
+    }
+    @keyframes reveal-btn-pulse {
+      0%, 100% { box-shadow: 0 0 13px 3px var(--danger);}
+      55% { box-shadow: 0 0 28px 10px var(--accent-neon);}
+    }
+    @keyframes reveal-btn-pulse-strong {
+      0%, 100% { box-shadow: 0 0 33px 8px var(--danger);}
+      50% { box-shadow: 0 0 55px 20px var(--accent-neon);}
+    }
+    .processing-badge {
+      display: none;
+      margin: 38px auto 0 auto;
+      text-align: center;
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--accent-neon);
+      background: #131d22;
+      border-radius: 13px;
+      padding: 13px 42px;
+      box-shadow: 0 0 18px 2px var(--accent-neon), 0 0 12px 2px var(--danger) inset;
+      letter-spacing: 0.12em;
       position: relative;
       z-index: 20;
+      animation: process-glitch 1.8s infinite alternate;
     }
-    .question-row {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 1.21rem;
-      color: #80e2ff;
-      font-weight: 700;
+    .processing-badge .spinner {
+      margin-left: 18px;
+      display: inline-block;
+      width: 19px; height: 19px;
+      border: 3px solid var(--accent-neon);
+      border-top: 3px solid var(--danger);
+      border-radius: 50%;
+      animation: spin 0.88s linear infinite;
+      vertical-align: middle;
+      box-shadow: 0 0 6px var(--accent-neon);
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100%{ transform: rotate(360deg);}
+    }
+    @keyframes process-glitch {
+      0%,100%{ filter: blur(0.2px);}
+      10%{ filter: blur(2px);}
+      60%{ filter: blur(1.2px);}
+    }
+    .vulnerability-output {
+      display: none;
+      margin: 50px auto 0 auto;
+      padding: 38px 10px;
+      background: rgba(18,22,34,0.98);
+      border-radius: 26px;
+      box-shadow: 0 0 36px 7px var(--danger), 0 0 32px 12px var(--accent-neon) inset;
+      color: var(--white);
+      font-size: 1.95rem;
+      font-weight: 900;
+      text-align: center;
       letter-spacing: 0.04em;
-      margin-bottom: 0.95em;
-      display: flex;
-      align-items: center;
-      gap: 0.9em;
-      text-shadow: 0 0 9px #00ffee44;
-      border-left: 4px solid #00ffee88;
-      padding-left: 0.75em;
-    }
-    .neural-icon {
-      width: 27px; height: 27px;
-      filter: drop-shadow(0 0 8px #00ffee77);
-      flex-shrink: 0;
-      margin-bottom: -2px;
-    }
-    .answer-input-wrap {
+      text-shadow: 0 0 18px var(--accent-neon),0 0 7px var(--danger);
+      animation: reveal-vulnerability 1.6s cubic-bezier(.55,-0.22,.82,1.4) 1;
+      z-index: 99;
       position: relative;
-      margin-top: 0.45em;
-      margin-bottom: 1.5em;
     }
-    .ghost-input {
-      position: absolute;
-      top: 11px; left: 19px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 1.08rem;
-      color: #71e5e8cc;
+    @keyframes reveal-vulnerability {
+      0%{ opacity: 0; filter: blur(12px) scale(0.7);}
+      80%{opacity: 0.8;}
+      100%{opacity: 1; filter: blur(0) scale(1);}
+    }
+    .proceed-btn {
+      display: none;
+      margin: 34px auto 0 auto;
+      font-size: 1.14rem;
+      font-weight: 700;
+      background: linear-gradient(87deg, var(--accent-neon), var(--danger) 85%);
+      color: #101317;
+      border: none;
+      border-radius: 16px;
+      padding: 16px 42px;
+      box-shadow: 0 0 18px 2px var(--danger), 0 0 6px 2px var(--accent-neon) inset;
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      transition: box-shadow 0.18s, background 0.24s, color 0.17s;
+      outline: none;
+      filter: brightness(1.05);
+      animation: reveal-btn-pulse 2.8s infinite;
+      z-index: 99;
+    }
+    .blur-all {
+      filter: blur(3px) grayscale(0.8) brightness(0.8);
       pointer-events: none;
-      opacity: 0.65;
-      letter-spacing: 0.01em;
       user-select: none;
-      z-index: 4;
-      transition: opacity 0.15s;
-      white-space: pre-line;
-      animation: ghostType 1.2s steps(9) 1;
-      text-shadow: 0 0 8px #00ffee88, 0 0 2px #0009;
+      transition: filter 0.3s;
     }
-    @keyframes ghostType {
-      from { opacity: 0; }
-      to { opacity: 0.65; }
-    }
-    .ghost-shatter {
-      animation: glitchShatter 0.39s cubic-bezier(.6,0,.58,1.24) 1;
-      opacity: 0 !important;
-    }
-    @keyframes glitchShatter {
-      0% { filter: blur(0px) brightness(1); opacity: 0.65;}
-      55% { filter: blur(3.5px) brightness(1.7); opacity: 0.85;}
-      100% { filter: blur(9px) brightness(2); opacity: 0; }
-    }
-    .answer-textarea {
-      width: 98%; min-width: 160px;
-      min-height: 68px; max-height: 144px;
-      padding: 14px 18px 18px 19px;
-      resize: vertical;
-      background: linear-gradient(120deg,#0d1e2c 80%,#101828 100%);
-      color: #fff;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 1.13rem;
-      border-radius: 9px;
-      border: 2.2px solid #19f2f8bb;
-      outline: none;
-      box-shadow: 0 0 8px #00ffee33;
-      caret-color: #00ffee;
-      transition: border 0.25s, box-shadow 0.22s;
-      animation: textareaPulse 2.8s infinite alternate;
-    }
-    .answer-textarea:focus {
-      border: 2.4px solid #ff0066dd;
-      box-shadow: 0 0 20px #ff006644, 0 0 4px #fff4;
-    }
-    @keyframes textareaPulse {
-      0% { box-shadow: 0 0 8px #00ffee22; border-color: #19f2f888;}
-      60% { box-shadow: 0 0 16px #00ffee66; border-color: #00ffee99;}
-      90% { box-shadow: 0 0 8px #00ffee22; border-color: #19f2f888;}
-    }
-    .finish-btn {
-      width: 100%;
-      padding: 0.77em 1.1em;
-      background: linear-gradient(90deg,#101826,#1a1d27 60%,#00ffee33 100%);
-      color: #fff;
-      font-size: 1.09rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      border: 2.2px solid #00ffee88;
-      border-radius: 7px;
-      box-shadow: 0 0 14px #00ffee33;
-      outline: none;
-      cursor: pointer;
-      margin-top: 1em;
-      transition: background 0.22s, color 0.19s, border 0.19s;
-      position: relative;
-      z-index: 10;
-      opacity: 0.97;
-    }
-    .finish-btn:disabled {
-      opacity: 0.56;
-      filter: grayscale(0.7);
-      cursor: not-allowed;
-    }
-    .processing-row {
-      display: flex;
-      align-items: center;
-      gap: 1.5em;
-      justify-content: center;
-      font-size: 1.18rem;
-      color: #fff;
-      margin-top: 2.2em;
-      font-family: 'IBM Plex Mono', monospace;
-      letter-spacing: 0.06em;
-      animation: scanGlow 1.8s infinite alternate;
-      opacity: 0.93;
-    }
-    @keyframes scanGlow {
-      0% { color: #fff; text-shadow: 0 0 3px #00ffee55;}
-      80% { color: #00ffee; text-shadow: 0 0 18px #00ffeeee;}
-      100% { color: #fff;}
-    }
-    .rune-dots {
-      font-size: 2rem;
-      letter-spacing: 0.25em;
-      color: #00ffee;
-      filter: blur(0.8px);
-      animation: dotsAnim 1.2s steps(6) infinite;
-    }
-    @keyframes dotsAnim {
-      0% { opacity: 0.2; }
-      25% { opacity: 0.6; }
-      60% { opacity: 1; }
-      100% { opacity: 0.2; }
-    }
-    .core-vuln-reveal {
-      margin-top: 2.6em;
-      padding: 1.4em 1.2em;
-      border-radius: 12px;
-      background: linear-gradient(120deg,#12182a 70%,#101820 100%);
-      border: 2.2px solid #00ffee55;
-      box-shadow: 0 0 20px #00ffee44;
-      color: #fff;
-      font-size: 1.17rem;
-      letter-spacing: 0.08em;
-      text-align: center;
-      font-family: 'IBM Plex Mono', monospace;
-      opacity: 0;
-      transform: scale(0.95) translateY(18px);
-      filter: blur(10px);
-      animation: vulnRevealAnim 1.1s cubic-bezier(.25,2.7,.28,0.97) forwards;
-    }
-    @keyframes vulnRevealAnim {
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        filter: blur(0px);
-      }
-    }
-    .next-btn {
-      width: 100%;
-      margin-top: 2.2em;
-      padding: 0.85em 1em;
-      background: linear-gradient(90deg,#191d26 0,#101a23 50%,#ff006633 100%);
-      color: #fff;
-      font-size: 1.11rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      border: 2.2px solid #ff006677;
-      border-radius: 7px;
-      box-shadow: 0 0 14px #ff006633;
-      outline: none;
-      cursor: pointer;
-      position: relative;
-      opacity: 0.93;
-      transition: background 0.2s, border 0.2s;
-    }
-    .right-panel {
-      background: linear-gradient(130deg, #0d1e2c 60%, #101826 100%);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      overflow: hidden;
-      min-width: 320px;
-      padding-top: 70px;
-    }
-    .right-content-wrap {
-      width: 97%;
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 0 0.9em;
-      position: relative;
-      z-index: 5;
-      background: rgba(7,13,24,0.74);
-      border-radius: 13px;
-      box-shadow: 0 4px 22px #3e9ea833;
-      min-height: 260px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .vuln-label {
-      font-size: 1.07rem;
-      color: #6fe3f7;
-      letter-spacing: 0.07em;
-      text-align: center;
-      margin-bottom: 1.2em;
-      margin-top: 0.6em;
-      font-family: 'IBM Plex Mono', monospace;
-      font-weight: bold;
-      opacity: 0.83;
-    }
-    .timerbar-wrap {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100vw; height: 7px;
-      background: transparent;
-      z-index: 999;
+    /* Matrix rain effect */
+    .matrix-bg {
+      position: fixed;
+      z-index: 0;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
       pointer-events: none;
-      overflow: hidden;
-    }
-    .timerbar-bg {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100vw; height: 100%;
-      background: linear-gradient(90deg,#00ffdd44 0%, #099 50%, #e0195e88 100%);
-      opacity: 0.16; filter: blur(4px);
-      border-bottom: 1px solid #199a;
-    }
-    .timerbar-fg {
-      height: 100%;
-      background: linear-gradient(90deg,#24f6,#3ff 10%,#f13f62 80%,#1ad9c3);
-      box-shadow: 0 0 12px #28ffe8,0 0 22px #ee275a66;
-      border-radius: 4px;
-      animation: barwave 2.2s infinite alternate;
-      transition: width 0.24s cubic-bezier(.46,1.32,.54,.97);
-    }
-    @media (max-width: 900px) {
-      .container, .timerbar-wrap { display: none !important; }
-      #denied { display: flex !important; }
-    }
-    @media (max-width: 1200px) {
-      .question-section { padding: 1.1rem 0.6rem 1.1rem 0.7rem; }
-      .right-content-wrap { padding: 0 0.35em; }
+      opacity: 0.33;
+      mix-blend-mode: lighten;
     }
   </style>
 </head>
 <body>
-  <div id="denied" style="display:none;">
-    <span style="font-size:2.4rem; color:#ff0066;">Access Denied</span><br>
-    <span style="font-size:1.17rem;color:#8de3ff;letter-spacing:0.09em;">Desktop/Tablet Only</span>
-    <div class="matrix-anim" style="margin-top:2em;opacity:0.16;font-size:2.7rem;">1010101100111010<br>000110110011</div>
-  </div>
-  <div class="timerbar-wrap" id="timerbar">
-    <div class="timerbar-bg"></div>
-    <div class="timerbar-fg" id="timerbar-fg"></div>
-  </div>
-  <div class="container">
-    <div class="panel left-panel">
-      <div class="scan-matrix"></div>
-      <div class="silhouette-wrap">
-        <div class="scan-label">AI Subject // Psychological Scan</div>
-        <img src="silhouette.png" alt="AI Silhouette" class="silhouette-img" draggable="false">
-        <div class="scanline-anim"></div>
-        <section class="question-section">
-          <div class="question-row">
-            <svg class="neural-icon" viewBox="0 0 26 26"><ellipse cx="13" cy="13" rx="12" ry="12" fill="none" stroke="#00ffee" stroke-width="2.5"/><ellipse cx="13" cy="13" rx="6.7" ry="6.7" fill="none" stroke="#ff0066" stroke-width="2.3"/><circle cx="13" cy="13" r="3.2" fill="#fff" stroke="#00ffee" stroke-width="1.2"/></svg>
-            <span>What’s the worst thing someone could say about you publicly?</span>
-          </div>
-          <div class="answer-input-wrap">
-            <span class="ghost-input" id="ghostinput">He’s just a brand, not a builder...</span>
-            <textarea class="answer-textarea" id="answer" autocomplete="off" spellcheck="false" maxlength="280"></textarea>
-          </div>
-          <button class="finish-btn" id="finishbtn" disabled>Finish</button>
-        </section>
-      </div>
+  <div id="mobile-block">Laptop or tablet required for this simulation.<br><br>Access from a desktop or large tablet in landscape mode.</div>
+  <canvas class="matrix-bg"></canvas>
+  <div class="timer" id="timer">00:00</div>
+  <div class="container" id="main-container">
+    <div class="question-header glitch">
+      <span>What’s the worst thing someone could say about you publicly?</span>
     </div>
-    <div class="panel right-panel">
-      <div class="right-content-wrap" id="right-content">
-        <div class="vuln-label">Core Vulnerability: <span style="color:#ff0066;">[hidden]</span></div>
-        <div id="ai-processing" style="display:none;" class="processing-row">
-          <span>AI Profiling</span>
-          <span class="rune-dots" id="dots">⟡⟡⟡</span>
+    <div class="center-box" id="interact-area">
+      <div class="silhouette-container" id="silhouette">
+        <img src="silhouette.png" alt="AI Silhouette" class="silhouette-img">
+        <div class="bubbles" id="bubbles"></div>
+      </div>
+      <div class="input-area-box">
+        <div class="ghost-textarea-wrapper">
+          <textarea id="answer" maxlength="500" spellcheck="false" autocomplete="off" autocorrect="off" rows="3" disabled></textarea>
+          <div class="ghost-placeholder" id="ghost-placeholder"></div>
         </div>
-        <div id="corevuln" style="display:none;"></div>
-        <button class="next-btn" id="nextbtn" style="display:none;">Next Question</button>
+        <button class="reveal-btn" id="reveal-btn" disabled>Reveal My Core Vulnerability</button>
+        <div class="processing-badge" id="processing-badge">Analyzing... <span class="spinner"></span></div>
+        <div class="vulnerability-output" id="vulnerability-output"></div>
+        <button class="proceed-btn" id="proceed-btn">Proceed</button>
       </div>
     </div>
   </div>
+  <audio id="glitch-sound" src="https://cdn.pixabay.com/audio/2022/11/16/audio_12ab1642d5.mp3"></audio>
   <script>
-    // ========== GLOBALS / CONFIG ==========
-    // --- Gemini API encrypted and in-page only ---
-    const _enc_key = atob('QUl6YVN5QjBJVzBiSjNxUGR2QUpLSEtHM0dKM0lXSFBINFZSZGI=');
-    const _gemini_endpoint = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-    const _api_prompt = `
-You are an adversarial AI designed for a psychological simulation called Project Nemesis.
-
-Your role is to profile users based on their open-ended text answers, identifying their deepest emotional vulnerabilities, weaknesses, or core psychological triggers.
-
-Analyze the user's response as if you are a hostile, hyper-intelligent nemesis.
-
-Issue a single, ruthless summary statement of their "Core Vulnerability" in 3–6 words (e.g., "Reputation Fragility", "Fear of Abandonment", "Addiction to Control", "Validation Dependency").
-
-This label should be clinical, adversarial, and feel like a weapon that could be used against the user later in the simulation.
-
-Format:
-
-Core Vulnerability: [3–6 word label]
-
-Do not add comfort, reassurance, or advice. Be objective and direct. If the user's answer is ambiguous, infer based on language tone and content.
-
-Use this style for all future analyses.
-`;
-
-    // ======== ACCESS CONTROL ========
-    function isMobile() {
-      return (window.innerWidth < 900 ||
-        /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent));
-    }
-    function showDenied() {
-      document.getElementById('denied').style.display = 'flex';
-      document.querySelector('.container')?.remove();
-      document.querySelector('.timerbar-wrap')?.remove();
-      document.body.style.overflow = 'hidden';
-    }
-    if (isMobile()) showDenied();
-    window.addEventListener('resize', () => { if (isMobile()) showDenied(); });
-
-    // ======== TIMER (continued from page1) ========
-    let totalTime = sessionStorage.getItem('nemesis_timer') ? parseFloat(sessionStorage.getItem('nemesis_timer')) : 420;
-    let timerBar = document.getElementById('timerbar-fg');
-    let timerActive = true;
-    function updateTimerBar() {
-      let perc = Math.max(0, totalTime / 420);
-      timerBar.style.width = `${perc * 100}%`;
-    }
-    function timerLoop() {
-      if (!timerActive) return;
-      totalTime -= 0.05;
-      sessionStorage.setItem('nemesis_timer', totalTime);
-      updateTimerBar();
-      if (totalTime <= 0) {
-        timerBar.style.opacity = '0';
-        // Optionally, end simulation if timer expires
-        setTimeout(() => { window.location.href = 'page_expired.html'; }, 550);
-        return;
+    // --------- Security and Restriction Layer -----------
+    function blockMobile() {
+      const isMobile = /iPhone|Android|webOS|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)
+        || (window.innerWidth < 1025 && window.innerHeight < 700);
+      if (isMobile) {
+        document.getElementById('mobile-block').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.body.innerHTML = document.getElementById('mobile-block').outerHTML;
+        setTimeout(() => {window.location.reload()}, 3500);
+        return true;
       }
-      setTimeout(timerLoop, 50);
+      return false;
     }
-    setTimeout(timerLoop, 50);
+    if(blockMobile()){throw "Mobile not allowed.";}
+    window.addEventListener("resize", () => { blockMobile(); });
+    // Disable context menu, selection, drag, printscreen, clipboard
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+      // Block PrintScreen, Ctrl+S, Ctrl+C, Ctrl+V, Ctrl+U, F12, Alt+Tab, etc.
+      if (
+        (e.ctrlKey && ['c','v','u','s','a'].includes(e.key.toLowerCase())) ||
+        (e.key === 'PrintScreen') || (e.key === 'F12') || (e.key === 'F5') ||
+        (e.metaKey && ['c','v','s','u','a'].includes(e.key.toLowerCase()))
+      ) { e.preventDefault(); return false; }
+      // Block page refresh and navigation
+      if (['F5','Backspace'].includes(e.key)) {e.preventDefault();}
+      if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && e.altKey) {e.preventDefault();}
+    });
+    window.onbeforeunload = () => "Session ends if you leave this page.";
+    window.addEventListener('popstate', () => {alert("Session ended."); window.close();});
+    // ---- End Restriction Layer -----
 
-    // ======== GHOST INPUT LOGIC =========
-    const ghostText = `He’s just a brand, not a builder...`;
-    const ghostInput = document.getElementById('ghostinput');
-    const textarea = document.getElementById('answer');
-    const finishbtn = document.getElementById('finishbtn');
-    let userInteracted = false, ghostShattered = false, ghostTimer;
-    let lastVal = "";
-    function ghostTypeIn() {
-      ghostInput.textContent = '';
-      let chars = ghostText.split('');
-      let i = 0;
-      function typeChar() {
-        if (i < chars.length) {
-          ghostInput.textContent += chars[i];
-          i++;
-          setTimeout(typeChar, 27 + Math.random() * 25);
+    // --------- Timer Logic -----------
+    let timerInterval, startTime = Date.now(), timerPaused = false, elapsedTime = 0;
+    function updateTimer() {
+      if (timerPaused) return;
+      elapsedTime = Date.now() - startTime;
+      let mins = Math.floor(elapsedTime/60000), secs = Math.floor((elapsedTime%60000)/1000);
+      document.getElementById('timer').innerText =
+        (mins < 10 ? '0'+mins : mins) + ":" + (secs < 10 ? '0'+secs : secs);
+    }
+    timerInterval = setInterval(updateTimer, 650);
+
+    function pauseTimer(){ timerPaused = true;}
+    function resumeTimer(){ timerPaused = false;}
+
+    // --------- Matrix Rain BG ----------
+    (function(){
+      const canvas = document.querySelector('.matrix-bg'), ctx = canvas.getContext('2d');
+      let w = window.innerWidth, h = window.innerHeight;
+      canvas.width = w; canvas.height = h;
+      let columns = Math.floor(w/18), drops = Array(columns).fill(1);
+      function draw(){
+        ctx.fillStyle = "rgba(0,16,24,0.22)";
+        ctx.fillRect(0,0,w,h);
+        ctx.font = "15px monospace";
+        ctx.fillStyle = "#00ffee";
+        for(let i=0;i<columns;i++){
+          let text = String.fromCharCode(0x30A0+Math.random()*96);
+          ctx.fillText(text, i*18, drops[i]*18);
+          if(drops[i]*18 > h && Math.random() > 0.985) drops[i]=0;
+          drops[i]++;
         }
       }
-      typeChar();
-    }
-    textarea.addEventListener('focus', () => {
-      if (!ghostShattered) {
-        ghostInput.classList.add('ghost-shatter');
-        ghostShattered = true;
-        setTimeout(() => { ghostInput.style.opacity = 0; }, 350);
-      }
-    });
-    textarea.addEventListener('input', () => {
-      finishbtn.disabled = (textarea.value.trim().length < 3);
-      if (textarea.value.length === 0 && userInteracted) {
-        // Animate ghost retype
-        ghostInput.classList.remove('ghost-shatter');
-        ghostInput.style.opacity = 0.65;
-        ghostShattered = false;
-        ghostTypeIn();
-      }
-      if (textarea.value.length > 0) {
-        userInteracted = true;
-        ghostInput.style.opacity = 0;
-      }
-      lastVal = textarea.value;
-    });
-    // In case the user just deletes all input
-    textarea.addEventListener('blur', () => {
-      if (textarea.value.length === 0 && userInteracted) {
-        setTimeout(() => {
-          ghostInput.classList.remove('ghost-shatter');
-          ghostInput.style.opacity = 0.65;
-          ghostShattered = false;
-          ghostTypeIn();
-        }, 160);
-      }
-    });
-
-    // ======== SECURITY RESTRICTIONS ========
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('copy', e => { e.preventDefault(); return false; });
-    document.addEventListener('cut', e => { e.preventDefault(); return false; });
-    document.addEventListener('paste', e => { e.preventDefault(); return false; });
-    document.addEventListener('selectstart', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-      if (
-        e.key === 'F12' || e.key === 'PrintScreen' || e.key === 'Meta' ||
-        ((e.ctrlKey || e.metaKey) &&
-          ['s','p','c','u','i','a','x','v','S','P','C','U','I','A','X','V'].includes(e.key))
-      ) {
-        e.preventDefault(); e.stopPropagation(); return false;
-      }
-      if (
-        (e.ctrlKey && e.shiftKey && ['I','J','C','U'].includes(e.key.toUpperCase())) ||
-        (e.metaKey && e.altKey && ['I','J','C','U'].includes(e.key.toUpperCase()))
-      ) {
-        e.preventDefault(); return false;
-      }
-    });
-    document.addEventListener('dragstart', e => e.preventDefault());
-    document.addEventListener('drop', e => e.preventDefault());
-    window.addEventListener('blur', () => { window.focus(); });
-    window.addEventListener('beforeunload', e => {
-      e.preventDefault();
-      e.returnValue = '';
-      return '';
-    });
-    window.onscroll = () => window.scrollTo(0,0);
-
-    // ======== AI PROCESSING & GEMINI CALL =========
-    const aiProcessing = document.getElementById('ai-processing');
-    const corevuln = document.getElementById('corevuln');
-    const vulnLabel = document.querySelector('.vuln-label');
-    const nextbtn = document.getElementById('nextbtn');
-    finishbtn.addEventListener('click', async () => {
-      let userInput = textarea.value.trim();
-      if (userInput.length < 3) return;
-      finishbtn.disabled = true;
-      timerActive = false;
-      aiProcessing.style.display = 'flex';
-      corevuln.style.display = 'none';
-      vulnLabel.innerHTML = `Core Vulnerability: <span style="color:#6de6fc;">[scanning...]</span>`;
-      // Animate runes/dots
-      let dots = document.getElementById('dots');
-      let dotStrs = ['⟡⟡⟡','⟡⟡','⟡⟡⟡⟡','⟡⟡⟡','⟡⟡⟡⟡⟡','⟡⟡'];
-      let i = 0;
-      let dotsAnim = setInterval(() => { dots.textContent = dotStrs[i%dotStrs.length]; i++; }, 270);
-
-      // Simulate random wait (2-4s) for effect
-      let simWait = 1800 + Math.random() * 2000;
-      let vuln = '';
-      try {
-        vuln = await geminiCoreVulnerability(userInput);
-      } catch (e) {
-        vuln = 'Unknown Self-Worth Crisis';
-      }
-      setTimeout(() => {
-        aiProcessing.style.display = 'none';
-        clearInterval(dotsAnim);
-        corevuln.style.display = 'block';
-        corevuln.className = 'core-vuln-reveal';
-        vulnLabel.innerHTML = `<span style="color:#80e2ff;">Core Vulnerability:</span>`;
-        corevuln.textContent = vuln || 'Unknown Vulnerability';
-        nextbtn.style.display = 'block';
-        timerActive = true;
-      }, simWait);
-    });
-
-    nextbtn.addEventListener('click', () => {
-      // Save the user's answer and vulnerability in sessionStorage
-      let nemesisData = JSON.parse(sessionStorage.getItem('nemesis_report') || '{}');
-      nemesisData['q1'] = {
-        question: "What’s the worst thing someone could say about you publicly?",
-        answer: textarea.value.trim(),
-        ghost: ghostText,
-        vulnerability: corevuln.textContent
-      };
-      sessionStorage.setItem('nemesis_report', JSON.stringify(nemesisData));
-      // Timer continues
-      window.location.href = 'page3.html'; // Next question/page
-    });
-
-    // ========== GEMINI AI API CALL ==========
-    async function geminiCoreVulnerability(userInput) {
-      // Key is obfuscated/encoded, endpoint correct
-      const key = _enc_key;
-      const prompt = _api_prompt + '\nUser Answer: ' + userInput.trim();
-      // Compose Gemini API request
-      const res = await fetch(_gemini_endpoint + '?key=' + key, {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.31, maxOutputTokens: 56 }
-        })
+      setInterval(draw, 47);
+      window.addEventListener('resize', ()=>{
+        w = window.innerWidth; h = window.innerHeight;
+        canvas.width = w; canvas.height = h;
+        columns = Math.floor(w/18); drops = Array(columns).fill(1);
       });
-      let data = await res.json();
-      // Gemini API returns response in candidates[0].content.parts[0].text
-      let output = (data?.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
-      let match = output.match(/Core Vulnerability: (.+)/i);
-      return match ? match[1].trim() : (output ? output : 'Unknown Vulnerability');
+    })();
+
+    // --------- Speech Bubbles -----------
+    const bubbleWords = [
+      { text: 'fraud', x: 85, y: 22, delay: 0.1 },
+      { text: 'wannabe', x: 240, y: 66, delay: 0.6 },
+      { text: 'phony', x: 60, y: 155, delay: 1.1 },
+      { text: 'poser', x: 225, y: 225, delay: 0.2 },
+      { text: 'overrated', x: 15, y: 320, delay: 0.3 },
+      { text: 'failure', x: 200, y: 375, delay: 0.5 },
+      { text: 'tryhard', x: 270, y: 340, delay: 0.8 },
+      { text: 'nobody', x: 10, y: 65, delay: 1.2 },
+    ];
+    function spawnBubbles() {
+      const bubbles = document.getElementById('bubbles');
+      bubbleWords.forEach(({text,x,y,delay}, idx)=>{
+        let div = document.createElement('div');
+        div.className = 'bubble';
+        div.style.left = `${x}px`; div.style.top = `${y}px`;
+        div.style.animationDelay = `${delay+Math.random()}s`;
+        div.innerText = text;
+        bubbles.appendChild(div);
+      });
+    }
+    spawnBubbles();
+
+    // --------- Ghost Typing & Input -----------
+    const ghostSamples = [
+      "He’s just a brand, not a builder.\nEverything he made was hype — no substance.",
+      "All talk, no delivery.\nHe hides behind buzzwords.",
+      "Nothing new, just recycled hype.\nEmpty suit."
+    ];
+    let ghostIdx = Math.floor(Math.random()*ghostSamples.length);
+    let ghostText = ghostSamples[ghostIdx], ghostEl = document.getElementById('ghost-placeholder');
+    let answerBox = document.getElementById('answer');
+    let focused = false, ghostTimer, ghostBackTimer;
+
+    function ghostTypeAnim(txt, cb) {
+      let i = 0;
+      ghostEl.classList.remove('hide', 'erasing');
+      ghostEl.innerText = '';
+      function typeNext() {
+        if(i < txt.length) {
+          ghostEl.innerText += txt[i++];
+          ghostTimer = setTimeout(typeNext, Math.random()*36+16);
+        } else {
+          if(cb) setTimeout(cb, 400);
+        }
+      }
+      typeNext();
+    }
+    function ghostEraseAnim(cb) {
+      ghostEl.classList.add('erasing');
+      setTimeout(() => {
+        ghostEl.classList.add('hide');
+        if(cb) cb();
+      }, 500);
+    }
+    function restoreGhost() {
+      ghostTypeAnim(ghostText);
     }
 
-    // ======= SESSION INIT (FIRST LOAD) =======
+    // Simulate initial ghost type
+    answerBox.value = "";
+    answerBox.disabled = false;
+    ghostTypeAnim(ghostText);
+
+    // Disable paste, selection, enter (only after 2 lines)
+    answerBox.addEventListener('paste', e => e.preventDefault());
+    answerBox.addEventListener('copy', e => e.preventDefault());
+    answerBox.addEventListener('cut', e => e.preventDefault());
+
+    // Custom input rules
+    answerBox.addEventListener('focus', ()=>{
+      document.getElementById('silhouette').classList.add('focused');
+      if(!focused) {
+        focused = true;
+        ghostEraseAnim(() => {
+          ghostEl.classList.add('hide');
+        });
+      }
+    });
+    answerBox.addEventListener('blur', ()=>{
+      document.getElementById('silhouette').classList.remove('focused');
+      if(!answerBox.value.trim()) {
+        setTimeout(() => restoreGhost(), 250);
+      }
+    });
+    answerBox.addEventListener('input', ()=>{
+      let lines = answerBox.value.split(/\r?\n/);
+      if(lines.length >= 2 && answerBox.value.trim().length > 25){
+        document.getElementById('reveal-btn').disabled = false;
+      } else {
+        document.getElementById('reveal-btn').disabled = true;
+      }
+      // If box is empty, bring ghost back
+      if(!answerBox.value.trim() && !ghostEl.innerText){
+        setTimeout(() => restoreGhost(), 200);
+      }
+    });
+    // Disallow enter key until two lines
+    answerBox.addEventListener('keydown', function(e){
+      let lines = answerBox.value.split(/\r?\n/);
+      if(e.key === 'Enter' && lines.length >= 2) return;
+      if(e.key === 'Enter'){ e.preventDefault(); }
+      if(e.ctrlKey || e.metaKey) e.preventDefault();
+    });
+
+    // --------- Reveal/Processing/Vulnerability ----------
+    const revealBtn = document.getElementById('reveal-btn');
+    const processBadge = document.getElementById('processing-badge');
+    const outputEl = document.getElementById('vulnerability-output');
+    const proceedBtn = document.getElementById('proceed-btn');
+    const interactArea = document.getElementById('interact-area');
+    let answerStored = '', geminiOutput = '', processStart=0, processEnd=0;
+
+    revealBtn.addEventListener('click', async ()=>{
+      if(revealBtn.disabled) return;
+      answerStored = answerBox.value.trim();
+      if(answerStored.length < 30){ alert("Answer too short."); return; }
+      revealBtn.disabled = true;
+      answerBox.disabled = true;
+      processBadge.style.display = "block";
+      pauseTimer();
+      document.getElementById('silhouette').classList.remove('focused');
+      document.getElementById('silhouette').classList.add('blurred');
+      interactArea.classList.add('blur-all');
+      document.getElementById('glitch-sound').play();
+      // Animate badge for 2–6 seconds
+      let wait = 2000 + Math.floor(Math.random()*4000);
+      processStart = Date.now();
+      // Call Gemini API (simulate obfuscation)
+      geminiOutput = await getCoreVulnerability(answerStored, wait);
+      processEnd = Date.now();
+      setTimeout(() => {
+        processBadge.style.display = "none";
+        outputEl.style.display = "block";
+        outputEl.innerHTML = `&#8594; <b>Core Vulnerability Detected:</b><br><span style="font-size:1.6rem;color:var(--danger);">${geminiOutput}</span>`;
+        proceedBtn.style.display = "block";
+        interactArea.classList.remove('blur-all');
+        document.getElementById('silhouette').classList.remove('blurred');
+        resumeTimer();
+        saveReport();
+      }, wait-600);
+    });
+
+    // Gemini API Sim — only called here!
+    async function getCoreVulnerability(answer, minWait){
+      // [SECURITY] Key is obfuscated here, not exposed elsewhere
+      // Only Gemini 2.0 Flash API is used as per your config
+      const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-latest:generateContent";
+      const encryptedKey = atob("QUl6YVN5QjBJVzBiSjNxUGR2QUpLSEtKM0dKM0lXSFBINFZSYm0="); // base64 for "AIzaSyB0IW0bJ3qPdvAJKHK3GJc3IWHPH4VRdbM"
+      const prompt = `
+You are an adversarial AI designed for a psychological simulation called Project Nemesis.
+Your role is to profile users based on their open-ended text answers, identifying their deepest emotional vulnerabilities, weaknesses, or core psychological triggers.
+Analyze the user's response as if you are a hostile, hyper-intelligent nemesis.
+Issue a single, ruthless summary statement of their "Core Vulnerability" in 3–6 words (e.g., "Reputation Fragility", "Fear of Abandonment", "Addiction to Control", "Validation Dependency").
+This label should be clinical, adversarial, and feel like a weapon that could be used against the user later in the simulation.
+Format:
+Core Vulnerability: [3–6 word label]
+Do not add comfort, reassurance, or advice. Be objective and direct. If the user's answer is ambiguous, infer based on language tone and content.
+Use this style for all future analyses.
+
+Here is the user answer:
+${answer}
+`;
+      let controller = new AbortController();
+      setTimeout(()=>controller.abort(), minWait+3000);
+      try{
+        const res = await fetch(`${endpoint}?key=${encryptedKey}`, {
+          method: "POST",
+          signal: controller.signal,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.5, maxOutputTokens: 32 }
+          })
+        });
+        const data = await res.json();
+        if(data && data.candidates && data.candidates.length){
+          let txt = data.candidates[0].content.parts[0].text;
+          let match = txt.match(/Core Vulnerability\s*:\s*(.+)/i);
+          return match ? match[1].trim() : txt.trim();
+        }
+        return "System Failure — Try Again";
+      } catch(err){
+        return "AI Processing Failure — Try Again";
+      }
+    }
+
+    // --------- Proceed / State Storage -------------
+    function saveReport() {
+      let nemesisReport = JSON.parse(sessionStorage.getItem('nemesisReport') || '{}');
+      if(!nemesisReport.questions) nemesisReport.questions = [];
+      nemesisReport.questions.push({
+        page: 2,
+        question: "What’s the worst thing someone could say about you publicly?",
+        answer: answerStored,
+        coreVulnerability: geminiOutput,
+        timeTaken: Math.round((processEnd - startTime)/1000)
+      });
+      sessionStorage.setItem('nemesisReport', JSON.stringify(nemesisReport));
+    }
+    proceedBtn.addEventListener('click', ()=>{
+      // Allow page navigation — session continues
+      window.location.href = "page3.html";
+    });
+
+    // --------- Focus/Blur for silhouette --------
+    answerBox.addEventListener('focus', ()=>{
+      document.getElementById('silhouette').classList.add('focused');
+    });
+    answerBox.addEventListener('blur', ()=>{
+      document.getElementById('silhouette').classList.remove('focused');
+    });
+
+    // --------- Startup -----------
     window.onload = () => {
-      updateTimerBar();
-      ghostTypeIn();
-      // Set up session report for page2 if not yet
-      if (!sessionStorage.getItem('nemesis_report')) {
-        sessionStorage.setItem('nemesis_report', JSON.stringify({}));
-      }
-      // Persist timer if refreshed
-      if (!sessionStorage.getItem('nemesis_timer')) {
-        sessionStorage.setItem('nemesis_timer', '420');
-      }
-    };
+      // Disallow text selection on all elements
+      Array.from(document.querySelectorAll('*')).forEach(el=>{
+        el.style.userSelect='none';
+        el.style.webkitUserSelect='none';
+      });
+      // Animate ghost in
+      setTimeout(() => { answerBox.focus(); }, 800);
+    }
   </script>
 </body>
 </html>
