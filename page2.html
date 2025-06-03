@@ -2,559 +2,536 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</title>
-  <meta name="viewport" content="width=900, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="data:," />
+  <title>Initiation Protocol: Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=1280">
+  <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Roboto+Mono:400,700" rel="stylesheet">
   <style>
+    :root {
+      --bg: #111;
+      --pale-blue: #b7c4ce;
+      --icy-blue: #a6cfe8;
+      --mono: 'Fira Mono', 'Roboto Mono', 'Menlo', 'Consolas', monospace;
+      --red: #EF5350;
+      --red-trans: rgba(239, 83, 80, 0.16);
+      --white: #fff;
+      --gray: #22292d;
+      --box-bg: #161b20;
+      --ghost: #b7c4ce;
+      --button-outline: #ef5350;
+      --button-hover: rgba(239, 83, 80, 0.10);
+      --transp: rgba(255,255,255,0.08);
+      --text-shadow: 0 2px 18px #101820;
+    }
     html, body {
-      height: 100%; margin: 0; padding: 0;
-      background: #111;
-      color: #C9D8EA;
-      font-family: 'Fira Mono', 'Roboto Mono', 'Menlo', monospace;
+      background: var(--bg);
+      color: var(--pale-blue);
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      min-height: 100vh;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+      user-select: none;
       overflow: hidden;
+      height: 100vh;
     }
-    body {
-      min-width: 900px;
-      min-height: 650px;
-      position: relative;
+
+    /* --- TIMER --- */
+    .timer-rect {
+      position: absolute;
+      top: 40px;
+      right: 52px;
+      border: 1.2px solid var(--red);
+      border-radius: 4px;
+      padding: 5px 17px 5px 17px;
+      display: flex;
+      align-items: center;
+      background: transparent;
     }
-    /* Digital circuit overlay */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.08;
-      background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="40" width="100" height="1" fill="white" opacity="0.5"/><rect x="30" y="110" width="160" height="1" fill="white" opacity="0.5"/><rect x="120" y="40" width="1" height="70" fill="white" opacity="0.4"/><circle cx="90" cy="40" r="3" fill="white" opacity="0.5"/><circle cx="120" cy="110" r="2" fill="white" opacity="0.6"/></svg>');
-      background-repeat: repeat;
+    .timer-label {
+      font-family: var(--mono);
+      font-size: 1.02rem;
+      font-weight: bold;
+      color: var(--red);
+      letter-spacing: 0.10em;
+      margin-right: 7px;
     }
-    /* Header */
+    .timer-value {
+      font-family: var(--mono);
+      font-size: 1.03rem;
+      color: var(--red);
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    /* --- HEADER --- */
     .header {
       width: 100vw;
       text-align: center;
-      font-size: 1.08rem;
-      letter-spacing: 0.07em;
-      color: #8CA1C5;
+      font-family: var(--mono);
+      font-size: 1.65rem;
+      letter-spacing: 0.16em;
+      color: var(--pale-blue);
+      font-weight: 600;
+      margin-top: 56px;
       text-transform: uppercase;
-      font-family: inherit;
-      font-weight: 600;
-      margin-top: 35px;
-      z-index: 2;
-      position: relative;
-      user-select: none;
+      text-shadow: var(--text-shadow);
+      z-index: 10;
     }
-    .timer {
-      position: absolute;
-      top: 36px; right: 42px;
-      font-family: inherit;
-      color: #EF5350;
-      background: rgba(25,22,25,0.76);
-      padding: 2px 20px 2px 15px;
-      font-size: 1.04rem;
-      letter-spacing: 0.08em;
-      border-radius: 5px;
-      font-variant-numeric: tabular-nums;
-      width: 212px;
-      text-align: right;
-      box-sizing: border-box;
-      user-select: none;
-      z-index: 2;
-      font-weight: 500;
-      border: 1.5px solid #E35C5C44;
-    }
-    /* Question */
+
+    /* --- QUESTION --- */
     .question {
+      margin-top: 54px;
       text-align: center;
-      font-size: 2.14rem;
-      color: #C9D8EA;
-      font-family: inherit;
-      font-weight: 700;
-      margin-top: 84px;
-      z-index: 3;
-      position: relative;
-      user-select: none;
-      line-height: 1.18;
-      letter-spacing: 0.03em;
-      text-shadow: 0 2px 16px #06090c9a;
+      font-family: var(--mono);
+      color: var(--pale-blue);
+      font-size: 1.47rem;
+      font-weight: 400;
+      letter-spacing: 0.025em;
+      z-index: 11;
     }
-    /* Silhouette */
-    .silhouette {
-      position: absolute;
-      left: 50%; top: 51%;
-      transform: translate(-50%,-51%);
-      z-index: 1;
-      opacity: 0.7;
-      width: 500px; max-width: 62vw;
+
+    /* --- SILHOUETTE --- */
+    .silhouette-bg {
+      position: fixed;
+      left: 50%;
+      top: 53%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 56vw;
+      min-width: 660px;
+      max-width: 820px;
+      opacity: 0.65;
       pointer-events: none;
       user-select: none;
-      transition: filter .7s;
+      filter: brightness(0.91) contrast(0.88);
     }
-    /* Crowd words */
-    .crowd-word {
+
+    /* --- FLOATING WORDS --- */
+    .floating {
       position: absolute;
-      color: #e3e3e380;
-      font-family: inherit;
-      font-weight: 600;
-      opacity: 0.37;
+      font-family: var(--mono);
+      font-weight: 500;
       pointer-events: none;
+      opacity: 0.36;
       z-index: 4;
+      text-shadow: 0 1px 18px #14181d, 0 2px 32px #13151c;
       user-select: none;
-      text-shadow: 0 0 22px #07070c55, 0 0 4px #111;
-      filter: blur(1.2px);
-      animation: crowdFlicker 2s infinite alternate;
     }
-    .crowd-word.red { color: #EF5350; opacity: 0.54; text-shadow: 0 0 13px #EF535080,0 0 2px #b31111cc; filter: blur(1.3px);}
-    @keyframes crowdFlicker {
-      0% { opacity: 0.12; }
-      16% { opacity: 0.32; }
-      40% { opacity: 0.37; }
-      64% { opacity: 0.16; }
-      82% { opacity: 0.4; }
-      100% { opacity: 0.08; }
+    .float-fraud {
+      left: 10vw;
+      top: 42vh;
+      font-size: 2.55rem;
+      color: var(--white);
+      opacity: 0.23;
+      letter-spacing: 0.08em;
+      font-weight: 400;
     }
-    /* Input box */
-    .input-wrap {
-      margin-top: 62px;
+    .float-overrated {
+      right: 10vw;
+      top: 32vh;
+      font-size: 2.2rem;
+      color: var(--red);
+      opacity: 0.31;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+    .float-faker1 {
+      left: 26vw;
+      bottom: 18vh;
+      font-size: 1.7rem;
+      color: #d6dde7;
+      opacity: 0.22;
+      font-weight: 500;
+    }
+    .float-faker2 {
+      right: 19vw;
+      bottom: 25vh;
+      font-size: 1.45rem;
+      color: #ccd3da;
+      opacity: 0.21;
+      font-weight: 400;
+    }
+    .float-faker3 {
+      left: 49vw;
+      top: 56vh;
+      font-size: 1.45rem;
+      color: #b7c4ce;
+      opacity: 0.28;
+      font-weight: 400;
+    }
+    .float-faker4 {
+      right: 11vw;
+      bottom: 11vh;
+      font-size: 1.32rem;
+      color: #fff;
+      opacity: 0.13;
+      font-weight: 400;
+    }
+
+    /* --- INPUT BOX --- */
+    .textbox-row {
       display: flex;
       justify-content: center;
-      align-items: center;
-      z-index: 6;
+      margin-top: 44px;
+      z-index: 20;
       position: relative;
+      width: 100vw;
     }
-    .nemesis-input {
-      width: 470px; min-width: 260px;
-      min-height: 84px; max-height: 160px;
-      font-size: 1.18rem;
-      background: #141920;
-      color: #B6C5DF;
-      border: 1.5px solid #2A3340;
-      outline: none;
-      padding: 17px 20px 17px 24px;
-      border-radius: 8px;
-      font-family: inherit;
-      font-weight: 450;
-      box-shadow: 0 4px 24px #000a 0px 1px 12px #16203355;
-      resize: none;
-      line-height: 1.33;
-      transition: border .2s;
-      caret-color: #EF5350;
-      overflow: auto;
-    }
-    .nemesis-input:focus {
-      border: 1.5px solid #EF5350;
-      background: #181C22;
-    }
-    .ghost {
-      position: absolute;
-      left: 35px; top: 16px; right: 20px; bottom: 16px;
-      color: #6F798E;
-      opacity: 0.62;
-      font-size: 1.06rem;
-      font-family: inherit;
-      pointer-events: none;
-      white-space: pre-line;
-      user-select: none;
-      z-index: 10;
-      transition: opacity .3s;
-      line-height: 1.33;
-    }
-    /* Submit Button */
-    .nemesis-submit {
-      margin: 22px auto 0 auto;
-      display: block;
-      font-family: inherit;
-      font-size: 1.03rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      background: #2C1112;
-      color: #F67C7B;
-      border: 1.4px solid #F24141;
+    .fake-textarea {
+      width: 635px;
+      min-height: 64px;
+      max-height: 125px;
+      background: var(--box-bg);
+      border: 1.7px solid #23272e;
       border-radius: 7px;
-      padding: 13px 44px 13px 44px;
-      cursor: not-allowed;
-      filter: grayscale(0.2);
-      opacity: 0.64;
-      font-weight: 650;
-      box-shadow: 0 1.5px 0 #e0343470;
-      transition: filter 0.17s, box-shadow 0.21s, background 0.17s, color 0.16s, border 0.14s;
+      color: var(--ghost);
+      font-family: var(--mono);
+      font-size: 1.23rem;
+      line-height: 1.50;
+      padding: 16px 21px 16px 21px;
       outline: none;
-      user-select: none;
+      resize: none;
+      letter-spacing: 0.03em;
+      margin-right: 0px;
+      box-shadow: 0 2.5px 28px #161a1c15;
+      overflow-x: hidden;
+      overflow-y: auto;
+      text-align: left;
+      user-select: text;
+      white-space: pre-line;
     }
-    .nemesis-submit.enabled {
+    .fake-textarea[readonly] {
+      color: var(--ghost);
+      background: var(--box-bg);
+      opacity: 1.0;
+    }
+
+    /* --- SUBMIT BUTTON --- */
+    .submit-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 635px;
+      margin: 18px auto 0;
+      z-index: 21;
+    }
+    .btn-submit {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--red);
+      background: transparent;
+      border: 1.7px solid var(--button-outline);
+      border-radius: 7px;
+      padding: 11px 30px 10px 30px;
+      margin-right: 0;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
       cursor: pointer;
-      filter: none;
-      opacity: 1;
-      box-shadow: 0 0 10px #f33b3b60, 0 2px 18px #330a0a33;
-      background: #3C1718;
-    }
-    .nemesis-submit.enabled:hover,
-    .nemesis-submit.enabled:focus {
-      background: #481616;
-      box-shadow: 0 0 26px #ef535088, 0 4px 22px #611a1a25;
-      border: 1.4px solid #ff4b44;
-      color: #FF8484;
       outline: none;
+      transition: background 0.18s;
+      box-shadow: 0 2.5px 24px #1d0d0d09;
     }
-    /* Nemesis Analysis */
-    .analysis {
+    .btn-submit:hover, .btn-submit:focus {
+      background: var(--button-hover);
+    }
+    .btn-submit:active {
+      background: var(--red-trans);
+    }
+
+    /* --- NEMESIS ANALYSIS --- */
+    .nemesis-row {
       position: absolute;
       left: 50%;
-      top: 58%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
+      top: 59.8vh;
+      transform: translate(-50%, 0);
+      z-index: 25;
       text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .7s;
-      width: 610px;
-      max-width: 98vw;
-    }
-    .analysis.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .scan-vuln {
-      font-size: 1.18rem;
-      color: #EF5350;
-      letter-spacing: 0.12em;
-      font-family: inherit;
-      font-weight: 600;
-      text-shadow: 0 0 16px #EF535088;
-      animation: scanPulse 1s infinite alternate;
-      margin-bottom: 28px;
-      user-select: none;
-    }
-    @keyframes scanPulse {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; text-shadow: 0 0 28px #EF5350cc; }
-      100% { opacity: 0.8; }
-    }
-    .fragility-box {
-      display: inline-block;
-      border: 2.5px solid #EF5350;
-      background: #201516cc;
-      color: #EF5350;
-      padding: 15px 48px;
-      border-radius: 10px;
-      font-family: inherit;
-      font-size: 1.55rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      box-shadow: 0 0 38px #EF535044, 0 0 8px #1c1010;
-      margin-top: 20px;
-      opacity: 0;
-      transition: opacity .65s;
-      text-align: center;
-    }
-    .fragility-box.visible {
-      opacity: 1;
-      transition-delay: .7s;
-    }
-    /* Next Truth Button */
-    .next-truth {
-      position: fixed;
-      bottom: 32px; right: 44px;
-      background: none;
-      color: #B5E8FF;
-      font-family: inherit;
-      font-size: 1.12rem;
-      letter-spacing: 0.09em;
-      border: 1.7px solid #44BEEF;
-      border-radius: 7px;
-      padding: 13px 30px 13px 30px;
-      text-transform: uppercase;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 2px 12px #0a456766;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 22;
-      transition: opacity .34s;
-      user-select: none;
-      outline: none;
-    }
-    .next-truth.visible {
-      opacity: 1;
-      pointer-events: auto;
-      animation: icyPulse 1.4s infinite alternate;
-    }
-    @keyframes icyPulse {
-      0% { box-shadow: 0 0 9px #00caf088, 0 2px 14px #172c3a22;}
-      100% { box-shadow: 0 0 23px #20a9e088, 0 3px 20px #21465942;}
-    }
-    .next-truth:hover, .next-truth:focus {
-      background: #183042;
-      color: #C8F0FF;
-      border: 1.7px solid #00C9FE;
-      box-shadow: 0 0 38px #00caf099, 0 4px 32px #21465955;
-      outline: none;
-    }
-    /* Mobile block overlay */
-    #mobile-block {
       display: none;
-      position: fixed; z-index: 9999;
-      inset: 0;
+      width: 100vw;
+      pointer-events: none;
+    }
+    .nemesis-txt {
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 1.18rem;
+      font-weight: bold;
+      letter-spacing: 0.09em;
+      margin-bottom: 34px;
+      text-shadow: 0 2px 18px #230f0f40;
+      transition: opacity 0.56s;
+    }
+    .nemesis-box {
+      margin: 0 auto;
+      margin-top: 18px;
+      display: none;
+      padding: 11px 32px 10px 32px;
+      border: 2px solid var(--red);
+      border-radius: 7px;
+      color: var(--red);
+      background: transparent;
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 1.08rem;
+      letter-spacing: 0.19em;
+      text-transform: uppercase;
+      box-shadow: 0 2.5px 22px #230f0f1a;
+      opacity: 0.95;
+      pointer-events: none;
+    }
+
+    /* --- FACE NEXT TRUTH --- */
+    .next-row {
+      position: absolute;
+      right: 64px;
+      bottom: 50px;
+      z-index: 100;
+      display: none;
+    }
+    .btn-next {
+      font-family: var(--mono);
+      font-size: 1.10rem;
+      font-weight: 700;
+      color: var(--icy-blue);
+      background: transparent;
+      border: none;
+      outline: none;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      padding: 12px 20px 10px 20px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.13s;
+      box-shadow: 0 2.5px 20px #1a273022;
+    }
+    .btn-next:hover, .btn-next:focus {
+      background: rgba(100, 160, 255, 0.08);
+    }
+
+    /* --- OVERLAY FOR MOBILE --- */
+    .mobile-block {
+      position: fixed;
+      z-index: 99999;
+      top: 0; left: 0; width: 100vw; height: 100vh;
       background: #111;
-      color: #fff;
-      font-size: 1.54rem;
-      font-family: inherit;
+      color: #ef5350;
+      font-family: var(--mono);
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 1.7rem;
       text-align: center;
-      font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.05em;
+      padding: 30px;
+      user-select: none;
     }
-    #mobile-block.visible { display: flex; }
-    /* Screenshot Blur Overlay */
+
+    /* --- BLUR OVERLAY --- */
     .blur-overlay {
       position: fixed;
-      inset: 0;
-      z-index: 99;
-      background: rgba(17,17,17,0.78);
-      backdrop-filter: blur(9px);
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(17, 17, 17, 0.9);
+      backdrop-filter: blur(7px);
+      z-index: 50000;
+      pointer-events: all;
       display: none;
-      pointer-events: none;
-      animation: blurFlash 2s forwards;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      color: #f2f7fb;
+      font-size: 2.1rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-align: center;
     }
-    @keyframes blurFlash {
-      0% { opacity: 0; }
-      8% { opacity: 1; }
-      85% { opacity: 1; }
-      100% { opacity: 0; }
-    }
+
+    /* --- Hide scrollbars everywhere --- */
+    ::-webkit-scrollbar { width: 0; background: transparent;}
+    body { -ms-overflow-style: none; scrollbar-width: none;}
   </style>
 </head>
 <body>
+
+  <!-- Timer Box -->
+  <div class="timer-rect">
+    <span class="timer-label">SESSION TIMER</span>
+    <span class="timer-value" id="timer">00:00 MIN</span>
+  </div>
+
   <!-- HEADER -->
   <div class="header">
-    INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING
+    INITIATION PROTOCOL: &nbsp; PSYCHOLOGICAL FINGERPRINTING
   </div>
-  <div class="timer" id="timer">
-    SESSION TIMER 00:00 MIN
-  </div>
-  <!-- MAIN QUESTION -->
+
+  <!-- QUESTION -->
   <div class="question">
-    What's the worst thing someone could say about you publicly?
+    What’s the worst thing someone could say about you publicly?
   </div>
+
   <!-- SILHOUETTE -->
-  <img src="silhouette.png" class="silhouette" alt="Silhouette" draggable="false" />
+  <img src="silhouette.png" alt="" class="silhouette-bg" draggable="false" />
 
-  <!-- CROWD WORDS -->
-  <span class="crowd-word" id="cw1" style="left:21vw;top:39vh;font-size:2.22rem;">fraud</span>
-  <span class="crowd-word red" id="cw2" style="left:52vw;top:27vh;font-size:2.05rem;filter:blur(2.6px);">overrated</span>
-  <span class="crowd-word" id="cw3" style="left:34vw;top:51vh;font-size:1.29rem;filter:blur(3.5px);">faker</span>
-  <span class="crowd-word" id="cw4" style="left:68vw;top:46vh;font-size:1.84rem;filter:blur(1.7px);">faker</span>
-  <span class="crowd-word" id="cw5" style="left:62vw;top:57vh;font-size:1.05rem;">fraud</span>
-  <span class="crowd-word" id="cw6" style="left:24vw;top:59vh;font-size:1.18rem;filter:blur(2px);">faker</span>
-  <span class="crowd-word" id="cw7" style="left:45vw;top:34vh;font-size:1.07rem;">faker</span>
+  <!-- Floating Words -->
+  <span class="floating float-fraud">fraud</span>
+  <span class="floating float-overrated">overrated</span>
+  <span class="floating float-faker1">faker</span>
+  <span class="floating float-faker2">faker</span>
+  <span class="floating float-faker3">faker</span>
+  <span class="floating float-faker4">faker</span>
 
-  <!-- INPUT BOX (with ghost text) -->
-  <div class="input-wrap">
-    <textarea class="nemesis-input" id="nemesis-input" rows="3" spellcheck="false" autocomplete="off"></textarea>
-    <div class="ghost" id="ghost-text">
-      He's just a brand, not a builder.<br>Everything he made was hype – no substance
-    </div>
+  <!-- Fake Input and Submit Row -->
+  <div class="textbox-row" id="inputSection">
+    <textarea class="fake-textarea" id="fakeTextarea" readonly rows="2">'He's just a brand, not a builder.
+Everything he made was hype – no substance'</textarea>
   </div>
-  <!-- SUBMIT BUTTON -->
-  <button class="nemesis-submit" id="nemesis-submit" disabled>SUBMIT TO ADVERSARY</button>
+  <div class="submit-row" id="submitRow">
+    <button class="btn-submit" id="btnSubmit">SUBMIT TO ADVERSARY</button>
+  </div>
 
-  <!-- NEMESIS ANALYSIS (hidden by default) -->
-  <div class="analysis" id="analysis">
-    <div class="scan-vuln" id="scan-vuln" style="display:none;">
+  <!-- Nemesis Analysis -->
+  <div class="nemesis-row" id="nemesisRow">
+    <div class="nemesis-txt" id="nemesisTxt" style="display:none;">
       Nemesis Analysis: Scanning Vulnerabilities...
     </div>
-    <div class="fragility-box" id="fragility-box">
-      REPUTATION FRAGILITY
+    <div class="nemesis-box" id="nemesisBox">
+      REPETATION FRAGTITY
     </div>
   </div>
 
-  <!-- FACE NEXT TRUTH BUTTON -->
-  <button class="next-truth" id="next-truth" style="display:none;">FACE NEXT TRUTH</button>
-
-  <!-- MOBILE OVERLAY -->
-  <div id="mobile-block">
-    Nemesis Protocol only runs on tablets and computers.
+  <!-- Face Next Truth -->
+  <div class="next-row" id="nextRow">
+    <button class="btn-next" id="btnNext">FACE NEXT TRUTH</button>
   </div>
 
-  <!-- Screenshot Blur Overlay -->
-  <div class="blur-overlay" id="blur-overlay"></div>
+  <!-- Mobile Blocker -->
+  <div class="mobile-block" id="mobileBlock" style="display:none;">
+    <div>
+      This experience is not available on mobile devices.<br>Please use a desktop browser.
+    </div>
+  </div>
 
-<script>
-/* --- UI Sizing/Blocking for Mobile --- */
-function checkMobileBlock() {
-  const w = window.innerWidth, h = window.innerHeight;
-  if (w < 760 || h < 500) {
-    document.getElementById('mobile-block').classList.add('visible');
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.getElementById('mobile-block').classList.remove('visible');
-    document.body.style.overflow = '';
-  }
-}
-window.addEventListener('resize', checkMobileBlock);
-checkMobileBlock();
+  <!-- Blur Overlay -->
+  <div class="blur-overlay" id="blurOverlay">
+    SCREEN CAPTURE BLOCKED
+  </div>
 
-/* --- Crowd Word Random Flicker & Flicker Delay --- */
-function randomizeCrowdWordFlicker() {
-  for (let i = 1; i <= 7; ++i) {
-    const word = document.getElementById('cw'+i);
-    word.style.animationDuration = (1.5 + Math.random()*2.8) + 's';
-    word.style.animationDelay = (Math.random()*3.7) + 's';
-    word.style.opacity = (0.25 + Math.random()*0.2);
-    word.style.filter = word.style.filter || '';
-  }
-}
-randomizeCrowdWordFlicker();
+  <script>
+    // Mobile detection
+    function isMobile() {
+      return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    window.onload = function() {
+      if (isMobile()) {
+        document.getElementById('mobileBlock').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
 
-/* --- Ghost Typing Logic --- */
-const input = document.getElementById('nemesis-input');
-const ghost = document.getElementById('ghost-text');
-let ghostTimeout = null;
-const ghostText = "He's just a brand, not a builder.\nEverything he made was hype – no substance";
-function showGhostText() {
-  ghost.innerHTML = ghostText.replace(/\n/g, '<br>');
-  ghost.style.opacity = '1';
-}
-function hideGhostText() {
-  ghost.style.opacity = '0';
-}
-input.addEventListener('focus', e => { hideGhostText(); });
-input.addEventListener('click', e => { hideGhostText(); });
-input.addEventListener('input', e => {
-  hideGhostText();
-  if (ghostTimeout) clearTimeout(ghostTimeout);
-  if (!input.value.trim()) {
-    ghostTimeout = setTimeout(() => {
-      if (!input.value.trim()) showGhostText();
-    }, 2000);
-  }
-  checkInputValidity();
-});
-input.addEventListener('blur', e => {
-  if (!input.value.trim()) showGhostText();
-});
+    // Timer
+    let timerVal = 0;
+    let timerInt = null;
+    let paused = false;
+    function pad(x) { return (x < 10 ? '0' : '') + x; }
+    function updateTimer() {
+      let min = Math.floor(timerVal / 60), sec = timerVal % 60;
+      document.getElementById('timer').textContent = `${pad(min)}:${pad(sec)} MIN`;
+    }
+    function startTimer() {
+      timerInt = setInterval(function() {
+        if (!paused) {
+          timerVal++;
+          updateTimer();
+        }
+      }, 1000);
+    }
+    function stopTimer() { paused = true; }
+    function resumeTimer() { paused = false; }
 
-/* --- Input Validity for Button --- */
-const submitBtn = document.getElementById('nemesis-submit');
-function checkInputValidity() {
-  // 2+ non-empty lines
-  const lines = input.value.split('\n').filter(line => line.trim().length > 0);
-  if (lines.length >= 2) {
-    submitBtn.classList.add('enabled');
-    submitBtn.disabled = false;
-    submitBtn.style.cursor = 'pointer';
-  } else {
-    submitBtn.classList.remove('enabled');
-    submitBtn.disabled = true;
-    submitBtn.style.cursor = 'not-allowed';
-  }
-}
-checkInputValidity();
+    startTimer();
 
-/* --- Session Timer --- */
-let timerElem = document.getElementById('timer');
-let t_seconds = 0, timerRunning = true, analysisMode = false;
-function updateTimer() {
-  if (timerRunning && !analysisMode) {
-    t_seconds++;
-    if (t_seconds > 420) t_seconds = 420; // never show >07:00
-  }
-  let mins = Math.floor(t_seconds/60);
-  let secs = t_seconds%60;
-  timerElem.textContent = `SESSION TIMER ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')} MIN`;
-}
-setInterval(updateTimer, 1000);
+    // Disable context menu, clipboard, printscreen, drag, select
+    window.addEventListener('contextmenu', e => e.preventDefault());
+    window.addEventListener('dragstart', e => e.preventDefault());
+    window.addEventListener('selectstart', e => e.preventDefault());
+    window.addEventListener('copy', e => e.preventDefault());
+    window.addEventListener('cut', e => e.preventDefault());
+    window.addEventListener('paste', e => e.preventDefault());
 
-/* --- Submit Button Click / Analysis Animation --- */
-const analysis = document.getElementById('analysis');
-const scanVuln = document.getElementById('scan-vuln');
-const fragility = document.getElementById('fragility-box');
-const nextTruth = document.getElementById('next-truth');
-submitBtn.addEventListener('click', async e => {
-  if (!submitBtn.classList.contains('enabled')) return;
-  analysisMode = true;
-  input.disabled = true;
-  submitBtn.disabled = true;
-  submitBtn.style.opacity = '0'; // fade out
-  input.style.opacity = '0';
-  setTimeout(()=>{ input.style.display='none'; submitBtn.style.display='none'; }, 350);
-  // After a random delay, show scanning...
-  const scanDelay = 4000 + Math.random() * 8000;
-  setTimeout(() => {
-    analysis.classList.add('visible');
-    scanVuln.style.display = '';
-    fragility.classList.remove('visible');
-    // After 1s, show fragility
-    setTimeout(() => {
-      scanVuln.style.display = 'none';
-      fragility.classList.add('visible');
-      // show next-truth button after .7s
-      setTimeout(() => {
-        nextTruth.style.display = '';
-        nextTruth.classList.add('visible');
-        analysisMode = false;
-      }, 700);
-    }, 1000);
-  }, scanDelay);
-});
+    // Block printscreen: show blur overlay for 2s on PrtSc or Cmd+Shift+4, etc.
+    let blurTimer = null;
+    function showBlurOverlay() {
+      let blur = document.getElementById('blurOverlay');
+      blur.style.display = 'flex';
+      clearTimeout(blurTimer);
+      blurTimer = setTimeout(()=>{ blur.style.display = 'none'; }, 2000);
+    }
+    // Windows PrintScreen
+    window.addEventListener('keyup', function(e) {
+      if (e.key === 'PrintScreen') showBlurOverlay();
+      // macOS screenshot
+      if ((e.metaKey && e.shiftKey && (e.key==='4'||e.key==='5'||e.key==='3'))) showBlurOverlay();
+    });
+    // Prevent ctrl+c/x/v and right mouse button
+    window.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) ||
+          (e.metaKey && (e.key === 'c' || e.key === 'v' || e.key === 'x'))) {
+        e.preventDefault();
+        showBlurOverlay();
+      }
+      // Block right-click keyboard
+      if (e.key === "ContextMenu") e.preventDefault();
+    });
 
-/* --- Next Truth Button Logic --- */
-nextTruth.addEventListener('click', e => {
-  window.location.href = 'page3.html';
-});
+    // SUBMIT TO ADVERSARY -> Analysis sequence
+    let submitted = false;
+    document.getElementById('btnSubmit').onclick = function() {
+      if (submitted) return;
+      submitted = true;
+      // Hide input & submit button
+      document.getElementById('inputSection').style.display = 'none';
+      document.getElementById('submitRow').style.display = 'none';
+      // Pause timer
+      stopTimer();
+      // Show nemesis row after random delay (4–12s)
+      let nemesisRow = document.getElementById('nemesisRow');
+      setTimeout(function() {
+        nemesisRow.style.display = 'block';
+        // Fade in nemesis-txt
+        let ntxt = document.getElementById('nemesisTxt');
+        ntxt.style.display = 'block';
+        ntxt.style.opacity = 0;
+        setTimeout(()=>{ntxt.style.opacity = 1;}, 30);
+        // After 1s, fade in nemesis box
+        setTimeout(function(){
+          let nbox = document.getElementById('nemesisBox');
+          nbox.style.display = 'block';
+          nbox.style.opacity = 0;
+          setTimeout(()=>{nbox.style.opacity = 0.95;}, 30);
+          // After 0.7s, show Face Next Truth
+          setTimeout(function(){
+            document.getElementById('nextRow').style.display = 'block';
+          }, 700);
+        }, 1050);
+      }, Math.floor(4000 + Math.random()*8000)); // 4–12s
+    };
 
-/* --- Clipboard/Right-click/Screenshot/Session Restrictions --- */
-function blockEvent(e) { e.preventDefault(); return false; }
-['copy','cut','paste','contextmenu','dragstart','drop'].forEach(ev => {
-  document.addEventListener(ev, blockEvent);
-});
-window.addEventListener('keydown', e => {
-  // Block PrintScreen
-  if (e.key === "PrintScreen") {
-    const blur = document.getElementById('blur-overlay');
-    blur.style.display = 'block';
-    setTimeout(() => { blur.style.display = 'none'; }, 2000);
-    e.preventDefault();
-    return false;
-  }
-  // Block Ctrl+C/V/X
-  if ((e.ctrlKey || e.metaKey) && ['c','v','x','C','V','X'].includes(e.key)) blockEvent(e);
-  // Block F5, Ctrl+R, Cmd+R, Backspace (if not typing), Alt+Left/Right
-  if ((e.key === 'F5') || ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'r'))) {
-    alert("You cannot reload or refresh during this protocol.");
-    e.preventDefault(); return false;
-  }
-  if ((e.key === 'Backspace' && document.activeElement !== input) || (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))) {
-    alert("Navigation is blocked during this protocol.");
-    e.preventDefault(); return false;
-  }
-  // Block Alt+Left/Right navigation
-  if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
-    alert("Navigation is blocked during this protocol."); e.preventDefault();
-  }
-});
-window.addEventListener('beforeunload', function (e) {
-  e.preventDefault();
-  e.returnValue = '';
-});
-window.addEventListener('popstate', function(e){
-  alert('Navigation is blocked during this protocol.');
-  history.pushState(null, null, location.href);
-});
-history.pushState(null, null, location.href); // lock in
+    // FACE NEXT TRUTH -> Go to next page
+    document.getElementById('btnNext').onclick = function() {
+      window.location.href = 'page3.html';
+    };
 
-// No session persistence
-if (window.localStorage) localStorage.clear();
-if (window.sessionStorage) sessionStorage.clear();
-
-/* --- On Page Load: Place ghost text and check validity --- */
-window.onload = () => {
-  showGhostText();
-  checkInputValidity();
-  setTimeout(() => input.blur(), 200);
-};
-</script>
+    // Safety: Block F12 and developer shortcuts
+    window.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+        (e.metaKey && e.altKey && e.key === 'I')
+      ) {
+        e.preventDefault();
+        showBlurOverlay();
+      }
+    });
+  </script>
 </body>
 </html>
