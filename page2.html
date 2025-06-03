@@ -3,80 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <title>Project Nemesis – Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <!-- IBM Plex Mono and JetBrains Mono fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=1024">
+  <!-- Fonts: JetBrains Mono and IBM Plex Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=IBM+Plex+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
       --black: #0a0a0d;
+      --neural-blue: #2dd2ff;
+      --glow-blue: #35a7ff;
       --accent-red: #ff3146;
-      --alert-blue: #35a7ff;
-      --highlight-white: #ecf4ff;
+      --alert-blue: #7fd9ff;
+      --highlight-white: #eef7ff;
       --timer-orange: #ff755a;
       --bubble-red: #ff3146;
-      --bubble-white: #ffffffee;
-      --bubble-fade: 0.12;
+      --bubble-white: #fff;
+      --crack-glow: 0 0 26px 3px #ff314666, 0 0 8px 2px #ff3146bb;
       --font: 'JetBrains Mono', 'IBM Plex Mono', monospace;
-      --crack-glow: 0 0 16px 6px #ff314666, 0 0 4px 2px #ff3146bb;
+      --shadow-red: 0 0 24px 2px #ff31466a;
+      --shadow-blue: 0 0 30px 4px #35a7ff33;
     }
     html, body {
-      height: 100%;
       margin: 0;
       padding: 0;
-      background: var(--black);
-      font-family: var(--font);
-      letter-spacing: 0.03em;
-      color: var(--highlight-white);
-      overflow: hidden;
-      min-width: 700px;
-    }
-    body {
       width: 100vw;
       height: 100vh;
+      min-width: 700px;
+      min-height: 650px;
       background: var(--black);
-      /* Subtle neural grid & scanline overlay */
-      background-image: 
-        repeating-linear-gradient(0deg, rgba(53,167,255,0.06) 0 2px, transparent 2px 6px),
-        repeating-linear-gradient(90deg, rgba(255,49,70,0.04) 0 1px, transparent 1px 20px),
-        url('data:image/svg+xml;utf8,<svg width="1200" height="700" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg"><g opacity="0.07"><path d="M0,50 Q400,250 800,50 T1200,50" stroke="cyan" fill="none"/><path d="M0,350 Q400,550 800,350 T1200,350" stroke="red" fill="none"/></g></svg>');
-      background-size: cover, cover, cover;
-      position: relative;
+      font-family: var(--font);
+      letter-spacing: 0.02em;
+      color: var(--highlight-white);
       overflow: hidden;
+      position: relative;
       user-select: none;
     }
+    body {
+      background:
+        /* Moving scanlines */
+        repeating-linear-gradient(0deg, #222b3344 0 1px, transparent 2px 6px),
+        /* Neural net SVG */
+        url('data:image/svg+xml;utf8,<svg width="1200" height="900" xmlns="http://www.w3.org/2000/svg"><g opacity="0.07"><path d="M0,250 Q400,450 900,170 T1200,90" stroke="cyan" fill="none"/><path d="M0,600 Q600,900 1200,600" stroke="red" fill="none"/></g></svg>'),
+        var(--black);
+      background-size: cover, 130vw 120vh, cover;
+      animation: scanlinesMove 6s linear infinite;
+    }
+    @keyframes scanlinesMove {
+      0% {background-position: 0 0, center center, center center;}
+      100% {background-position: 0 12px, center center, center center;}
+    }
+
     /* Header */
     #header {
-      position: absolute;
-      top: 32px;
-      left: 0;
       width: 100vw;
       text-align: center;
+      font-size: 2.35rem;
+      letter-spacing: 0.12em;
       font-family: var(--font);
       font-weight: 700;
-      font-size: 2.1rem;
-      letter-spacing: 0.07em;
-      color: var(--alert-blue);
-      text-shadow: 0 0 9px #0af7ff44;
+      color: var(--glow-blue);
+      text-shadow: 0 0 11px #2dd2ff66;
+      margin-top: 44px;
       z-index: 10;
       pointer-events: none;
       opacity: 0;
-      animation: fadeInDown 1s 0.2s forwards;
+      animation: fadeInDown 1.2s 0.2s forwards;
     }
     /* Timer */
     #session-timer {
       position: absolute;
-      top: 38px;
-      right: 62px;
+      top: 46px;
+      right: 66px;
       color: var(--timer-orange);
-      font-family: var(--font);
-      font-size: 1.1rem;
-      letter-spacing: 0.08em;
+      font-size: 1.16rem;
+      letter-spacing: 0.12em;
       z-index: 11;
-      opacity: 0.85;
-      text-shadow: 0 0 6px #ff755a66;
-      font-weight: 600;
+      font-weight: 700;
       background: transparent;
+      text-shadow: 0 0 8px #ff755a66;
       pointer-events: none;
+      opacity: 0.86;
+      font-family: var(--font);
       opacity: 0;
       animation: fadeInRight 1.1s 0.6s forwards;
     }
@@ -84,56 +90,59 @@
     #silhouette-container {
       position: absolute;
       left: 50%;
-      top: 54%;
+      top: 56%;
       transform: translate(-50%, -50%);
-      width: 390px;
-      height: 540px;
-      z-index: 1;
-      filter: brightness(1.1) contrast(1.2) blur(0.5px);
-      opacity: 0;
-      animation: fadeInScale 2s 0.6s forwards;
+      width: 470px;
+      height: 680px;
+      z-index: 2;
+      filter: brightness(1.1) contrast(1.23) blur(0.1px);
+      opacity: 0.82;
       pointer-events: none;
+      transition: filter 0.6s;
+      animation: fadeInScale 1.2s 0.6s forwards;
     }
     #silhouette {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      opacity: 0.75;
-      filter: drop-shadow(0 0 70px #000a) brightness(0.96);
-      user-drag: none; user-select: none;
+      opacity: 0.79;
+      filter: drop-shadow(0 0 80px #000a) brightness(0.96);
       pointer-events: none;
+      user-drag: none;
+      user-select: none;
     }
-    /* Text bubbles flicker */
+    /* Animated Negative Bubbles */
     .bubble {
       position: absolute;
-      font-size: 1.25rem;
+      font-size: 1.45rem;
       font-family: var(--font);
       font-weight: 700;
-      opacity: 0.13;
-      animation: bubbleFlicker 3s infinite alternate;
+      opacity: 0.09;
       pointer-events: none;
       user-select: none;
-      text-shadow: 0 0 12px #000c, 0 0 4px #ff3146;
       filter: blur(0.4px);
+      z-index: 4;
+      animation: bubbleFlicker 2.7s infinite alternate;
+      transition: color 0.4s;
+      text-shadow: 0 0 13px #000c, 0 0 4px #ff314666;
     }
     .bubble.red { color: var(--bubble-red);}
     .bubble.white { color: var(--bubble-white);}
-    .bubble.fade { opacity: var(--bubble-fade);}
     /* Main question */
     #main-question {
       position: absolute;
-      top: 160px;
+      top: 168px;
       left: 0; right: 0;
       width: 100vw;
       text-align: center;
-      font-size: 1.55rem;
+      font-size: 1.63rem;
       font-family: var(--font);
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
       color: var(--highlight-white);
-      text-shadow: 0 0 10px #74e3fe44;
+      text-shadow: 0 0 14px #74e3fe44;
       z-index: 15;
-      filter: brightness(1.15) contrast(1.13);
+      filter: brightness(1.14) contrast(1.11);
       opacity: 0;
       animation: fadeInDown 1.1s 0.8s forwards;
     }
@@ -141,89 +150,98 @@
     #input-section {
       position: absolute;
       left: 50%;
-      top: 270px;
+      top: 290px;
       transform: translateX(-50%);
-      width: 600px;
+      width: 680px;
       z-index: 19;
       opacity: 0;
       animation: fadeInUp 1.1s 1.1s forwards;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     #user-input {
       width: 100%;
-      min-height: 58px;
-      background: rgba(8,14,26,0.94);
-      border: 1.8px solid #2a3a46;
-      box-shadow: 0 0 22px 2px #0008 inset, 0 0 2px #35a7ff55;
-      border-radius: 12px;
+      min-height: 80px;
+      background: #0b1321f6;
+      border: 2.5px solid #263345;
+      box-shadow: 0 0 30px 2px #1a364a inset, 0 0 5px #35a7ff45;
+      border-radius: 13px;
       font-family: var(--font);
       font-size: 1.16rem;
-      color: var(--highlight-white);
+      color: var(--alert-blue);
       outline: none;
-      padding: 22px 28px;
-      transition: border 0.17s, box-shadow 0.17s;
+      padding: 30px 38px;
+      transition: border 0.15s, box-shadow 0.17s, color 0.13s;
       resize: none;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       caret-color: var(--accent-red);
+      background-clip: padding-box;
       animation: ghostShiver 2.1s infinite alternate;
+      margin-bottom: 22px;
+      spellcheck: false;
+      user-select: none;
+      overflow: hidden;
     }
     #user-input:focus {
-      border: 2px solid var(--accent-red);
-      box-shadow: 0 0 30px 2px #ff314655, 0 0 0 2px #ff314677;
-      animation: ghostShiverActive 0.18s 3 alternate;
-      background: rgba(8,14,26,0.98);
+      border: 2.5px solid var(--accent-red);
+      color: var(--highlight-white);
+      box-shadow: 0 0 44px 5px #ff314666, 0 0 0 2px #ff314699;
+      animation: ghostShiverActive 0.18s 2 alternate;
+      background: #171b23fc;
     }
-    #user-input::selection {
-      background: var(--alert-blue);
-      color: #000;
-    }
+    #user-input::selection { background: var(--accent-red); color: #fff;}
     /* Ghost typing cursor effect */
     .ghost-cursor {
       display: inline-block;
       width: 0.75ch;
       background: transparent;
-      border-right: 2.5px solid #6bf3ffbb;
+      border-right: 2.5px solid #7fd9ffbb;
       margin-left: -2px;
-      animation: ghostCursorBlink 0.75s steps(1) infinite;
+      animation: ghostCursorBlink 0.67s steps(1) infinite;
     }
     /* SUBMIT button */
     #submit-btn {
-      margin: 32px auto 0 auto;
-      display: block;
-      width: 370px;
-      padding: 20px 0;
+      width: 440px;
+      padding: 21px 0;
       font-size: 1.22rem;
       font-family: var(--font);
       font-weight: 700;
       color: var(--accent-red);
       background: transparent;
-      border: 2.7px solid var(--accent-red);
+      border: 2.9px solid var(--accent-red);
       border-radius: 17px;
       cursor: pointer;
-      box-shadow: 0 0 24px 2px #ff31462a, 0 0 4px 0 #ff314655;
+      box-shadow: var(--shadow-red);
       letter-spacing: 0.12em;
       outline: none;
-      text-shadow: 0 0 7px #ff314666;
-      transition: box-shadow 0.2s, background 0.13s, color 0.11s;
-      animation: fadeInUp 1.1s 1.4s forwards, ghostShiver 2.7s infinite alternate;
+      text-shadow: 0 0 7px #ff314688;
+      margin-top: 8px;
+      margin-bottom: 6px;
+      transition: box-shadow 0.17s, background 0.13s, color 0.13s, border 0.18s;
+      animation: fadeInUp 1.1s 1.4s forwards, ghostShiver 2.6s infinite alternate;
       opacity: 0;
+      filter: drop-shadow(0 0 12px #ff31463d);
     }
     #submit-btn:hover, #submit-btn:focus {
       color: var(--highlight-white);
-      background: linear-gradient(90deg, #ff31463c 0%, #111924 100%);
-      box-shadow: 0 0 44px 6px #ff314688, 0 0 0 3px #ff314677;
-      animation: ghostShiverActive 0.19s 3 alternate;
+      background: linear-gradient(90deg, #ff314628 0%, #111924 100%);
+      box-shadow: 0 0 48px 8px #ff314688, 0 0 0 3px #ff314677;
+      animation: ghostShiverActive 0.21s 2 alternate;
+      border: 2.9px solid #ff3146cc;
     }
-    /* Analysis overlay */
+    /* Processing overlay */
     #processing-overlay {
       display: none;
       position: fixed;
       z-index: 30;
       left: 0; top: 0;
       width: 100vw; height: 100vh;
-      background: rgba(8,14,26,0.86);
-      animation: fadeIn 0.25s;
+      background: rgba(8,14,26,0.92);
+      animation: fadeIn 0.21s;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
     }
     #processing-content {
       text-align: center;
@@ -232,78 +250,77 @@
     #processing-text {
       color: var(--accent-red);
       font-family: var(--font);
-      font-size: 2.1rem;
+      font-size: 2.17rem;
       font-weight: 700;
       letter-spacing: 0.09em;
-      text-shadow: 0 0 22px #ff314699;
+      text-shadow: 0 0 29px #ff3146cc;
       margin-top: 12px;
       animation: pulseGlow 1.2s infinite alternate;
     }
     /* Data vortex animation */
     .vortex {
-      width: 92px;
-      height: 92px;
+      width: 102px;
+      height: 102px;
       margin: 0 auto;
       margin-top: 24px;
       position: relative;
     }
     .vortex span {
       position: absolute;
-      border: 3.7px solid var(--accent-red);
+      border: 4px solid var(--accent-red);
       border-radius: 50%;
       opacity: 0.21;
       animation: vortexSpin 2s infinite linear;
     }
-    .vortex .v1 { width:92px; height:92px; top:0; left:0; }
-    .vortex .v2 { width:62px; height:62px; top:15px; left:15px; animation-delay: 0.4s;}
-    .vortex .v3 { width:40px; height:40px; top:26px; left:26px; animation-delay: 0.7s;}
+    .vortex .v1 { width:102px; height:102px; top:0; left:0; }
+    .vortex .v2 { width:70px; height:70px; top:16px; left:16px; animation-delay: 0.43s;}
+    .vortex .v3 { width:44px; height:44px; top:29px; left:29px; animation-delay: 0.77s;}
     /* Vulnerability reveal */
     #vuln-report {
       display: none;
       position: fixed;
-      left: 50%; top: 46%;
+      left: 50%; top: 44%;
       transform: translate(-50%, -50%);
-      z-index: 50;
+      z-index: 60;
       text-align: center;
       animation: fadeInScale 0.8s;
     }
     #vuln-box {
-      background: rgba(27,0,0,0.96);
-      border: 3.5px solid var(--accent-red);
+      background: rgba(27,0,0,0.98);
+      border: 3.6px solid var(--accent-red);
       border-radius: 14px;
       color: var(--accent-red);
-      font-size: 2.25rem;
+      font-size: 2.45rem;
       font-family: var(--font);
       font-weight: 900;
-      letter-spacing: 0.17em;
-      padding: 42px 88px;
-      box-shadow: 0 0 70px 8px #ff314699, var(--crack-glow);
-      margin-bottom: 23px;
-      text-shadow: 0 0 28px #ff3146, 0 0 8px #ff3146dd;
+      letter-spacing: 0.16em;
+      padding: 44px 110px;
+      box-shadow: 0 0 88px 13px #ff3146aa, var(--crack-glow);
+      margin-bottom: 21px;
+      text-shadow: 0 0 31px #ff3146cc, 0 0 8px #ff3146dd;
       position: relative;
       overflow: visible;
-      animation: crackPulse 1.2s infinite alternate;
+      animation: crackPulse 1.19s infinite alternate;
     }
-    /* Crack effect */
     #vuln-crack {
-      width: 102px;
-      height: 34px;
+      width: 114px;
+      height: 36px;
       position: absolute;
       left: 50%;
       top: 100%;
-      transform: translate(-50%, -18%);
+      transform: translate(-50%, -12%);
       z-index: 51;
       pointer-events: none;
       opacity: 0.85;
-      filter: drop-shadow(0 0 13px #ff3146cc);
-      animation: crackGlow 2.2s infinite alternate;
+      filter: drop-shadow(0 0 23px #ff3146cc);
+      animation: crackGlow 2.1s infinite alternate;
     }
     /* FACE NEXT TRUTH */
     #next-btn {
       display: none;
-      width: 350px;
+      width: 355px;
       padding: 19px 0;
-      font-size: 1.13rem;
+      font-size: 1.16rem;
       font-family: var(--font);
       font-weight: 700;
       color: var(--alert-blue);
@@ -312,19 +329,19 @@
       border-radius: 17px;
       cursor: pointer;
       letter-spacing: 0.11em;
-      margin: 32px auto 0 auto;
-      text-shadow: 0 0 14px #35a7ff88;
-      box-shadow: 0 0 38px 6px #35a7ff22;
+      margin: 33px auto 0 auto;
+      text-shadow: 0 0 17px #35a7ff88;
+      box-shadow: 0 0 35px 7px #35a7ff33;
       outline: none;
       transition: box-shadow 0.19s, background 0.17s, color 0.13s;
-      animation: fadeInUp 1.1s 0.3s forwards, ghostShiver 2.3s infinite alternate;
+      animation: fadeInUp 1.1s 0.27s forwards, ghostShiver 2.3s infinite alternate;
       opacity: 0;
     }
     #next-btn:hover, #next-btn:focus {
       color: var(--highlight-white);
-      background: linear-gradient(90deg, #35a7ff33 0%, #111924 100%);
-      box-shadow: 0 0 44px 7px #35a7ffbb, 0 0 0 3px #35a7ff77;
-      animation: ghostShiverActive 0.19s 3 alternate;
+      background: linear-gradient(90deg, #35a7ff24 0%, #111924 100%);
+      box-shadow: 0 0 49px 11px #35a7ffbb, 0 0 0 4px #35a7ff77;
+      animation: ghostShiverActive 0.18s 2 alternate;
     }
     /* Red laser cursor */
     button, #user-input, textarea, input {
@@ -337,7 +354,7 @@
       left: 0; top: 0;
       width: 100vw; height: 100vh;
       z-index: 9999;
-      background: rgba(10,10,13,0.99);
+      background: rgba(10,10,13,0.98);
       align-items: center;
       justify-content: center;
       flex-direction: column;
@@ -346,39 +363,39 @@
     #modal-content {
       color: var(--accent-red);
       background: #1a1219;
-      padding: 45px 70px 36px 70px;
-      border-radius: 16px;
-      border: 2.5px solid var(--accent-red);
-      font-size: 1.3rem;
+      padding: 50px 72px 36px 72px;
+      border-radius: 15px;
+      border: 2.3px solid var(--accent-red);
+      font-size: 1.22rem;
       font-weight: 700;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.07em;
       text-align: center;
-      box-shadow: 0 0 55px 6px #ff314655;
+      box-shadow: 0 0 70px 12px #ff3146aa;
     }
     /* Animations */
-    @keyframes fadeInDown { from {opacity:0; transform: translateY(-38px);} to {opacity:1; transform: translateY(0);} }
-    @keyframes fadeInUp { from {opacity:0; transform: translateY(40px);} to {opacity:1; transform: translateY(0);} }
-    @keyframes fadeInRight { from {opacity:0; transform: translateX(56px);} to {opacity:0.9; transform: translateX(0);} }
-    @keyframes fadeInScale { from {opacity:0; transform:scale(0.93);} to {opacity:1; transform:scale(1);} }
+    @keyframes fadeInDown { from {opacity:0; transform: translateY(-45px);} to {opacity:1; transform: translateY(0);} }
+    @keyframes fadeInUp { from {opacity:0; transform: translateY(50px);} to {opacity:1; transform: translateY(0);} }
+    @keyframes fadeInRight { from {opacity:0; transform: translateX(66px);} to {opacity:0.9; transform: translateX(0);} }
+    @keyframes fadeInScale { from {opacity:0; transform:scale(0.92);} to {opacity:1; transform:scale(1);} }
     @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-    @keyframes ghostShiver { 0%{box-shadow:0 0 0 #fff0;} 90%{box-shadow:0 0 9px #ff314677;} 100%{box-shadow:0 0 12px #ff314677;} }
-    @keyframes ghostShiverActive { 0%{box-shadow:0 0 0 #fff0;} 100%{box-shadow:0 0 13px #ff3146bb;} }
-    @keyframes ghostCursorBlink {0%{border-right:2.5px solid #6bf3ffbb;}49%{border-right:2.5px solid #6bf3ffbb;}50%{border-right:2.5px solid #fff0;}100%{border-right:2.5px solid #fff0;}}
-    @keyframes pulseGlow {0%{text-shadow:0 0 7px #ff3146,0 0 6px #ff3146cc;}100%{text-shadow:0 0 26px #ff3146,0 0 18px #ff3146cc;}}
-    @keyframes crackGlow {0%{filter:drop-shadow(0 0 13px #ff3146cc);}100%{filter:drop-shadow(0 0 36px #ff3146dd);} }
-    @keyframes crackPulse {0%{box-shadow:0 0 70px 8px #ff314699,var(--crack-glow);}100%{box-shadow:0 0 140px 30px #ff314633,var(--crack-glow);} }
+    @keyframes ghostShiver { 0%{box-shadow:0 0 0 #fff0;} 90%{box-shadow:0 0 11px #ff314677;} 100%{box-shadow:0 0 14px #ff314677;} }
+    @keyframes ghostShiverActive { 0%{box-shadow:0 0 0 #fff0;} 100%{box-shadow:0 0 21px #ff3146bb;} }
+    @keyframes ghostCursorBlink {0%{border-right:2.5px solid #7fd9ffbb;}49%{border-right:2.5px solid #7fd9ffbb;}50%{border-right:2.5px solid #fff0;}100%{border-right:2.5px solid #fff0;}}
+    @keyframes pulseGlow {0%{text-shadow:0 0 7px #ff3146,0 0 6px #ff3146cc;}100%{text-shadow:0 0 29px #ff3146,0 0 19px #ff3146cc;}}
+    @keyframes crackGlow {0%{filter:drop-shadow(0 0 15px #ff3146cc);}100%{filter:drop-shadow(0 0 31px #ff3146ee);} }
+    @keyframes crackPulse {0%{box-shadow:0 0 88px 13px #ff3146aa,var(--crack-glow);}100%{box-shadow:0 0 160px 41px #ff314633,var(--crack-glow);} }
     @keyframes vortexSpin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
     @keyframes bubbleFlicker {
-      0% {opacity:0.1;}
-      20% {opacity:0.28;}
-      50% {opacity:0.13;}
+      0% {opacity:0.09;}
+      20% {opacity:0.25;}
+      50% {opacity:0.14;}
       70% {opacity:0.21;}
       100% {opacity:0.06;}
     }
     /* Responsive for tablets/desktops only */
-    @media (max-width: 1050px) {
+    @media (max-width: 1100px) {
       #input-section { width: 85vw; }
-      #silhouette-container { width: 58vw; height: 68vh;}
+      #silhouette-container { width: 68vw; height: 72vh;}
     }
     @media (max-width: 700px) {
       html, body { min-width: 0; }
@@ -392,17 +409,17 @@
   <!-- Header -->
   <div id="header">INITIATION PROTOCOL:  PSYCHOLOGICAL FINGERPRINTING</div>
   <!-- Timer -->
-  <div id="session-timer">SESSION TIMER:<span id="timer-val">07:00 MIN</span></div>
+  <div id="session-timer">SESSION TIMER: <span id="timer-val">07:00 MIN</span></div>
   <!-- Silhouette -->
   <div id="silhouette-container"><img src="silhouette.png" id="silhouette" alt="silhouette"></div>
-  <!-- Flickering bubbles -->
-  <span class="bubble red" style="top:200px;left:38vw;animation-delay:0.2s;">fraud</span>
-  <span class="bubble white" style="top:275px;left:60vw;animation-delay:0.6s;">faker</span>
-  <span class="bubble red" style="top:420px;left:42vw;animation-delay:1.7s;">overrated</span>
-  <span class="bubble white" style="top:500px;left:56vw;animation-delay:2.2s;">faker</span>
-  <span class="bubble white" style="top:330px;left:51vw;animation-delay:1.4s;">fraud</span>
-  <span class="bubble red" style="top:475px;left:63vw;animation-delay:2.8s;">faker</span>
-  <span class="bubble red" style="top:340px;left:45vw;animation-delay:2.5s;">overrated</span>
+  <!-- Animated Negative Bubbles -->
+  <span class="bubble red" style="top:218px;left:35vw;animation-delay:0.12s;">fraud</span>
+  <span class="bubble white" style="top:297px;left:63vw;animation-delay:0.7s;">faker</span>
+  <span class="bubble red" style="top:440px;left:42vw;animation-delay:1.6s;">overrated</span>
+  <span class="bubble white" style="top:540px;left:56vw;animation-delay:2.2s;">faker</span>
+  <span class="bubble white" style="top:380px;left:53vw;animation-delay:1.8s;">fraud</span>
+  <span class="bubble red" style="top:475px;left:69vw;animation-delay:2.7s;">wannabe</span>
+  <span class="bubble red" style="top:350px;left:47vw;animation-delay:2.3s;">overrated</span>
   <!-- Main question -->
   <div id="main-question">What’s the worst thing someone could say about you publicly?</div>
   <!-- Input -->
@@ -416,13 +433,13 @@
       <div class="vortex">
         <span class="v1"></span><span class="v2"></span><span class="v3"></span>
       </div>
-      <div id="processing-text">Nemesis Analysis: Scanning Vulnerabilities...</div>
+      <div id="processing-text">Nemesis Analysis: Scanning Vulnerabilities<span id="dotdotdot">…</span></div>
     </div>
   </div>
   <!-- Vulnerability Reveal -->
   <div id="vuln-report">
     <div id="vuln-box">REPUTATION FRAGILITY
-      <img id="vuln-crack" src="data:image/svg+xml;utf8,<svg width='102' height='34' viewBox='0 0 102 34' xmlns='http://www.w3.org/2000/svg'><polyline points='0,17 15,20 30,11 40,20 55,8 65,23 80,13 92,20 102,0' stroke='%23ff3146' stroke-width='3' fill='none' /><polyline points='20,33 25,26 31,33 43,25 51,33 67,24 80,33' stroke='%23ff3146' stroke-width='2' fill='none' /></svg>" />
+      <img id="vuln-crack" src="data:image/svg+xml;utf8,<svg width='114' height='36' viewBox='0 0 114 36' xmlns='http://www.w3.org/2000/svg'><polyline points='0,18 15,23 30,13 44,23 56,9 67,27 82,16 100,22 114,0' stroke='%23ff3146' stroke-width='4' fill='none' /><polyline points='23,35 30,27 39,35 53,25 61,35 79,24 91,35' stroke='%23ff3146' stroke-width='2' fill='none' /></svg>" />
     </div>
     <button id="next-btn">FACE NEXT TRUTH</button>
   </div>
@@ -431,11 +448,11 @@
     <div id="modal-content"></div>
   </div>
   <script>
-    // === PARAMETERS ===
+    // PARAMETERS
     const GHOST_TEXT = "He's just a brand, not a builder.\nEverything he made was hype – no substance.";
     const MIN_ANALYSIS = 4000, MAX_ANALYSIS = 12000;
-    // === TIMER ===
-    let timerSeconds = 420; // 7 minutes
+    // TIMER
+    let timerSeconds = 420;
     let timerInterval = null, timerPaused = false;
     function updateTimer() {
       if (timerPaused) return;
@@ -450,7 +467,7 @@
     }
     function pauseTimer() { timerPaused = true; }
     function resumeTimer() { timerPaused = false; }
-    // === GHOST TYPING ===
+    // GHOST TYPING
     let ghostTyping = false, ghostIndex = 0, ghostTimeout = null;
     const userInput = document.getElementById('user-input');
     function setGhostText() {
@@ -464,7 +481,7 @@
       if (ghostIndex <= GHOST_TEXT.length) {
         userInput.value = GHOST_TEXT.slice(0, ghostIndex);
         ghostIndex++;
-        ghostTimeout = setTimeout(ghostTypeStep, 28 + Math.random()*38);
+        ghostTimeout = setTimeout(ghostTypeStep, 23 + Math.random()*31);
       } else {
         ghostTyping = false;
         userInput.readOnly = false;
@@ -478,7 +495,7 @@
       userInput.readOnly = false;
       userInput.style.color = '';
     }
-    // === GHOST REAPPEAR ===
+    // GHOST REAPPEAR
     let reGhostTimer = null;
     function triggerReGhost() {
       if (ghostTyping) return;
@@ -488,13 +505,18 @@
     function killReGhost() {
       if (reGhostTimer) clearTimeout(reGhostTimer);
     }
-    // === INPUT EVENTS ===
+    // INPUT EVENTS
     userInput.addEventListener('focus', () => {
       killGhostText();
       userInput.value = '';
       userInput.readOnly = false;
       userInput.style.color = '';
       killReGhost();
+      // Nemesis shadow (faint flicker)
+      document.getElementById('silhouette-container').style.filter = "brightness(1.16) contrast(1.29) blur(0.1px) drop-shadow(0 0 49px #ff314688)";
+      setTimeout(()=>{
+        document.getElementById('silhouette-container').style.filter = "brightness(1.1) contrast(1.23) blur(0.1px)";
+      },400);
     });
     userInput.addEventListener('blur', triggerReGhost);
     userInput.addEventListener('input', () => {
@@ -502,35 +524,39 @@
       if (userInput.value.trim() === '') triggerReGhost();
       else killReGhost();
     });
-    // === INITIALIZE ===
-    setTimeout(setGhostText, 800);
-    // === SUBMIT BUTTON ===
+    // INITIALIZE
+    setTimeout(setGhostText, 850);
+    // DOT DOT DOT
+    setInterval(function(){
+      let dots = document.getElementById('dotdotdot');
+      if(dots){
+        let txt = dots.innerText.length >= 3 ? '' : dots.innerText + '.';
+        dots.innerText = txt;
+      }
+    }, 460);
+    // SUBMIT BUTTON
     const submitBtn = document.getElementById('submit-btn');
     let submitted = false;
     submitBtn.addEventListener('click', () => {
       if (submitted) return;
       submitted = true;
-      // Lock UI
       userInput.readOnly = true;
       submitBtn.disabled = true;
       submitBtn.style.opacity = "0.7";
       pauseTimer();
-      // Show overlay
       document.getElementById('processing-overlay').style.display = 'flex';
-      // After random delay, show vulnerability
+      // Random AI "scan" delay
       setTimeout(() => {
         document.getElementById('processing-overlay').style.display = 'none';
         document.getElementById('vuln-report').style.display = 'block';
-        document.getElementById('next-btn').style.display = 'block';
-        setTimeout(()=>{document.getElementById('next-btn').style.opacity='1';}, 100);
+        setTimeout(()=>{document.getElementById('next-btn').style.opacity='1';}, 180);
       }, Math.floor(Math.random()*(MAX_ANALYSIS-MIN_ANALYSIS)+MIN_ANALYSIS));
     });
     // Next button
     document.getElementById('next-btn').addEventListener('click', () => {
       window.location.href = "page3.html";
     });
-    // === CLIPBOARD & SECURITY LOCKDOWNS ===
-    // Block copy, paste, cut, right-click, context menu
+    // CLIPBOARD & SECURITY LOCKDOWNS
     function blockClipboard(e) { e.preventDefault(); return false; }
     ['copy','cut','paste'].forEach(ev => document.addEventListener(ev, blockClipboard));
     document.addEventListener('contextmenu', blockClipboard);
@@ -549,12 +575,10 @@
       }
     });
     document.addEventListener('keydown', function(e){
-      // Block PrintScreen everywhere
       if (e.key === 'PrintScreen' || (e.key === 'Insert' && e.shiftKey)) {
         showModal("Security Violation:<br>Screen capture, copy, and save are disabled during this simulation.");
         e.preventDefault();
       }
-      // Block save
       if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 's') {
         showModal("Saving is disabled during this simulation.");
         e.preventDefault();
@@ -566,7 +590,6 @@
       }
     });
     window.onbeforeunload = () => "Leaving now will erase your progress.";
-    // Disable back/forward navigation
     window.history.pushState(null, '', window.location.href);
     window.addEventListener('popstate', function(event) {
       window.history.pushState(null, '', window.location.href);
@@ -591,7 +614,7 @@
     }
     window.addEventListener('resize', blockMobile);
     if (blockMobile()) { }
-    // === Animation boot ===
+    // Animation boot
     window.onload = function() {
       startTimer();
       document.getElementById('submit-btn').style.opacity='1';
