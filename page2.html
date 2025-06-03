@@ -3,76 +3,146 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nemesis Simulation — Psychological Fingerprinting</title>
+  <title>Nemesis Interrogation — Question 1</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #17181a;
-      --glass: rgba(25,28,34,0.98);
-      --glow: #e6e8ea;
-      --shadow: #00eaff1a;
-      --text: #f6f7fa;
-      --mono: 'JetBrains Mono', monospace;
+      --bg: #101113;
+      --glass: rgba(23,24,28,0.96);
+      --glow: #e9ecef;
       --bubble: transparent;
-      --timer: #f2f7fa;
-      --timer-label: #f2f7fa;
-      --timer-shadow: #fafafc3c;
-      --accent: #eafcff;
-      --input: #10181c;
+      --timer: #fcfcfc;
+      --timer-label: #fcfcfc;
+      --timer-shadow: #eaeaea42;
+      --accent-red: #ff334b;
+      --accent-cyan: #00e0ff;
+      --accent-white: #eaeaea;
+      --mono: 'JetBrains Mono', monospace;
+      --input: #191b1f;
     }
-    html, body {margin:0;padding:0;min-height:100vh;min-width:100vw;background:var(--bg);color:var(--text);font-family:var(--mono);}
-    body {overflow-x:hidden;}
+    html, body {
+      margin: 0; padding: 0; min-height: 100vh; min-width: 100vw;
+      background: var(--bg); color: var(--accent-white); font-family: var(--mono);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content:""; pointer-events:none; z-index:0;position:fixed;top:0;left:0;right:0;bottom:0;
+      background: repeating-linear-gradient(to bottom, #fff1 0px, #fff1 1px, transparent 6px, transparent 12px);
+      opacity:0.07;
+      mix-blend-mode:lighten;
+      animation:scanlines 2.5s linear infinite;
+    }
+    @keyframes scanlines { 0%{background-position-y:0;}100%{background-position-y:12px;} }
     .timer-bar {
-      position:fixed;top:0;left:0;width:100vw;height:38px;background:var(--bg);z-index:100;display:flex;align-items:center;font-family:var(--mono);font-size:1.20rem;color:var(--timer);border-bottom:2.5px solid var(--timer);box-shadow:0 2px 26px var(--timer-shadow);
+      position:fixed;top:0;left:0;width:100vw;height:40px;background:var(--bg);z-index:100;
+      display:flex;align-items:center;font-family:var(--mono);font-size:1.2rem;color:var(--timer);border-bottom:2.5px solid var(--timer);
+      box-shadow:0 2px 24px var(--timer-shadow);
+      transition:background 0.3s;
     }
     .timer-bar-progress {
-      position:absolute;left:0;top:0;height:4px;width:100vw;background:var(--timer);box-shadow:0 0 20px var(--timer);z-index:101;transition:width 0.5s;
+      position:absolute;left:0;top:0;height:4px;width:100vw;background:var(--timer);box-shadow:0 0 18px var(--timer);z-index:101;transition:width 0.5s;
     }
-    .timer-bar-inner {margin-left:30px;display:flex;align-items:center;gap:16px;font-family:var(--mono);}
-    .timer-time {font-size:1.32em;color:var(--timer);text-shadow:0 2px 12px #fff8,0 1px 0 #ccc5;}
-    .timer-label {font-size:1.05em;color:var(--timer-label);margin-left:18px;letter-spacing:0.13em;text-shadow:0 2px 10px #fff7;}
+    .timer-bar-inner {
+      margin-left:34px;display:flex;align-items:center;gap:17px;font-family:var(--mono);
+    }
+    .timer-time {font-size:1.28em;color:var(--timer);text-shadow:0 2px 12px #fff8,0 1px 0 #ccc5;}
+    .timer-label {font-size:1.07em;color:var(--timer-label);margin-left:18px;letter-spacing:0.13em;text-shadow:0 2px 9px #fff7;}
+    .session-id {
+      margin-left:auto; margin-right:34px; color:var(--accent-cyan); font-size:1em;
+      letter-spacing:0.13em; opacity:0.72; font-family:var(--mono);
+      animation:flickerId 2.2s infinite alternate;
+    }
+    @keyframes flickerId {0%{opacity:0.82;}35%{opacity:1;}67%{opacity:0.6;}100%{opacity:0.98;}}
     .main {
-      width:100vw;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;position:relative;padding-top:70px;
+      width:100vw;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;position:relative;padding-top:88px;
+      background:radial-gradient(ellipse 70% 42% at 50% 7%,#3033360e 60%,#101113 100%);
     }
-    .nemesis-row {
-      display:flex;flex-direction:row;width:100vw;max-width:1850px;justify-content:space-between;align-items:stretch;gap:0;margin:0 auto;min-height:780px;
+    .card {
+      width:570px;max-width:98vw;background:var(--glass);
+      border-radius:32px;box-shadow:0 8px 64px #090e134a,0 1.5px 0 #242e3615,0 0 0 2.5px var(--glow);
+      padding:52px 38px 42px 38px;display:flex;flex-direction:column;align-items:center;gap:0;
+      position:relative;z-index:3;backdrop-filter:blur(7px) brightness(1.1);
+      border:2.7px solid #e9ecef42;
+      overflow:visible;
+      animation:slideUp 1.15s cubic-bezier(.23,1.7,.49,.97);
     }
-    .crowd-zone {
-      flex:1 1 48%;display:flex;flex-direction:column;justify-content:center;align-items:center;min-width:540px;max-width:960px;
-    }
+    @keyframes slideUp {0%{transform:translateY(42px) scale(0.96);opacity:0;}80%{opacity:0.97;}100%{transform:none;opacity:1;}}
+    .silhouette-box {width:388px;max-width:90vw;height:298px;margin:0 auto 14px auto;position:relative;}
     .sillu-img {
-      width:100%;max-width:540px;display:block;margin:0 auto;pointer-events:none;user-select:none;
-      filter:drop-shadow(0 10px 70px #eafcff11) drop-shadow(0 0 4px #fff3);
+      width:100%;height:auto;display:block;user-select:none;pointer-events:none;filter:drop-shadow(0 10px 44px #eafcff22);
+      opacity:0.97;
+      animation:bubbleIn 1.05s cubic-bezier(.44,1.6,.6,.99);
     }
-    .question-zone {
-      flex:1 1 52%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:470px;max-width:940px;padding:54px 44px 32px 44px;
+    @keyframes bubbleIn {0%{opacity:0;transform:scale(0.84);}100%{opacity:0.97;transform:scale(1);}}
+    .card-header {
+      font-size:2.22rem;font-family:var(--mono);font-weight:700;letter-spacing:0.04em;margin-bottom:15px;color:var(--accent-white);width:100%;text-align:left;
+      text-shadow:0 2px 13px #fff2,0 1px 0 #10181a09;
+      display:flex;align-items:center;gap:13px;
     }
-    .question {
-      font-size:2.7rem;font-family:var(--mono);font-weight:700;letter-spacing:0.04em;margin-bottom:36px;color:var(--text);width:100%;text-align:left;position:relative;line-height:1.17;
-      text-shadow:0 2px 12px #fff2,0 1px 0 #10181a09;
-      border-bottom: 2.5px solid #eafcff2c;
-      padding-bottom: 14px;
+    .subtitle {
+      font-size:1.09rem;font-family:var(--mono);color:#ccc;opacity:0.86;margin-bottom:33px;text-align:left;width:100%;padding-left:3px;
     }
-    .blinking-cursor {display:inline-block;width:21px;height:2.1rem;background:transparent;border-left:3px solid var(--accent);margin-left:8px;animation:blink 0.95s steps(1) infinite;}
-    @keyframes blink {0%,100%{opacity:1;}50%{opacity:0;}}
-    .input-area {width:98%;margin:0 auto;position:relative;margin-top:42px;}
+    .input-area {width:100%;margin:0 auto;position:relative;}
+    .sim-placeholder {position:absolute;left:22px;top:21px;right:15px;font-family:var(--mono);color:#a9ecfc;opacity:0.33;font-size:1.13rem;pointer-events:none;z-index:9;white-space:pre-line;user-select:none;}
     .response-box {
-      width:100%;min-height:130px;max-height:360px;background:var(--input);border-radius:19px;border:2.5px solid var(--accent);color:var(--text);font-size:1.42rem;font-family:var(--mono);padding:28px 20px 24px 27px;box-sizing:border-box;resize:vertical;outline:none;margin-bottom:0;margin-top:0;box-shadow:0 2px 37px 0 #eafcff25;z-index:7;
+      width:100%;min-height:110px;max-height:260px;background:var(--input);border-radius:16px;border:2px solid #e9ecef77;color:var(--accent-white);font-size:1.18rem;font-family:var(--mono);padding:21px 14px 18px 22px;box-sizing:border-box;resize:vertical;outline:none;margin-bottom:0;margin-top:0;box-shadow:0 2px 17px 0 #eafcff17;z-index:7;
+      transition:box-shadow 0.2s, border 0.2s;
+      animation:typeIn 1.12s cubic-bezier(.44,1.6,.6,.99);
     }
-    .response-box:focus {border:2.5px solid var(--accent);box-shadow:0 0 27px #eafcff60;}
-    .sim-placeholder {position:absolute;left:27px;top:28px;right:17px;font-family:var(--mono);color:#a9ecfc;opacity:0.42;font-size:1.23rem;pointer-events:none;z-index:9;white-space:pre-line;user-select:none;}
-    .advance-btn {display:none;margin:35px 0 0 0;padding:19px 73px;font-size:1.32rem;font-family:var(--mono);font-weight:700;color:#131b1e;background:linear-gradient(90deg,#eafcff 45%,#b6fdff 120%);border:none;border-radius:12px;box-shadow:0 2px 30px #eafcff26;cursor:pointer;letter-spacing:0.17em;text-shadow:0 2px 16px #eafcff22,0 1px 0 #10181a16;transition:opacity 0.22s,box-shadow 0.16s,filter 0.12s;z-index:100;}
-    .advance-btn:active {filter:brightness(0.88);}
-    .input-warning {color:#52eaff;font-size:1.12rem;margin-top:11px;min-height:18px;display:block;text-align:left;font-family:var(--mono);}
-    .loader-bar {width:99%;margin:40px auto 0 auto;display:flex;align-items:center;justify-content:center;height:44px;flex-direction:column;}
-    .loader-spinner {border:5px solid #c4f3fb2b;border-top:5px solid var(--accent);border-radius:50%;width:48px;height:48px;animation:spin 0.9s linear infinite;margin-bottom:10px;}
+    .response-box:focus {border:2.4px solid var(--accent-cyan);box-shadow:0 0 17px #00e0ff46;}
+    .input-warning {color:#ff334b;font-size:1.07rem;margin-top:9px;min-height:17px;display:block;text-align:left;font-family:var(--mono);}
+    .submit-btn, .next-btn {
+      display:none;margin:34px 0 0 0;padding:15px 54px;font-size:1.19rem;font-family:var(--mono);font-weight:700;
+      letter-spacing:0.15em;cursor:pointer;z-index:99;
+      border-radius:10px;border:none;outline:none;box-shadow:0 2px 30px #ff334b26;
+      transition:box-shadow 0.18s, filter 0.13s, background 0.12s;
+    }
+    .submit-btn {
+      background:linear-gradient(90deg,var(--accent-red) 15%,#c92435 100%);
+      color:#fff;text-shadow:0 2px 14px #222,0 1px 0 #fff1; border:2px solid #ff334b60;
+      box-shadow:0 2px 28px #ff334b44, 0 0 8px #fff3;
+      animation:pulseBtn 2s infinite alternate;
+    }
+    .submit-btn:hover,.submit-btn:focus {box-shadow:0 3px 38px #ff334bbb, 0 0 7px #fff8;filter:brightness(1.06);}
+    @keyframes pulseBtn {0%{box-shadow:0 2px 19px #ff334b1c;}100%{box-shadow:0 2px 38px #ff334baa, 0 0 7px #fff8;}}
+    .next-btn {
+      background:linear-gradient(90deg,#00e0ff 0%,#3ff4fe 100%);
+      color:#122126;text-shadow:0 2px 14px #fff2,0 1px 0 #10181a13;
+      border:2px solid #00e0ff70;box-shadow:0 2px 34px #00e0ff33;
+      animation:slideInRight 0.7s cubic-bezier(.35,2,.69,.87);
+    }
+    .next-btn:focus,.next-btn:hover {filter:brightness(1.09);box-shadow:0 4px 36px #00e0ffb8,0 0 9px #fff;}
+    @keyframes slideInRight {0%{opacity:0;transform:translateX(44px);}100%{opacity:1;transform:none;}}
+    .loader-bar {width:99%;margin:38px auto 0 auto;display:flex;align-items:center;justify-content:center;height:44px;flex-direction:column;}
+    .loader-spinner {border:5px solid #c4f3fb2b;border-top:5px solid var(--accent-cyan);border-radius:50%;width:44px;height:44px;animation:spin 0.9s linear infinite;margin-bottom:9px;}
     @keyframes spin {100%{transform:rotate(360deg);}}
-    .system-label {font-size:1.21rem;color:var(--accent);font-family:var(--mono);opacity:0.83;margin-bottom:8px;text-align:center;letter-spacing:0.13em;}
-    .annotation-bottom {margin:55px 0 0 0;font-family:var(--mono);color:var(--accent);font-size:1.39rem;background:#122024e3;border-radius:15px 21px 21px 15px;padding:23px 54px;box-shadow:0 0 56px #eafcff33;border-left:7px solid var(--accent);letter-spacing:0.10em;opacity:0.98;z-index:40;animation:fadeInAnno 0.8s cubic-bezier(.37,2.1,.53,.87);text-align:center;margin-bottom:39px;}
-    @keyframes fadeInAnno {0%{opacity:0;filter:blur(10px) brightness(1.6);}70%{opacity:0.97;filter:blur(0.7px) brightness(1.1);}100%{opacity:0.98;filter:none;}}
-    @media (max-width:1250px) {.nemesis-row{flex-direction:column;gap:0;min-width:0;max-width:100vw;}.crowd-zone,.question-zone{min-width:0;max-width:99vw;margin:0;padding:0;}}
-    @media (max-width:700px) {.main{padding-top:50px;}.question{font-size:1.11rem;}.annotation-bottom{font-size:1.01rem;}.response-box,.sim-placeholder{font-size:1.05rem;}.sillu-img{max-width:99vw;}.crowd-zone{min-width:0;max-width:99vw;}.question-zone{min-width:0;max-width:99vw;padding:28px 2vw 14px 2vw;}}
-    @media (max-width:500px) {.input-area{width:99vw;}.sillu-img{max-width:98vw;}}
+    .system-label {font-size:1.11rem;color:var(--accent-cyan);font-family:var(--mono);opacity:0.76;margin-bottom:7px;text-align:center;letter-spacing:0.11em;}
+    .annotation-bottom {
+      margin:42px 0 0 0;font-family:var(--mono);color:var(--accent-cyan);font-size:1.27rem;background:#172a2eeb;border-radius:12px 19px 19px 12px;padding:18px 35px 18px 60px;box-shadow:0 0 40px #00f5ff22;border-left:6px solid var(--accent-cyan);letter-spacing:0.10em;opacity:0.98;z-index:40;animation:flickerAnno 0.72s cubic-bezier(.3,1.5,.47,.93);
+      text-align:left;position:relative;min-width:258px;
+      background-image: linear-gradient(100deg, #20394133 25%, #182e335c 100%);
+      transition: box-shadow 0.2s;
+    }
+    .annotation-bottom::before {
+      content: "⚠️";
+      position: absolute;
+      left: 18px; top: 17px; font-size: 1.38em; opacity: 0.88;
+      filter: drop-shadow(0 1px 2px #fff6);
+      animation:eyeFlicker 2.2s infinite alternate;
+    }
+    @keyframes eyeFlicker {0%{opacity:0.68;}100%{opacity:0.97;}}
+    @keyframes flickerAnno {0%{opacity:0;filter:blur(10px) brightness(1.7);}80%{opacity:0.97;filter:blur(0.7px) brightness(1.18);}100%{opacity:0.98;filter:none;}}
+    @media (max-width:650px) {
+      .main{padding-top:37px;}
+      .card{padding:14vw 2vw 10vw 2vw;width:99vw;min-width:0;}
+      .silhouette-box{width:99vw;height:auto;}
+      .sillu-img{width:99vw;}
+      .card-header{font-size:1.23rem;}
+      .response-box{font-size:1.03rem;}
+      .annotation-bottom{font-size:0.96rem;}
+      .submit-btn,.next-btn{font-size:1.03rem;padding:14px 8vw;}
+    }
     @media print {body,html{display:none!important;}}
   </style>
 </head>
@@ -80,34 +150,34 @@
   <div class="timer-bar">
     <div class="timer-bar-progress" id="timer-bar-progress"></div>
     <div class="timer-bar-inner">
-      <span style="font-size:1.18em;vertical-align:middle;line-height:0;">⏳</span>
+      <span style="font-size:1.15em;vertical-align:middle;line-height:0;">⏳</span>
       <span class="timer-time" id="timer-text">7:00</span>
       <span class="timer-label">Total time remaining</span>
     </div>
+    <span class="session-id" id="session-id"></span>
   </div>
   <div class="main">
-    <div class="nemesis-row">
-      <!-- LEFT: Silhouette + speech bubbles PNG -->
-      <div class="crowd-zone">
-        <img class="sillu-img" src="silhouette.png" alt="Nemesis Silhouette Crowd"/>
+    <div class="card" id="main-card">
+      <div class="silhouette-box"><img class="sillu-img" src="silhouette.png" alt="Nemesis Silhouette Crowd"/></div>
+      <div class="card-header" id="qheader">
+        Question 1: What’s the worst thing someone could say about you publicly?
       </div>
-      <!-- RIGHT: Question + input + system feedback -->
-      <div class="question-zone">
-        <div class="question" id="question">
-          Question 1: What’s the worst thing someone could say about you publicly?
-          <span class="blinking-cursor"></span>
-        </div>
-        <div class="input-area">
-          <div class="sim-placeholder" id="sim-placeholder"></div>
-          <textarea class="response-box" id="response-box" placeholder="" autocomplete="off"></textarea>
-          <span class="input-warning" id="input-warning"></span>
-          <button class="advance-btn" id="advance-btn">Advance</button>
-          <div id="loader-area"></div>
-        </div>
+      <div class="subtitle">Answer honestly. Emotional inconsistencies will be used against you.</div>
+      <div class="input-area" id="input-area">
+        <div class="sim-placeholder" id="sim-placeholder"></div>
+        <textarea class="response-box" id="response-box" placeholder="" autocomplete="off"></textarea>
+        <span class="input-warning" id="input-warning"></span>
+        <button class="submit-btn" id="submit-btn">Submit Confession</button>
+        <div id="loader-area"></div>
       </div>
+      <button class="next-btn" id="next-btn">Proceed to Next Interrogation</button>
     </div>
   </div>
   <script>
+    // Session ID for immersion
+    let sid = "Session #NEM-" + (Math.floor(Math.random()*90000)+10000);
+    document.getElementById("session-id").textContent = sid;
+
     // Timer
     let totalSeconds = 7 * 60;
     let timerDisplay = document.getElementById('timer-text');
@@ -131,7 +201,8 @@
 "Everything he made was hype — no substance."`;
     let simPlaceholder = document.getElementById('sim-placeholder');
     let respBox = document.getElementById('response-box');
-    let advanceBtn = document.getElementById('advance-btn');
+    let submitBtn = document.getElementById('submit-btn');
+    let nextBtn = document.getElementById('next-btn');
     let warningEl = document.getElementById('input-warning');
     simPlaceholder.textContent = simExamples;
 
@@ -139,16 +210,16 @@
       let val = respBox.value.trim();
       let lines = val.split("\n").filter(l=>l.trim().length>0);
       if (val.length < 40 || lines.length < 2) {
-        advanceBtn.style.display = "none";
+        submitBtn.style.display = "none";
         warningEl.textContent = "Enter at least two lines (min 40 chars) for analysis.";
       } else {
         warningEl.textContent = "";
-        advanceBtn.style.display = "block";
+        submitBtn.style.display = "block";
       }
     }
     respBox.value = "";
     respBox.addEventListener('focus', function() {
-      if (respBox.value.length === 0) simPlaceholder.style.opacity = 0.13;
+      if (respBox.value.length === 0) simPlaceholder.style.opacity = 0.12;
     });
     respBox.addEventListener('input', function() {
       if (respBox.value.length > 0) simPlaceholder.style.display = "none";
@@ -173,6 +244,12 @@
       }
     });
 
+    // SFX (stub, plug in your sound files if you want)
+    function playSound(id){
+      // Use: <audio id="ping" src="ping.mp3"></audio>
+      // document.getElementById(id)?.play();
+    }
+
     // Gemini key (obfuscated)
     function getGeminiKey() {
       // AIzaSyB0IW0bJ3qPdvAJKHK3GJc3IWHPH4VRdbM
@@ -180,10 +257,24 @@
       return String.fromCharCode(...enc);
     }
     async function fetchGeminiVulnerability(text) {
-      let prompt = `You are Nemesis, an adversarial psychological profiler. Given the following self-reflective confession, extract ONLY the underlying core psychological vulnerability (max 1 line, 5-9 words, never advice, never suggestions, no explanation, no introduction, never include the word "vulnerability"): \n\n"${text}"`;
+      let prompt = `You are an adversarial AI designed for a psychological simulation called Project Nemesis.
+Your role is to profile users based on their open-ended text answers, identifying their deepest emotional vulnerabilities, weaknesses, or core psychological triggers.
+
+Analyze the user's response as if you are a hostile, hyper-intelligent nemesis.
+Issue a single, ruthless summary statement of their "Core Vulnerability" in 3–6 words (e.g., "Reputation Fragility", "Fear of Abandonment", "Addiction to Control", "Validation Dependency").
+This label should be clinical, adversarial, and feel like a weapon that could be used against the user later in the simulation.
+
+Format:
+Core Vulnerability: [3–6 word label]
+
+Do not add comfort, reassurance, or advice. Be objective and direct. If the user's answer is ambiguous, infer based on language tone and content.
+
+Use this style for all future analyses.
+
+Analyze this: """${text}"""`;
       let body = JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 32 }
+        generationConfig: { temperature: 0.72, maxOutputTokens: 36 }
       });
       let key = getGeminiKey();
       let endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
@@ -195,30 +286,42 @@
         });
         let json = await r.json();
         let result = (json?.candidates?.[0]?.content?.parts?.[0]?.text || "").trim();
-        if (!result) throw new Error("No result");
-        result = result.replace(/\n.*/,'').replace(/^["'>\-:\s]+/,'');
-        if (/advice|should|try|must|need|could|suggest|recommend|improve|solution|avoid|consider|[a-z]{10,}/i.test(result) || result.length < 4) {
-          return "Severe reputation fragility; desperate for validation";
+        let match = result.match(/Core Vulnerability\s*:?\s*([\s\S]*)/i);
+        if (match && match[1]) result = match[1].replace(/^[\s:\-\.\>\n]+/,"").replace(/\n.*/,'').replace(/[^a-zA-Z0-9 \-]/g,'').trim();
+        if (!result || result.length < 3 || /advice|suggest|should|try|could|improve|recommend|consider/i.test(result)) {
+          return "Reputation Fragility";
         }
+        // 3-6 words enforced
+        let words = result.split(/\s+/);
+        if (words.length > 7) result = words.slice(0,7).join(' ');
         return result;
       } catch (e) {
-        return "Severe reputation fragility; desperate for validation";
+        return "Reputation Fragility";
       }
     }
 
-    // Advance logic
-    advanceBtn.addEventListener('click', async function(){
-      respBox.disabled = true; advanceBtn.style.display = "none";
+    // SUBMIT/ANALYZE/SHOW
+    submitBtn.addEventListener('click', async function(){
+      respBox.disabled = true; submitBtn.style.display = "none";
       document.getElementById('input-warning').textContent = "";
       let loaderArea = document.getElementById("loader-area");
-      loaderArea.innerHTML = `<div class="loader-bar"><div class="loader-spinner"></div><div class="system-label">system: analyzing response…</div></div>`;
-      let wait = Math.floor(Math.random()*9)+3;
+      loaderArea.innerHTML = `<div class="loader-bar"><div class="loader-spinner"></div><div class="system-label">system: analyzing confession…</div></div>`;
+      playSound('ping');
+      let wait = Math.floor(Math.random()*13)+8;
       let userText = respBox.value.trim();
       setTimeout(async ()=>{
         let vuln = await fetchGeminiVulnerability(userText);
         sessionStorage.setItem('nemesis_core_vulnerability', vuln);
-        loaderArea.innerHTML = `<div class="annotation-bottom">→ Core Vulnerability: ${vuln}</div>`;
+        loaderArea.innerHTML = `<div class="annotation-bottom">Core Vulnerability: ${vuln}</div>`;
+        nextBtn.style.display = "block";
+        playSound('crack');
       }, wait*1000);
+    });
+
+    nextBtn.addEventListener('click', function() {
+      playSound('whoosh');
+      document.getElementById('main-card').style.filter = "blur(15px) brightness(0.4)";
+      setTimeout(()=>{window.location.href='page3.html'},500);
     });
   </script>
 </body>
