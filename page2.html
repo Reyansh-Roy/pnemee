@@ -3,308 +3,541 @@
 <head>
   <meta charset="UTF-8">
   <title>INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</title>
-  <meta name="viewport" content="width=1400">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=1024">
   <style>
     :root {
-      --main-blue: #6ce2ff;
-      --header-blue: #69beff;
-      --white: #f2fcff;
-      --timer-red: #ff3a39;
-      --input-blue: #71c8f9;
-      --button-red: #ff3a39;
-      --bubble-red: #ff3a39;
-      --bubble-white: #fff;
-      --bubble-gray: #aeb9c9;
-      --bg-black: #0c1016;
-      --mesh: #32404d;
-      --font: 'JetBrains Mono', monospace;
+      --bg: #111;
+      --header: #b3c6cf;
+      --session-timer: #EF5350;
+      --question: #c6d4e1;
+      --crowd: #b5b9ca;
+      --crowd-red: #EF5350;
+      --input-bg: rgba(19,24,29,0.88);
+      --input-border: #415165;
+      --input-text: #b7ccdf;
+      --input-placeholder: #8898aa;
+      --submit-bg: #17181b;
+      --submit-red: #EF5350;
+      --submit-shadow: 0 0 12px #EF5350bb;
+      --fragility-bg: rgba(31, 13, 13, 0.89);
+      --fragility-red: #EF5350;
+      --truth-blue: #c8e6ff;
+      --nemesis-red: #EF5350;
     }
     html, body {
-      margin: 0; padding: 0; height: 100%; width: 100vw;
-      background: var(--bg-black);
-      color: var(--white);
-      font-family: var(--font);
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
       overflow: hidden;
+      background: var(--bg);
+      font-family: 'Fira Mono', 'Roboto Mono', 'Menlo', monospace;
+      letter-spacing: 0.01em;
+      user-select: none;
     }
-    body {
-      position: relative;
-      min-height: 100vh;
-      min-width: 1280px;
-      /* subtle mesh grid + scanlines overlay: */
-      background:
-        repeating-linear-gradient(0deg, #29374525 0 1px, transparent 1.5px 6px),
-        repeating-radial-gradient(circle at 60% 40%, #2748620a 0 10px, transparent 12px 100px),
-        url('data:image/svg+xml;utf8,<svg width="1600" height="900" xmlns="http://www.w3.org/2000/svg"><g opacity="0.08"><path d="M0,200 Q400,480 900,100 T1600,120" stroke="cyan" fill="none"/><path d="M0,700 Q800,850 1600,700" stroke="red" fill="none"/></g></svg>');
-      background-size: cover, cover, cover;
-      background-position: center center;
+    body::before {
+      content: "";
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.16;
+      background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><g opacity="0.55"><rect x="10" y="30" width="200" height="2" fill="%23243c47"/><rect x="200" y="60" width="120" height="2" fill="%23243c47"/><rect x="40" y="110" width="500" height="2" fill="%23243c47"/><rect x="300" y="20" width="80" height="2" fill="%23243c47"/><circle cx="160" cy="140" r="3" fill="%23345"/><circle cx="120" cy="90" r="1.5" fill="%23345"/><rect x="600" y="230" width="120" height="2" fill="%23243c47"/><rect x="620" y="120" width="40" height="2" fill="%23243c47"/></g></svg>');
+      background-repeat: repeat;
+      background-size: 800px 300px;
+      animation: circuit-move 17s linear infinite;
     }
-
-    /* HEADER */
+    @keyframes circuit-move {
+      from { background-position: 0 0;}
+      to { background-position: -200px -120px;}
+    }
     #header {
-      font-size: 2.8rem;
-      font-family: var(--font);
-      letter-spacing: 0.14em;
-      color: var(--header-blue);
-      text-shadow: 0 0 16px #53a0e9, 0 0 3px #2029fa60;
-      font-weight: 800;
-      text-align: left;
-      margin-left: 115px;
-      margin-top: 44px;
-      margin-bottom: 22px;
-      line-height: 1.07;
-      user-select: none;
-    }
-    /* TIMER */
-    #timer {
       position: absolute;
-      top: 56px;
-      right: 100px;
-      color: var(--timer-red);
-      font-family: var(--font);
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-shadow: 0 0 3px #e61c35b5;
-      z-index: 100;
-      user-select: none;
-    }
-
-    /* CENTER MAIN LAYOUT */
-    #main {
-      width: 100vw;
-      position: relative;
+      top: 30px;
+      left: 0; right: 0;
+      width: 100%;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 16px;
+      justify-content: center;
+      align-items: flex-start;
       z-index: 2;
     }
-    /* BIG QUESTION */
-    #question {
-      font-family: var(--font);
-      font-size: 2.7rem;
-      font-weight: 800;
-      color: #f3fcff;
-      letter-spacing: 0.09em;
+    #header-title {
+      font-size: 1.39rem;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: var(--header);
+      font-family: inherit;
+      font-weight: 600;
       text-align: center;
-      margin-top: 44px;
-      margin-bottom: 40px;
-      line-height: 1.16;
-      text-shadow: 0 0 14px #87e0ff60, 0 0 1px #2f9ada;
-      filter: brightness(1.07);
-      width: 80vw;
-      max-width: 1100px;
+      flex: 1 1 auto;
+      user-select: none;
+      pointer-events: none;
+    }
+    #header-timer {
+      position: absolute;
+      right: 56px; top: 0px;
+      font-size: 0.99rem;
+      color: var(--session-timer);
+      font-family: inherit;
+      font-weight: 400;
+      letter-spacing: 0.09em;
+      width: 190px;
+      text-align: right;
+      text-transform: uppercase;
       user-select: none;
     }
-    /* CENTERPIECE SILHOUETTE */
+    #question {
+      margin-top: 108px;
+      width: 100vw;
+      text-align: center;
+      color: var(--question);
+      font-size: 2.16rem;
+      font-family: inherit;
+      letter-spacing: 0.02em;
+      z-index: 2;
+      position: relative;
+      text-shadow: 0 2px 12px #0006;
+      user-select: none;
+    }
     #silhouette {
       position: absolute;
-      top: 130px;
       left: 50%;
-      transform: translateX(-50%);
-      width: 420px;
-      height: 660px;
-      object-fit: contain;
-      opacity: 0.85;
-      z-index: 0;
-      filter: brightness(0.75) grayscale(0.35) drop-shadow(0 0 70px #020207b2);
+      top: 51%;
+      transform: translate(-50%,-54%);
+      opacity: 0.7;
+      width: 500px;
+      max-width: 67vw;
+      z-index: 1;
       pointer-events: none;
       user-select: none;
+      filter: blur(0.2px) brightness(1.04);
+      transition: filter 0.24s;
     }
-    /* INPUT SECTION */
-    #input-section {
-      position: relative;
-      z-index: 2;
-      margin-top: 185px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #input-box {
-      width: 725px;
-      height: 120px;
-      background: rgba(22,34,49,0.89);
-      border: 1.5px solid #4877ab3f;
-      border-radius: 17px;
-      box-shadow: 0 0 22px 6px #61cbff25, 0 0 0px #fff0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      padding: 26px 32px 18px 32px;
-      margin-bottom: 34px;
-      position: relative;
-      font-family: var(--font);
-    }
-    #user-input {
-      width: 100%;
-      height: 100%;
-      resize: none;
-      background: transparent;
-      border: none;
-      color: var(--input-blue);
-      font-size: 1.28rem;
-      font-family: var(--font);
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      outline: none;
-      line-height: 1.42;
-      caret-color: var(--button-red);
-      /* Remove selection highlight, disable spellcheck: */
-      spellcheck: false;
-      padding: 0;
-      margin: 0;
-      z-index: 2;
-      /* No scrollbars: */
-      overflow: hidden;
-    }
-    #user-input:focus { color: #fff; }
-    /* SUBMIT BUTTON */
-    #submit-btn {
-      width: 540px;
-      margin-top: 4px;
-      font-size: 2rem;
-      font-family: var(--font);
-      font-weight: 800;
-      letter-spacing: 0.10em;
-      color: var(--button-red);
-      background: none;
-      border: 4px solid var(--button-red);
-      border-radius: 21px;
-      padding: 18px 0;
-      text-align: center;
-      cursor: pointer;
-      box-shadow: 0 0 27px 4px #ff3a3939, 0 0 8px #bd3433;
-      text-shadow: 0 0 14px #ff3a397e, 0 0 2px #fff2;
-      outline: none;
-      transition: background 0.15s, color 0.13s, border 0.18s;
-      z-index: 4;
-    }
-    #submit-btn:hover, #submit-btn:focus {
-      background: #2e070c;
-      color: #fff;
-      border: 4px solid #ff6566;
-      box-shadow: 0 0 42px 8px #ff3a39a8, 0 0 12px #fff3;
-      text-shadow: 0 0 24px #ff6566c2;
-    }
-
-    /* NEON LABEL BUBBLES (FAKE "crowd") */
-    .bubble {
+    #crowd {
       position: absolute;
-      font-family: var(--font);
-      font-size: 1.43rem;
-      font-weight: 700;
-      opacity: 0.13;
-      text-shadow: 0 0 13px #ff3a3935, 0 0 1px #fff;
-      z-index: 3;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9;
+    }
+    .crowd-word {
+      position: absolute;
+      font-family: inherit;
+      opacity: 0.19;
+      color: var(--crowd);
+      font-size: 1.37rem;
+      filter: blur(1.1px);
       pointer-events: none;
       user-select: none;
+      transition: opacity 0.14s, filter 0.11s;
+      text-shadow: 0 2px 14px #0008;
+      white-space: pre;
+      will-change: opacity, filter;
     }
-    .bubble.red { color: var(--bubble-red);}
-    .bubble.gray { color: var(--bubble-gray);}
-    .bubble.white { color: var(--bubble-white);}
-    .bubble.b1 { left:57vw; top:390px;}
-    .bubble.b2 { left:68vw; top:265px; font-size:1.7rem;}
-    .bubble.b3 { left:68vw; top:500px; font-size:1.5rem;}
-    .bubble.b4 { left:64vw; top:570px;}
-    .bubble.b5 { left:51vw; top:300px;}
-    .bubble.b6 { left:41vw; top:580px;}
-    .bubble.b7 { left:70vw; top:415px;}
-    .bubble.b8 { left:54vw; top:600px;}
-    .bubble.b9 { left:71vw; top:360px;}
-    /* Only a few visible in the reference: */
-    .bubble.b10 { left:77vw; top:340px;}
-    .bubble.b11 { left:59vw; top:550px;}
-    .bubble.b12 { left:61vw; top:320px;}
-    /*---*/
+    .crowd-red {
+      color: var(--crowd-red);
+      opacity: 0.17;
+      font-weight: 600;
+    }
+    /* Main input area */
+    #inputbox-container {
+      position: relative;
+      width: 680px;
+      max-width: 92vw;
+      margin: 52px auto 0;
+      z-index: 12;
+    }
+    #ghost-text {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      font-family: inherit;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--input-placeholder);
+      white-space: pre-line;
+      pointer-events: none;
+      padding: 18px 22px 18px 18px;
+      opacity: 0.88;
+      letter-spacing: 0.03em;
+      transition: opacity 0.3s;
+      background: none;
+      z-index: 2;
+    }
+    #main-input {
+      width: 100%;
+      min-height: 74px;
+      background: var(--input-bg);
+      border: 1.2px solid var(--input-border);
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 1.15rem;
+      color: var(--input-text);
+      padding: 18px 22px 18px 18px;
+      box-sizing: border-box;
+      outline: none;
+      resize: none;
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+      box-shadow: 0 4px 24px #0a0a0a36;
+      z-index: 3;
+      caret-color: var(--input-text);
+      transition: border 0.15s;
+    }
+    #main-input:focus {
+      border: 1.5px solid var(--session-timer);
+      background: rgba(20, 20, 21, 0.99);
+    }
+    #submit-btn {
+      margin: 33px auto 0;
+      display: block;
+      font-family: inherit;
+      font-size: 1.07rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--submit-red);
+      background: var(--submit-bg);
+      border: 1.3px solid var(--submit-red);
+      border-radius: 7px;
+      padding: 15px 39px;
+      cursor: not-allowed;
+      outline: none;
+      box-shadow: none;
+      transition: box-shadow 0.17s, border 0.17s, color 0.17s;
+      opacity: 0.78;
+      text-transform: uppercase;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    #submit-btn.enabled {
+      cursor: pointer;
+      opacity: 1;
+      box-shadow: none;
+    }
+    #submit-btn.enabled:hover {
+      box-shadow: var(--submit-shadow);
+      color: #fff;
+      border-color: #fff;
+      background: #150203;
+      transition: box-shadow 0.11s, border 0.13s, color 0.13s;
+    }
+    /* Nemesis analysis */
+    #nemesis-analysis {
+      display: none;
+      width: 100vw;
+      text-align: center;
+      margin-top: 60px;
+      font-family: inherit;
+      font-size: 1.33rem;
+      color: var(--nemesis-red);
+      letter-spacing: 0.07em;
+      animation: pulse-red 1.33s infinite;
+      z-index: 18;
+      position: relative;
+    }
+    @keyframes pulse-red {
+      0%,100% { opacity: 1;}
+      47% { opacity: 0.6;}
+      60% { opacity: 1;}
+    }
+    #fragility-box {
+      display: none;
+      margin: 44px auto 0;
+      text-align: center;
+    }
+    #fragility-text {
+      display: inline-block;
+      background: var(--fragility-bg);
+      border: 1.7px solid var(--fragility-red);
+      border-radius: 13px;
+      padding: 24px 66px 18px 66px;
+      font-family: inherit;
+      font-size: 1.47rem;
+      letter-spacing: 0.18em;
+      color: var(--fragility-red);
+      font-weight: 800;
+      box-shadow: 0 3px 17px #4905071a;
+      text-transform: uppercase;
+      opacity: 0.93;
+    }
+    #truth-btn {
+      display: none;
+      position: fixed;
+      right: 48px; bottom: 46px;
+      background: none;
+      border: 1.3px solid var(--truth-blue);
+      color: var(--truth-blue);
+      font-family: inherit;
+      font-size: 1.09rem;
+      letter-spacing: 0.10em;
+      padding: 15px 36px;
+      border-radius: 9px;
+      box-shadow: 0 1.5px 12px #0ad5fc33;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.12s, border 0.13s, color 0.13s;
+      text-transform: uppercase;
+      z-index: 30;
+      user-select: none;
+    }
+    #truth-btn:hover {
+      box-shadow: 0 0 19px #2f93efcc;
+      color: #fff;
+      border-color: #fff;
+      background: #05131a;
+    }
+    /* Screenshot overlay */
+    #screenshot-blur {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.56);
+      backdrop-filter: blur(7px);
+      z-index: 1002;
+      pointer-events: all;
+      justify-content: center; align-items: center;
+      text-align: center;
+      font-family: inherit;
+      font-size: 1.3rem;
+      color: #ffe7e7;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      transition: opacity 0.24s;
+    }
+    /* Mobile overlay */
+    #mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1005;
+      background: #000;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1.29rem;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      padding-top: 24vh;
+      letter-spacing: 0.09em;
+    }
+    @media (max-width: 890px), (max-height: 580px), (max-aspect-ratio: 4/5) {
+      #mobile-overlay {display: flex;}
+      #header, #question, #inputbox-container, #submit-btn, #silhouette, #nemesis-analysis, #fragility-box, #truth-btn, #crowd {display: none !important;}
+    }
   </style>
 </head>
 <body>
-  <!-- Header & Timer -->
-  <div id="header">INITIATION PROTOCOL:  PSYCHOLOGICAL FINGERPRINTING</div>
-  <div id="timer">SESSION TIMER: <span id="timer-val">07:00 MIN</span></div>
-
-  <!-- Center Silhouette -->
-  <img id="silhouette" src="silhouette.png" alt="silhouette">
-
-  <!-- Neon word bubbles -->
-  <span class="bubble red b1">overrated</span>
-  <span class="bubble gray b2">faker</span>
-  <span class="bubble gray b3">faker</span>
-  <span class="bubble red b4">overrated</span>
-  <span class="bubble gray b5">faker</span>
-  <span class="bubble red b6">overrated</span>
-  <span class="bubble red b7">fraud</span>
-  <span class="bubble gray b8">faker</span>
-  <span class="bubble gray b9">faker</span>
-  <span class="bubble red b10">overrated</span>
-  <span class="bubble gray b11">faker</span>
-  <span class="bubble gray b12">fraud</span>
-
-  <!-- Main Center Layout -->
-  <div id="main">
-    <div id="question">
-      What’s the worst thing someone could say about you publicly?
-    </div>
-    <div id="input-section">
-      <div id="input-box">
-        <textarea id="user-input" autocomplete="off" spellcheck="false" rows="3" maxlength="180"></textarea>
-      </div>
-      <button id="submit-btn">SUBMIT TO ADVERSARY</button>
+  <div id="header">
+    <div id="header-title">INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</div>
+    <div id="header-timer">
+      SESSION TIMER <span id="timer">00:00</span> MIN
     </div>
   </div>
-
+  <div id="question">
+    What's the worst thing someone could say about you publicly?
+  </div>
+  <img id="silhouette" src="silhouette.png" alt="Silhouette">
+  <div id="crowd"></div>
+  <div id="inputbox-container">
+    <textarea id="main-input" rows="3" maxlength="360" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
+    <div id="ghost-text"></div>
+  </div>
+  <button id="submit-btn" disabled>SUBMIT TO ADVERSARY</button>
+  <div id="nemesis-analysis">Nemesis Analysis: Scanning Vulnerabilities...</div>
+  <div id="fragility-box"><span id="fragility-text">REPETATION FRAGILITY</span></div>
+  <button id="truth-btn">FACE NEXT TRUTH</button>
+  <div id="screenshot-blur"></div>
+  <div id="mobile-overlay">Nemesis Protocol only runs on tablets and computers.</div>
   <script>
-    // GHOST TYPE effect
-    const userInput = document.getElementById('user-input');
-    const ghostText = "He's just a brand, not a builder.\nEverything he made was hype – no substance.";
-    let ghostIdx = 0, ghostTimer = null, hasInteracted = false;
-    function ghostType() {
-      if (hasInteracted) return;
-      if (ghostIdx <= ghostText.length) {
-        userInput.value = ghostText.slice(0, ghostIdx);
-        ghostIdx++;
-        ghostTimer = setTimeout(ghostType, 17 + Math.random()*25);
+    // Crowd words, positions, and animation
+    const crowdWords = [
+      {text:'fraud', x:16, y:220, size:1.28, blur:1.7, op:0.18, dur:2400, delay:150},
+      {text:'overrated', x:670, y:170, size:1.24, blur:1.3, op:0.16, red:true, dur:2250, delay:980},
+      {text:'faker', x:470, y:118, size:1.19, blur:1.8, op:0.17, dur:1700, delay:210},
+      {text:'faker', x:210, y:342, size:1.22, blur:1.1, op:0.17, dur:2770, delay:0},
+      {text:'faker', x:800, y:310, size:1.26, blur:1.1, op:0.19, dur:2120, delay:510},
+      {text:'faker', x:660, y:360, size:1.11, blur:2.0, op:0.16, dur:1590, delay:1440},
+      {text:'fraud', x:420, y:430, size:1.19, blur:1.55, op:0.16, dur:2770, delay:130},
+    ];
+    const crowdContainer = document.getElementById('crowd');
+    function createCrowd() {
+      crowdWords.forEach((w,i) => {
+        let el = document.createElement('div');
+        el.className = 'crowd-word'+(w.red?' crowd-red':'');
+        el.textContent = w.text;
+        el.style.left = w.x+'px';
+        el.style.top = w.y+'px';
+        el.style.fontSize = (w.size*1.28)+'rem';
+        el.style.opacity = w.op;
+        el.style.filter = `blur(${w.blur}px)`;
+        el.dataset.idx = i;
+        crowdContainer.appendChild(el);
+        animateCrowdWord(el, w);
+      });
+    }
+    function animateCrowdWord(el, w) {
+      let fade = () => {
+        let show = Math.random()>0.32;
+        el.style.opacity = show ? w.op : 0;
+        el.style.filter = show
+          ? `blur(${w.blur}px)`
+          : `blur(${w.blur+2.5}px)`;
+        let next = (show ? w.dur : w.dur*0.7)+Math.random()*600;
+        setTimeout(fade, next);
+      };
+      setTimeout(fade, w.delay+Math.random()*450);
+    }
+    // Ghost typing logic
+    const ghostTextDefault =
+      "He's just a brand, not a builder.\nEverything he made was hype – no substance";
+    const ghostTextDiv = document.getElementById('ghost-text');
+    const mainInput = document.getElementById('main-input');
+    function showGhostText() {
+      ghostTextDiv.style.opacity = '1';
+      ghostTextDiv.innerText = '';
+      let txt = ghostTextDefault, i=0;
+      let interval = setInterval(()=>{
+        if(mainInput.value.length>0) { ghostTextDiv.innerText=''; clearInterval(interval); return;}
+        ghostTextDiv.innerText = txt.slice(0, i+1);
+        i++;
+        if(i>=txt.length) clearInterval(interval);
+      }, 16+Math.random()*22);
+    }
+    function hideGhostText() {
+      ghostTextDiv.innerText='';
+      ghostTextDiv.style.opacity='0';
+    }
+    // On page load: show ghost
+    showGhostText();
+    // Focus/blur logic
+    let ghostTimer = null;
+    mainInput.addEventListener('focus', hideGhostText);
+    mainInput.addEventListener('input', function() {
+      if(this.value.length === 0) {
+        if(ghostTimer) clearTimeout(ghostTimer);
+        ghostTimer = setTimeout(showGhostText, 2000);
+      } else {
+        hideGhostText();
+        if(ghostTimer) clearTimeout(ghostTimer);
+      }
+      checkSubmitState();
+    });
+    mainInput.addEventListener('blur', function(){
+      if(mainInput.value.length === 0) {
+        ghostTimer = setTimeout(showGhostText, 1800);
+      }
+    });
+    // Allow only 4 lines max
+    mainInput.addEventListener('input', function(e){
+      let lines = this.value.split('\n').length;
+      if(lines > 4) {
+        let parts = this.value.split('\n').slice(0,4);
+        this.value = parts.join('\n');
+      }
+    });
+    // Enable submit button after 2+ lines
+    const submitBtn = document.getElementById('submit-btn');
+    function checkSubmitState() {
+      let lines = mainInput.value.split('\n');
+      if(lines.length>=2 && lines[0].trim().length>=4 && lines[1].trim().length>=2) {
+        submitBtn.disabled = false;
+        submitBtn.classList.add('enabled');
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.classList.remove('enabled');
       }
     }
-    function resetGhost() {
-      ghostIdx = 0;
-      ghostType();
-    }
-    userInput.addEventListener('focus', () => {
-      hasInteracted = true;
-      userInput.value = '';
-      userInput.style.color = "#fff";
-      clearTimeout(ghostTimer);
-    });
-    userInput.addEventListener('blur', () => {
-      if (userInput.value.trim() === '') {
-        hasInteracted = false;
-        userInput.style.color = "#71c8f9";
-        resetGhost();
+    // Prevent context menu, clipboard, drag, etc
+    document.addEventListener('contextmenu', e=>e.preventDefault());
+    document.addEventListener('cut', e=>e.preventDefault());
+    document.addEventListener('copy', e=>e.preventDefault());
+    document.addEventListener('paste', e=>e.preventDefault());
+    document.addEventListener('keydown', function(e){
+      if((e.ctrlKey||e.metaKey) && (e.key==='c'||e.key==='v'||e.key==='x'||e.key==='a')) e.preventDefault();
+      // Block F5/refresh/back/forward
+      if(e.key==='F5'||e.key==='r'&&e.ctrlKey) {e.preventDefault();window.location.reload();}
+      // Screenshot: PrintScreen key
+      if(e.key==='PrintScreen'||e.key==='PrintScrn') {
+        blurScreen();
       }
     });
-    userInput.style.color = "#71c8f9";
-    setTimeout(ghostType, 400);
-
-    // TIMER logic
-    let timerVal = 420;
+    // Drag/Drop
+    document.addEventListener('dragstart',e=>e.preventDefault());
+    document.addEventListener('drop',e=>e.preventDefault());
+    // Screenshot blur
+    let screenshotDiv = document.getElementById('screenshot-blur');
+    function blurScreen() {
+      screenshotDiv.style.display = 'flex';
+      screenshotDiv.innerText = "SECURITY ALERT: SCREEN CAPTURE BLOCKED";
+      setTimeout(()=>{ screenshotDiv.style.display = 'none';}, 2000);
+    }
+    // Navigation block
+    let navWarn = () => "Are you sure? Your session will be lost.";
+    window.addEventListener('beforeunload', function(e) {
+      e.preventDefault();
+      e.returnValue = navWarn();
+      return navWarn();
+    });
+    // Timer logic
+    let timerEl = document.getElementById('timer');
+    let timeSecs = 0, timerPaused=false, timerInt=null;
     function updateTimer() {
-      timerVal--;
-      if (timerVal < 0) timerVal = 0;
-      let min = Math.floor(timerVal/60).toString().padStart(2,'0');
-      let sec = (timerVal%60).toString().padStart(2,'0');
-      document.getElementById('timer-val').innerText = `${min}:${sec} MIN`;
+      let mm = Math.floor(timeSecs/60).toString().padStart(2,'0');
+      let ss = (timeSecs%60).toString().padStart(2,'0');
+      timerEl.innerText = `${mm}:${ss}`;
     }
-    setInterval(updateTimer, 1000);
-
-    // Submission disables everything for demo (no overlay here)
-    document.getElementById('submit-btn').addEventListener('click', function() {
-      userInput.disabled = true;
-      this.disabled = true;
-      this.style.opacity = "0.55";
-      this.innerText = "SUBMITTED";
+    function startTimer() {
+      timerPaused=false;
+      if(timerInt) clearInterval(timerInt);
+      timerInt = setInterval(()=>{
+        if(!timerPaused) {
+          timeSecs++;
+          updateTimer();
+          if(timeSecs>=420) clearInterval(timerInt);
+        }
+      },1000);
+    }
+    function pauseTimer() {timerPaused=true;}
+    function resumeTimer() {timerPaused=false;}
+    startTimer();
+    // Submit/analysis
+    let nemesis = document.getElementById('nemesis-analysis');
+    let fragility = document.getElementById('fragility-box');
+    let truthBtn = document.getElementById('truth-btn');
+    submitBtn.addEventListener('click', function(){
+      if(this.disabled) return;
+      pauseTimer();
+      mainInput.style.transition = "opacity 0.45s";
+      submitBtn.style.transition = "opacity 0.3s";
+      mainInput.style.opacity = 0;
+      submitBtn.style.opacity = 0;
+      setTimeout(()=>{
+        mainInput.style.display='none';
+        submitBtn.style.display='none';
+        nemesis.style.display='block';
+      },410);
+      let delay = Math.floor(4000 + Math.random()*8000);
+      setTimeout(()=>{
+        nemesis.style.display='none';
+        fragility.style.display='block';
+        truthBtn.style.display='block';
+      },delay+900);
     });
+    // Next truth button
+    truthBtn.addEventListener('click', function(){
+      window.location.href='page3.html';
+    });
+    // Prevent session persistence
+    if(window.localStorage) localStorage.clear();
+    if(window.sessionStorage) sessionStorage.clear();
+    // Crowd words
+    createCrowd();
+    // Mobile overlay logic handled in CSS
+    // On resize, for paranoia, force overlays
+    function checkMobile() {
+      let w=window.innerWidth, h=window.innerHeight;
+      if(w<900||h<580) document.getElementById('mobile-overlay').style.display='flex';
+      else document.getElementById('mobile-overlay').style.display='none';
+    }
+    window.addEventListener('resize', checkMobile);
+    checkMobile();
+    // Focus input on load
+    setTimeout(()=>{mainInput.focus();},700);
   </script>
 </body>
 </html>
