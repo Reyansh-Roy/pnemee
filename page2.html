@@ -3,541 +3,558 @@
 <head>
   <meta charset="UTF-8">
   <title>INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</title>
-  <meta name="viewport" content="width=1024">
+  <meta name="viewport" content="width=900, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="data:," />
   <style>
-    :root {
-      --bg: #111;
-      --header: #b3c6cf;
-      --session-timer: #EF5350;
-      --question: #c6d4e1;
-      --crowd: #b5b9ca;
-      --crowd-red: #EF5350;
-      --input-bg: rgba(19,24,29,0.88);
-      --input-border: #415165;
-      --input-text: #b7ccdf;
-      --input-placeholder: #8898aa;
-      --submit-bg: #17181b;
-      --submit-red: #EF5350;
-      --submit-shadow: 0 0 12px #EF5350bb;
-      --fragility-bg: rgba(31, 13, 13, 0.89);
-      --fragility-red: #EF5350;
-      --truth-blue: #c8e6ff;
-      --nemesis-red: #EF5350;
-    }
     html, body {
-      margin: 0; padding: 0;
-      width: 100vw; height: 100vh;
-      overflow: hidden;
-      background: var(--bg);
+      height: 100%; margin: 0; padding: 0;
+      background: #111;
+      color: #C9D8EA;
       font-family: 'Fira Mono', 'Roboto Mono', 'Menlo', monospace;
-      letter-spacing: 0.01em;
-      user-select: none;
+      overflow: hidden;
     }
+    body {
+      min-width: 900px;
+      min-height: 650px;
+      position: relative;
+    }
+    /* Digital circuit overlay */
     body::before {
       content: "";
-      pointer-events: none;
       position: fixed;
       inset: 0;
       z-index: 0;
-      opacity: 0.16;
-      background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><g opacity="0.55"><rect x="10" y="30" width="200" height="2" fill="%23243c47"/><rect x="200" y="60" width="120" height="2" fill="%23243c47"/><rect x="40" y="110" width="500" height="2" fill="%23243c47"/><rect x="300" y="20" width="80" height="2" fill="%23243c47"/><circle cx="160" cy="140" r="3" fill="%23345"/><circle cx="120" cy="90" r="1.5" fill="%23345"/><rect x="600" y="230" width="120" height="2" fill="%23243c47"/><rect x="620" y="120" width="40" height="2" fill="%23243c47"/></g></svg>');
-      background-repeat: repeat;
-      background-size: 800px 300px;
-      animation: circuit-move 17s linear infinite;
-    }
-    @keyframes circuit-move {
-      from { background-position: 0 0;}
-      to { background-position: -200px -120px;}
-    }
-    #header {
-      position: absolute;
-      top: 30px;
-      left: 0; right: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      z-index: 2;
-    }
-    #header-title {
-      font-size: 1.39rem;
-      text-transform: uppercase;
-      letter-spacing: 0.10em;
-      color: var(--header);
-      font-family: inherit;
-      font-weight: 600;
-      text-align: center;
-      flex: 1 1 auto;
-      user-select: none;
       pointer-events: none;
+      opacity: 0.08;
+      background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="40" width="100" height="1" fill="white" opacity="0.5"/><rect x="30" y="110" width="160" height="1" fill="white" opacity="0.5"/><rect x="120" y="40" width="1" height="70" fill="white" opacity="0.4"/><circle cx="90" cy="40" r="3" fill="white" opacity="0.5"/><circle cx="120" cy="110" r="2" fill="white" opacity="0.6"/></svg>');
+      background-repeat: repeat;
     }
-    #header-timer {
-      position: absolute;
-      right: 56px; top: 0px;
-      font-size: 0.99rem;
-      color: var(--session-timer);
-      font-family: inherit;
-      font-weight: 400;
-      letter-spacing: 0.09em;
-      width: 190px;
-      text-align: right;
-      text-transform: uppercase;
-      user-select: none;
-    }
-    #question {
-      margin-top: 108px;
+    /* Header */
+    .header {
       width: 100vw;
       text-align: center;
-      color: var(--question);
-      font-size: 2.16rem;
+      font-size: 1.08rem;
+      letter-spacing: 0.07em;
+      color: #8CA1C5;
+      text-transform: uppercase;
       font-family: inherit;
-      letter-spacing: 0.02em;
+      font-weight: 600;
+      margin-top: 35px;
       z-index: 2;
       position: relative;
-      text-shadow: 0 2px 12px #0006;
       user-select: none;
     }
-    #silhouette {
+    .timer {
       position: absolute;
-      left: 50%;
-      top: 51%;
-      transform: translate(-50%,-54%);
-      opacity: 0.7;
-      width: 500px;
-      max-width: 67vw;
+      top: 36px; right: 42px;
+      font-family: inherit;
+      color: #EF5350;
+      background: rgba(25,22,25,0.76);
+      padding: 2px 20px 2px 15px;
+      font-size: 1.04rem;
+      letter-spacing: 0.08em;
+      border-radius: 5px;
+      font-variant-numeric: tabular-nums;
+      width: 212px;
+      text-align: right;
+      box-sizing: border-box;
+      user-select: none;
+      z-index: 2;
+      font-weight: 500;
+      border: 1.5px solid #E35C5C44;
+    }
+    /* Question */
+    .question {
+      text-align: center;
+      font-size: 2.14rem;
+      color: #C9D8EA;
+      font-family: inherit;
+      font-weight: 700;
+      margin-top: 84px;
+      z-index: 3;
+      position: relative;
+      user-select: none;
+      line-height: 1.18;
+      letter-spacing: 0.03em;
+      text-shadow: 0 2px 16px #06090c9a;
+    }
+    /* Silhouette */
+    .silhouette {
+      position: absolute;
+      left: 50%; top: 51%;
+      transform: translate(-50%,-51%);
       z-index: 1;
+      opacity: 0.7;
+      width: 500px; max-width: 62vw;
       pointer-events: none;
       user-select: none;
-      filter: blur(0.2px) brightness(1.04);
-      transition: filter 0.24s;
+      transition: filter .7s;
     }
-    #crowd {
-      position: absolute;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 9;
-    }
+    /* Crowd words */
     .crowd-word {
       position: absolute;
+      color: #e3e3e380;
       font-family: inherit;
-      opacity: 0.19;
-      color: var(--crowd);
-      font-size: 1.37rem;
-      filter: blur(1.1px);
-      pointer-events: none;
-      user-select: none;
-      transition: opacity 0.14s, filter 0.11s;
-      text-shadow: 0 2px 14px #0008;
-      white-space: pre;
-      will-change: opacity, filter;
-    }
-    .crowd-red {
-      color: var(--crowd-red);
-      opacity: 0.17;
       font-weight: 600;
-    }
-    /* Main input area */
-    #inputbox-container {
-      position: relative;
-      width: 680px;
-      max-width: 92vw;
-      margin: 52px auto 0;
-      z-index: 12;
-    }
-    #ghost-text {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      font-family: inherit;
-      font-size: 1.15rem;
-      line-height: 1.6;
-      color: var(--input-placeholder);
-      white-space: pre-line;
+      opacity: 0.37;
       pointer-events: none;
-      padding: 18px 22px 18px 18px;
-      opacity: 0.88;
-      letter-spacing: 0.03em;
-      transition: opacity 0.3s;
-      background: none;
-      z-index: 2;
+      z-index: 4;
+      user-select: none;
+      text-shadow: 0 0 22px #07070c55, 0 0 4px #111;
+      filter: blur(1.2px);
+      animation: crowdFlicker 2s infinite alternate;
     }
-    #main-input {
-      width: 100%;
-      min-height: 74px;
-      background: var(--input-bg);
-      border: 1.2px solid var(--input-border);
-      border-radius: 9px;
-      font-family: inherit;
-      font-size: 1.15rem;
-      color: var(--input-text);
-      padding: 18px 22px 18px 18px;
-      box-sizing: border-box;
+    .crowd-word.red { color: #EF5350; opacity: 0.54; text-shadow: 0 0 13px #EF535080,0 0 2px #b31111cc; filter: blur(1.3px);}
+    @keyframes crowdFlicker {
+      0% { opacity: 0.12; }
+      16% { opacity: 0.32; }
+      40% { opacity: 0.37; }
+      64% { opacity: 0.16; }
+      82% { opacity: 0.4; }
+      100% { opacity: 0.08; }
+    }
+    /* Input box */
+    .input-wrap {
+      margin-top: 62px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 6;
+      position: relative;
+    }
+    .nemesis-input {
+      width: 470px; min-width: 260px;
+      min-height: 84px; max-height: 160px;
+      font-size: 1.18rem;
+      background: #141920;
+      color: #B6C5DF;
+      border: 1.5px solid #2A3340;
       outline: none;
+      padding: 17px 20px 17px 24px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 450;
+      box-shadow: 0 4px 24px #000a 0px 1px 12px #16203355;
       resize: none;
-      line-height: 1.6;
-      letter-spacing: 0.03em;
-      box-shadow: 0 4px 24px #0a0a0a36;
-      z-index: 3;
-      caret-color: var(--input-text);
-      transition: border 0.15s;
+      line-height: 1.33;
+      transition: border .2s;
+      caret-color: #EF5350;
+      overflow: auto;
     }
-    #main-input:focus {
-      border: 1.5px solid var(--session-timer);
-      background: rgba(20, 20, 21, 0.99);
+    .nemesis-input:focus {
+      border: 1.5px solid #EF5350;
+      background: #181C22;
     }
-    #submit-btn {
-      margin: 33px auto 0;
+    .ghost {
+      position: absolute;
+      left: 35px; top: 16px; right: 20px; bottom: 16px;
+      color: #6F798E;
+      opacity: 0.62;
+      font-size: 1.06rem;
+      font-family: inherit;
+      pointer-events: none;
+      white-space: pre-line;
+      user-select: none;
+      z-index: 10;
+      transition: opacity .3s;
+      line-height: 1.33;
+    }
+    /* Submit Button */
+    .nemesis-submit {
+      margin: 22px auto 0 auto;
       display: block;
       font-family: inherit;
-      font-size: 1.07rem;
+      font-size: 1.03rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: #2C1112;
+      color: #F67C7B;
+      border: 1.4px solid #F24141;
+      border-radius: 7px;
+      padding: 13px 44px 13px 44px;
+      cursor: not-allowed;
+      filter: grayscale(0.2);
+      opacity: 0.64;
+      font-weight: 650;
+      box-shadow: 0 1.5px 0 #e0343470;
+      transition: filter 0.17s, box-shadow 0.21s, background 0.17s, color 0.16s, border 0.14s;
+      outline: none;
+      user-select: none;
+    }
+    .nemesis-submit.enabled {
+      cursor: pointer;
+      filter: none;
+      opacity: 1;
+      box-shadow: 0 0 10px #f33b3b60, 0 2px 18px #330a0a33;
+      background: #3C1718;
+    }
+    .nemesis-submit.enabled:hover,
+    .nemesis-submit.enabled:focus {
+      background: #481616;
+      box-shadow: 0 0 26px #ef535088, 0 4px 22px #611a1a25;
+      border: 1.4px solid #ff4b44;
+      color: #FF8484;
+      outline: none;
+    }
+    /* Nemesis Analysis */
+    .analysis {
+      position: absolute;
+      left: 50%;
+      top: 58%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .7s;
+      width: 610px;
+      max-width: 98vw;
+    }
+    .analysis.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .scan-vuln {
+      font-size: 1.18rem;
+      color: #EF5350;
+      letter-spacing: 0.12em;
+      font-family: inherit;
+      font-weight: 600;
+      text-shadow: 0 0 16px #EF535088;
+      animation: scanPulse 1s infinite alternate;
+      margin-bottom: 28px;
+      user-select: none;
+    }
+    @keyframes scanPulse {
+      0% { opacity: 0.8; }
+      50% { opacity: 1; text-shadow: 0 0 28px #EF5350cc; }
+      100% { opacity: 0.8; }
+    }
+    .fragility-box {
+      display: inline-block;
+      border: 2.5px solid #EF5350;
+      background: #201516cc;
+      color: #EF5350;
+      padding: 15px 48px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1.55rem;
       font-weight: 600;
       letter-spacing: 0.08em;
-      color: var(--submit-red);
-      background: var(--submit-bg);
-      border: 1.3px solid var(--submit-red);
-      border-radius: 7px;
-      padding: 15px 39px;
-      cursor: not-allowed;
-      outline: none;
-      box-shadow: none;
-      transition: box-shadow 0.17s, border 0.17s, color 0.17s;
-      opacity: 0.78;
       text-transform: uppercase;
-      box-sizing: border-box;
-      user-select: none;
+      box-shadow: 0 0 38px #EF535044, 0 0 8px #1c1010;
+      margin-top: 20px;
+      opacity: 0;
+      transition: opacity .65s;
+      text-align: center;
     }
-    #submit-btn.enabled {
-      cursor: pointer;
+    .fragility-box.visible {
       opacity: 1;
-      box-shadow: none;
+      transition-delay: .7s;
     }
-    #submit-btn.enabled:hover {
-      box-shadow: var(--submit-shadow);
-      color: #fff;
-      border-color: #fff;
-      background: #150203;
-      transition: box-shadow 0.11s, border 0.13s, color 0.13s;
-    }
-    /* Nemesis analysis */
-    #nemesis-analysis {
-      display: none;
-      width: 100vw;
-      text-align: center;
-      margin-top: 60px;
-      font-family: inherit;
-      font-size: 1.33rem;
-      color: var(--nemesis-red);
-      letter-spacing: 0.07em;
-      animation: pulse-red 1.33s infinite;
-      z-index: 18;
-      position: relative;
-    }
-    @keyframes pulse-red {
-      0%,100% { opacity: 1;}
-      47% { opacity: 0.6;}
-      60% { opacity: 1;}
-    }
-    #fragility-box {
-      display: none;
-      margin: 44px auto 0;
-      text-align: center;
-    }
-    #fragility-text {
-      display: inline-block;
-      background: var(--fragility-bg);
-      border: 1.7px solid var(--fragility-red);
-      border-radius: 13px;
-      padding: 24px 66px 18px 66px;
-      font-family: inherit;
-      font-size: 1.47rem;
-      letter-spacing: 0.18em;
-      color: var(--fragility-red);
-      font-weight: 800;
-      box-shadow: 0 3px 17px #4905071a;
-      text-transform: uppercase;
-      opacity: 0.93;
-    }
-    #truth-btn {
-      display: none;
+    /* Next Truth Button */
+    .next-truth {
       position: fixed;
-      right: 48px; bottom: 46px;
+      bottom: 32px; right: 44px;
       background: none;
-      border: 1.3px solid var(--truth-blue);
-      color: var(--truth-blue);
+      color: #B5E8FF;
       font-family: inherit;
-      font-size: 1.09rem;
-      letter-spacing: 0.10em;
-      padding: 15px 36px;
-      border-radius: 9px;
-      box-shadow: 0 1.5px 12px #0ad5fc33;
+      font-size: 1.12rem;
+      letter-spacing: 0.09em;
+      border: 1.7px solid #44BEEF;
+      border-radius: 7px;
+      padding: 13px 30px 13px 30px;
+      text-transform: uppercase;
       font-weight: 600;
       cursor: pointer;
-      transition: box-shadow 0.12s, border 0.13s, color 0.13s;
-      text-transform: uppercase;
-      z-index: 30;
+      box-shadow: 0 2px 12px #0a456766;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 22;
+      transition: opacity .34s;
       user-select: none;
+      outline: none;
     }
-    #truth-btn:hover {
-      box-shadow: 0 0 19px #2f93efcc;
-      color: #fff;
-      border-color: #fff;
-      background: #05131a;
+    .next-truth.visible {
+      opacity: 1;
+      pointer-events: auto;
+      animation: icyPulse 1.4s infinite alternate;
     }
-    /* Screenshot overlay */
-    #screenshot-blur {
+    @keyframes icyPulse {
+      0% { box-shadow: 0 0 9px #00caf088, 0 2px 14px #172c3a22;}
+      100% { box-shadow: 0 0 23px #20a9e088, 0 3px 20px #21465942;}
+    }
+    .next-truth:hover, .next-truth:focus {
+      background: #183042;
+      color: #C8F0FF;
+      border: 1.7px solid #00C9FE;
+      box-shadow: 0 0 38px #00caf099, 0 4px 32px #21465955;
+      outline: none;
+    }
+    /* Mobile block overlay */
+    #mobile-block {
       display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.56);
-      backdrop-filter: blur(7px);
-      z-index: 1002;
-      pointer-events: all;
-      justify-content: center; align-items: center;
-      text-align: center;
-      font-family: inherit;
-      font-size: 1.3rem;
-      color: #ffe7e7;
-      font-weight: 600;
-      letter-spacing: 0.13em;
-      transition: opacity 0.24s;
-    }
-    /* Mobile overlay */
-    #mobile-overlay {
-      display: none;
-      position: fixed;
+      position: fixed; z-index: 9999;
       inset: 0;
-      z-index: 1005;
-      background: #000;
+      background: #111;
       color: #fff;
+      font-size: 1.54rem;
       font-family: inherit;
-      font-size: 1.29rem;
-      text-align: center;
       align-items: center;
       justify-content: center;
-      padding-top: 24vh;
-      letter-spacing: 0.09em;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.03em;
     }
-    @media (max-width: 890px), (max-height: 580px), (max-aspect-ratio: 4/5) {
-      #mobile-overlay {display: flex;}
-      #header, #question, #inputbox-container, #submit-btn, #silhouette, #nemesis-analysis, #fragility-box, #truth-btn, #crowd {display: none !important;}
+    #mobile-block.visible { display: flex; }
+    /* Screenshot Blur Overlay */
+    .blur-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      background: rgba(17,17,17,0.78);
+      backdrop-filter: blur(9px);
+      display: none;
+      pointer-events: none;
+      animation: blurFlash 2s forwards;
+    }
+    @keyframes blurFlash {
+      0% { opacity: 0; }
+      8% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div id="header">
-    <div id="header-title">INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</div>
-    <div id="header-timer">
-      SESSION TIMER <span id="timer">00:00</span> MIN
-    </div>
+  <!-- HEADER -->
+  <div class="header">
+    INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING
   </div>
-  <div id="question">
+  <div class="timer" id="timer">
+    SESSION TIMER 00:00 MIN
+  </div>
+  <!-- MAIN QUESTION -->
+  <div class="question">
     What's the worst thing someone could say about you publicly?
   </div>
-  <img id="silhouette" src="silhouette.png" alt="Silhouette">
-  <div id="crowd"></div>
-  <div id="inputbox-container">
-    <textarea id="main-input" rows="3" maxlength="360" autocomplete="off" autocorrect="off" spellcheck="false"></textarea>
-    <div id="ghost-text"></div>
+  <!-- SILHOUETTE -->
+  <img src="silhouette.png" class="silhouette" alt="Silhouette" draggable="false" />
+
+  <!-- CROWD WORDS -->
+  <span class="crowd-word" id="cw1" style="left:21vw;top:39vh;font-size:2.22rem;">fraud</span>
+  <span class="crowd-word red" id="cw2" style="left:52vw;top:27vh;font-size:2.05rem;filter:blur(2.6px);">overrated</span>
+  <span class="crowd-word" id="cw3" style="left:34vw;top:51vh;font-size:1.29rem;filter:blur(3.5px);">faker</span>
+  <span class="crowd-word" id="cw4" style="left:68vw;top:46vh;font-size:1.84rem;filter:blur(1.7px);">faker</span>
+  <span class="crowd-word" id="cw5" style="left:62vw;top:57vh;font-size:1.05rem;">fraud</span>
+  <span class="crowd-word" id="cw6" style="left:24vw;top:59vh;font-size:1.18rem;filter:blur(2px);">faker</span>
+  <span class="crowd-word" id="cw7" style="left:45vw;top:34vh;font-size:1.07rem;">faker</span>
+
+  <!-- INPUT BOX (with ghost text) -->
+  <div class="input-wrap">
+    <textarea class="nemesis-input" id="nemesis-input" rows="3" spellcheck="false" autocomplete="off"></textarea>
+    <div class="ghost" id="ghost-text">
+      He's just a brand, not a builder.<br>Everything he made was hype – no substance
+    </div>
   </div>
-  <button id="submit-btn" disabled>SUBMIT TO ADVERSARY</button>
-  <div id="nemesis-analysis">Nemesis Analysis: Scanning Vulnerabilities...</div>
-  <div id="fragility-box"><span id="fragility-text">REPETATION FRAGILITY</span></div>
-  <button id="truth-btn">FACE NEXT TRUTH</button>
-  <div id="screenshot-blur"></div>
-  <div id="mobile-overlay">Nemesis Protocol only runs on tablets and computers.</div>
-  <script>
-    // Crowd words, positions, and animation
-    const crowdWords = [
-      {text:'fraud', x:16, y:220, size:1.28, blur:1.7, op:0.18, dur:2400, delay:150},
-      {text:'overrated', x:670, y:170, size:1.24, blur:1.3, op:0.16, red:true, dur:2250, delay:980},
-      {text:'faker', x:470, y:118, size:1.19, blur:1.8, op:0.17, dur:1700, delay:210},
-      {text:'faker', x:210, y:342, size:1.22, blur:1.1, op:0.17, dur:2770, delay:0},
-      {text:'faker', x:800, y:310, size:1.26, blur:1.1, op:0.19, dur:2120, delay:510},
-      {text:'faker', x:660, y:360, size:1.11, blur:2.0, op:0.16, dur:1590, delay:1440},
-      {text:'fraud', x:420, y:430, size:1.19, blur:1.55, op:0.16, dur:2770, delay:130},
-    ];
-    const crowdContainer = document.getElementById('crowd');
-    function createCrowd() {
-      crowdWords.forEach((w,i) => {
-        let el = document.createElement('div');
-        el.className = 'crowd-word'+(w.red?' crowd-red':'');
-        el.textContent = w.text;
-        el.style.left = w.x+'px';
-        el.style.top = w.y+'px';
-        el.style.fontSize = (w.size*1.28)+'rem';
-        el.style.opacity = w.op;
-        el.style.filter = `blur(${w.blur}px)`;
-        el.dataset.idx = i;
-        crowdContainer.appendChild(el);
-        animateCrowdWord(el, w);
-      });
-    }
-    function animateCrowdWord(el, w) {
-      let fade = () => {
-        let show = Math.random()>0.32;
-        el.style.opacity = show ? w.op : 0;
-        el.style.filter = show
-          ? `blur(${w.blur}px)`
-          : `blur(${w.blur+2.5}px)`;
-        let next = (show ? w.dur : w.dur*0.7)+Math.random()*600;
-        setTimeout(fade, next);
-      };
-      setTimeout(fade, w.delay+Math.random()*450);
-    }
-    // Ghost typing logic
-    const ghostTextDefault =
-      "He's just a brand, not a builder.\nEverything he made was hype – no substance";
-    const ghostTextDiv = document.getElementById('ghost-text');
-    const mainInput = document.getElementById('main-input');
-    function showGhostText() {
-      ghostTextDiv.style.opacity = '1';
-      ghostTextDiv.innerText = '';
-      let txt = ghostTextDefault, i=0;
-      let interval = setInterval(()=>{
-        if(mainInput.value.length>0) { ghostTextDiv.innerText=''; clearInterval(interval); return;}
-        ghostTextDiv.innerText = txt.slice(0, i+1);
-        i++;
-        if(i>=txt.length) clearInterval(interval);
-      }, 16+Math.random()*22);
-    }
-    function hideGhostText() {
-      ghostTextDiv.innerText='';
-      ghostTextDiv.style.opacity='0';
-    }
-    // On page load: show ghost
-    showGhostText();
-    // Focus/blur logic
-    let ghostTimer = null;
-    mainInput.addEventListener('focus', hideGhostText);
-    mainInput.addEventListener('input', function() {
-      if(this.value.length === 0) {
-        if(ghostTimer) clearTimeout(ghostTimer);
-        ghostTimer = setTimeout(showGhostText, 2000);
-      } else {
-        hideGhostText();
-        if(ghostTimer) clearTimeout(ghostTimer);
-      }
-      checkSubmitState();
-    });
-    mainInput.addEventListener('blur', function(){
-      if(mainInput.value.length === 0) {
-        ghostTimer = setTimeout(showGhostText, 1800);
-      }
-    });
-    // Allow only 4 lines max
-    mainInput.addEventListener('input', function(e){
-      let lines = this.value.split('\n').length;
-      if(lines > 4) {
-        let parts = this.value.split('\n').slice(0,4);
-        this.value = parts.join('\n');
-      }
-    });
-    // Enable submit button after 2+ lines
-    const submitBtn = document.getElementById('submit-btn');
-    function checkSubmitState() {
-      let lines = mainInput.value.split('\n');
-      if(lines.length>=2 && lines[0].trim().length>=4 && lines[1].trim().length>=2) {
-        submitBtn.disabled = false;
-        submitBtn.classList.add('enabled');
-      } else {
-        submitBtn.disabled = true;
-        submitBtn.classList.remove('enabled');
-      }
-    }
-    // Prevent context menu, clipboard, drag, etc
-    document.addEventListener('contextmenu', e=>e.preventDefault());
-    document.addEventListener('cut', e=>e.preventDefault());
-    document.addEventListener('copy', e=>e.preventDefault());
-    document.addEventListener('paste', e=>e.preventDefault());
-    document.addEventListener('keydown', function(e){
-      if((e.ctrlKey||e.metaKey) && (e.key==='c'||e.key==='v'||e.key==='x'||e.key==='a')) e.preventDefault();
-      // Block F5/refresh/back/forward
-      if(e.key==='F5'||e.key==='r'&&e.ctrlKey) {e.preventDefault();window.location.reload();}
-      // Screenshot: PrintScreen key
-      if(e.key==='PrintScreen'||e.key==='PrintScrn') {
-        blurScreen();
-      }
-    });
-    // Drag/Drop
-    document.addEventListener('dragstart',e=>e.preventDefault());
-    document.addEventListener('drop',e=>e.preventDefault());
-    // Screenshot blur
-    let screenshotDiv = document.getElementById('screenshot-blur');
-    function blurScreen() {
-      screenshotDiv.style.display = 'flex';
-      screenshotDiv.innerText = "SECURITY ALERT: SCREEN CAPTURE BLOCKED";
-      setTimeout(()=>{ screenshotDiv.style.display = 'none';}, 2000);
-    }
-    // Navigation block
-    let navWarn = () => "Are you sure? Your session will be lost.";
-    window.addEventListener('beforeunload', function(e) {
-      e.preventDefault();
-      e.returnValue = navWarn();
-      return navWarn();
-    });
-    // Timer logic
-    let timerEl = document.getElementById('timer');
-    let timeSecs = 0, timerPaused=false, timerInt=null;
-    function updateTimer() {
-      let mm = Math.floor(timeSecs/60).toString().padStart(2,'0');
-      let ss = (timeSecs%60).toString().padStart(2,'0');
-      timerEl.innerText = `${mm}:${ss}`;
-    }
-    function startTimer() {
-      timerPaused=false;
-      if(timerInt) clearInterval(timerInt);
-      timerInt = setInterval(()=>{
-        if(!timerPaused) {
-          timeSecs++;
-          updateTimer();
-          if(timeSecs>=420) clearInterval(timerInt);
-        }
-      },1000);
-    }
-    function pauseTimer() {timerPaused=true;}
-    function resumeTimer() {timerPaused=false;}
-    startTimer();
-    // Submit/analysis
-    let nemesis = document.getElementById('nemesis-analysis');
-    let fragility = document.getElementById('fragility-box');
-    let truthBtn = document.getElementById('truth-btn');
-    submitBtn.addEventListener('click', function(){
-      if(this.disabled) return;
-      pauseTimer();
-      mainInput.style.transition = "opacity 0.45s";
-      submitBtn.style.transition = "opacity 0.3s";
-      mainInput.style.opacity = 0;
-      submitBtn.style.opacity = 0;
-      setTimeout(()=>{
-        mainInput.style.display='none';
-        submitBtn.style.display='none';
-        nemesis.style.display='block';
-      },410);
-      let delay = Math.floor(4000 + Math.random()*8000);
-      setTimeout(()=>{
-        nemesis.style.display='none';
-        fragility.style.display='block';
-        truthBtn.style.display='block';
-      },delay+900);
-    });
-    // Next truth button
-    truthBtn.addEventListener('click', function(){
-      window.location.href='page3.html';
-    });
-    // Prevent session persistence
-    if(window.localStorage) localStorage.clear();
-    if(window.sessionStorage) sessionStorage.clear();
-    // Crowd words
-    createCrowd();
-    // Mobile overlay logic handled in CSS
-    // On resize, for paranoia, force overlays
-    function checkMobile() {
-      let w=window.innerWidth, h=window.innerHeight;
-      if(w<900||h<580) document.getElementById('mobile-overlay').style.display='flex';
-      else document.getElementById('mobile-overlay').style.display='none';
-    }
-    window.addEventListener('resize', checkMobile);
-    checkMobile();
-    // Focus input on load
-    setTimeout(()=>{mainInput.focus();},700);
-  </script>
+  <!-- SUBMIT BUTTON -->
+  <button class="nemesis-submit" id="nemesis-submit" disabled>SUBMIT TO ADVERSARY</button>
+
+  <!-- NEMESIS ANALYSIS (hidden by default) -->
+  <div class="analysis" id="analysis">
+    <div class="scan-vuln" id="scan-vuln" style="display:none;">
+      Nemesis Analysis: Scanning Vulnerabilities...
+    </div>
+    <div class="fragility-box" id="fragility-box">
+      REPUTATION FRAGILITY
+    </div>
+  </div>
+
+  <!-- FACE NEXT TRUTH BUTTON -->
+  <button class="next-truth" id="next-truth" style="display:none;">FACE NEXT TRUTH</button>
+
+  <!-- MOBILE OVERLAY -->
+  <div id="mobile-block">
+    Nemesis Protocol only runs on tablets and computers.
+  </div>
+
+  <!-- Screenshot Blur Overlay -->
+  <div class="blur-overlay" id="blur-overlay"></div>
+
+<script>
+/* --- UI Sizing/Blocking for Mobile --- */
+function checkMobileBlock() {
+  const w = window.innerWidth, h = window.innerHeight;
+  if (w < 760 || h < 500) {
+    document.getElementById('mobile-block').classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.getElementById('mobile-block').classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+}
+window.addEventListener('resize', checkMobileBlock);
+checkMobileBlock();
+
+/* --- Crowd Word Random Flicker & Flicker Delay --- */
+function randomizeCrowdWordFlicker() {
+  for (let i = 1; i <= 7; ++i) {
+    const word = document.getElementById('cw'+i);
+    word.style.animationDuration = (1.5 + Math.random()*2.8) + 's';
+    word.style.animationDelay = (Math.random()*3.7) + 's';
+    word.style.opacity = (0.25 + Math.random()*0.2);
+    word.style.filter = word.style.filter || '';
+  }
+}
+randomizeCrowdWordFlicker();
+
+/* --- Ghost Typing Logic --- */
+const input = document.getElementById('nemesis-input');
+const ghost = document.getElementById('ghost-text');
+let ghostTimeout = null;
+const ghostText = "He's just a brand, not a builder.\nEverything he made was hype – no substance";
+function showGhostText() {
+  ghost.innerHTML = ghostText.replace(/\n/g, '<br>');
+  ghost.style.opacity = '1';
+}
+function hideGhostText() {
+  ghost.style.opacity = '0';
+}
+input.addEventListener('focus', e => { hideGhostText(); });
+input.addEventListener('click', e => { hideGhostText(); });
+input.addEventListener('input', e => {
+  hideGhostText();
+  if (ghostTimeout) clearTimeout(ghostTimeout);
+  if (!input.value.trim()) {
+    ghostTimeout = setTimeout(() => {
+      if (!input.value.trim()) showGhostText();
+    }, 2000);
+  }
+  checkInputValidity();
+});
+input.addEventListener('blur', e => {
+  if (!input.value.trim()) showGhostText();
+});
+
+/* --- Input Validity for Button --- */
+const submitBtn = document.getElementById('nemesis-submit');
+function checkInputValidity() {
+  // 2+ non-empty lines
+  const lines = input.value.split('\n').filter(line => line.trim().length > 0);
+  if (lines.length >= 2) {
+    submitBtn.classList.add('enabled');
+    submitBtn.disabled = false;
+    submitBtn.style.cursor = 'pointer';
+  } else {
+    submitBtn.classList.remove('enabled');
+    submitBtn.disabled = true;
+    submitBtn.style.cursor = 'not-allowed';
+  }
+}
+checkInputValidity();
+
+/* --- Session Timer --- */
+let timerElem = document.getElementById('timer');
+let t_seconds = 0, timerRunning = true, analysisMode = false;
+function updateTimer() {
+  if (timerRunning && !analysisMode) {
+    t_seconds++;
+    if (t_seconds > 420) t_seconds = 420; // never show >07:00
+  }
+  let mins = Math.floor(t_seconds/60);
+  let secs = t_seconds%60;
+  timerElem.textContent = `SESSION TIMER ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')} MIN`;
+}
+setInterval(updateTimer, 1000);
+
+/* --- Submit Button Click / Analysis Animation --- */
+const analysis = document.getElementById('analysis');
+const scanVuln = document.getElementById('scan-vuln');
+const fragility = document.getElementById('fragility-box');
+const nextTruth = document.getElementById('next-truth');
+submitBtn.addEventListener('click', async e => {
+  if (!submitBtn.classList.contains('enabled')) return;
+  analysisMode = true;
+  input.disabled = true;
+  submitBtn.disabled = true;
+  submitBtn.style.opacity = '0'; // fade out
+  input.style.opacity = '0';
+  setTimeout(()=>{ input.style.display='none'; submitBtn.style.display='none'; }, 350);
+  // After a random delay, show scanning...
+  const scanDelay = 4000 + Math.random() * 8000;
+  setTimeout(() => {
+    analysis.classList.add('visible');
+    scanVuln.style.display = '';
+    fragility.classList.remove('visible');
+    // After 1s, show fragility
+    setTimeout(() => {
+      scanVuln.style.display = 'none';
+      fragility.classList.add('visible');
+      // show next-truth button after .7s
+      setTimeout(() => {
+        nextTruth.style.display = '';
+        nextTruth.classList.add('visible');
+        analysisMode = false;
+      }, 700);
+    }, 1000);
+  }, scanDelay);
+});
+
+/* --- Next Truth Button Logic --- */
+nextTruth.addEventListener('click', e => {
+  window.location.href = 'page3.html';
+});
+
+/* --- Clipboard/Right-click/Screenshot/Session Restrictions --- */
+function blockEvent(e) { e.preventDefault(); return false; }
+['copy','cut','paste','contextmenu','dragstart','drop'].forEach(ev => {
+  document.addEventListener(ev, blockEvent);
+});
+window.addEventListener('keydown', e => {
+  // Block PrintScreen
+  if (e.key === "PrintScreen") {
+    const blur = document.getElementById('blur-overlay');
+    blur.style.display = 'block';
+    setTimeout(() => { blur.style.display = 'none'; }, 2000);
+    e.preventDefault();
+    return false;
+  }
+  // Block Ctrl+C/V/X
+  if ((e.ctrlKey || e.metaKey) && ['c','v','x','C','V','X'].includes(e.key)) blockEvent(e);
+  // Block F5, Ctrl+R, Cmd+R, Backspace (if not typing), Alt+Left/Right
+  if ((e.key === 'F5') || ((e.ctrlKey || e.metaKey) && (e.key.toLowerCase() === 'r'))) {
+    alert("You cannot reload or refresh during this protocol.");
+    e.preventDefault(); return false;
+  }
+  if ((e.key === 'Backspace' && document.activeElement !== input) || (e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight'))) {
+    alert("Navigation is blocked during this protocol.");
+    e.preventDefault(); return false;
+  }
+  // Block Alt+Left/Right navigation
+  if (e.altKey && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+    alert("Navigation is blocked during this protocol."); e.preventDefault();
+  }
+});
+window.addEventListener('beforeunload', function (e) {
+  e.preventDefault();
+  e.returnValue = '';
+});
+window.addEventListener('popstate', function(e){
+  alert('Navigation is blocked during this protocol.');
+  history.pushState(null, null, location.href);
+});
+history.pushState(null, null, location.href); // lock in
+
+// No session persistence
+if (window.localStorage) localStorage.clear();
+if (window.sessionStorage) sessionStorage.clear();
+
+/* --- On Page Load: Place ghost text and check validity --- */
+window.onload = () => {
+  showGhostText();
+  checkInputValidity();
+  setTimeout(() => input.blur(), 200);
+};
+</script>
 </body>
 </html>
