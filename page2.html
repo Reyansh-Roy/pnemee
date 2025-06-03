@@ -2,607 +2,708 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Project Nemesis — Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=1024">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>Project Nemesis: Initiation Protocol — Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=1024, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="silhouette.png" />
   <style>
-    /* General Layout */
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
     html, body {
-      background: #090a0e;
-      margin: 0; padding: 0; width: 100vw; height: 100vh;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0e1012 0%, #16181a 100%);
+      color: #e9f4ff;
       font-family: 'JetBrains Mono', monospace;
-      color: #eee;
       overflow: hidden;
-      position: relative;
+      user-select: none;
     }
+
     body.blocked {
-      filter: blur(10px) grayscale(1);
       pointer-events: none;
-      user-select: none;
-    }
-    #mobile-warning {
-      display: none;
-      position: fixed; z-index: 99999;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(10,10,16,0.96);
-      color: #ff4e4e;
-      font-size: 2.2vw;
-      font-weight: bold;
-      justify-content: center; align-items: center;
-      text-align: center;
-      letter-spacing: 1px;
-      backdrop-filter: blur(4px);
+      filter: grayscale(1) blur(1.5px) brightness(0.7);
     }
 
-    /* Glitch/Static BG (simple CSS + SVG overlay) */
-    .bg-static {
+    /* Glitch/Static overlay effect */
+    #glitch {
       pointer-events: none;
+      position: fixed;
+      z-index: 2;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      opacity: 0.08;
+      background: url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="200" height="200" fill="black"/><g><rect x="0" y="0" width="40" height="10" fill="white" opacity="0.03"/><rect x="60" y="40" width="60" height="12" fill="white" opacity="0.06"/><rect x="120" y="100" width="80" height="7" fill="white" opacity="0.06"/><rect x="10" y="120" width="180" height="4" fill="white" opacity="0.07"/><rect x="30" y="170" width="40" height="20" fill="white" opacity="0.03"/></g></svg>');
+      animation: staticShift 1.5s infinite linear;
+      background-size: 200px 200px;
+    }
+    @keyframes staticShift {
+      0% { background-position: 0 0;}
+      25% { background-position: 50px 100px;}
+      50% { background-position: 120px 60px;}
+      75% { background-position: 80px 180px;}
+      100% { background-position: 0 0;}
+    }
+
+    /* Ghostly corner glyphs */
+    .glyph {
       position: absolute;
-      width: 100vw;
-      height: 100vh;
-      left: 0; top: 0;
-      z-index: 1;
-      opacity: 0.18;
-      background: repeating-linear-gradient(
-        115deg, #1d2026 0px, #1d2026 3px, #111214 4px, #111214 7px
-      );
-      mix-blend-mode: lighten;
-      animation: flicker 2s infinite linear;
-    }
-    @keyframes flicker {
-      0%,100% { opacity:0.19; }
-      25% { opacity:0.13; }
-      50% { opacity:0.22; }
-      75% { opacity:0.17; }
-    }
-    /* Matrix data rain in corners */
-    .matrix-corner {
-      position: absolute; z-index: 2; font-size: 1.1vw;
-      color: #18ffe3; opacity: 0.15;
+      font-size: 3.2em;
+      opacity: 0.06;
       pointer-events: none;
-      white-space: pre;
-      font-family: 'Fira Mono', monospace;
-      user-select: none;
-      line-height: 1.1;
+      animation: drift 13s infinite alternate ease-in-out;
     }
-    .matrix-corner.top-left { left:1vw; top:1vw; }
-    .matrix-corner.bottom-right { right:1vw; bottom:1vw; text-align:right; }
-    /* Main Container */
-    .main-wrap {
-      position: relative;
-      z-index: 10;
-      width: 100vw; height: 100vh;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
+    .glyph.g1 { left: 3vw; top: 2vh; transform: rotate(-15deg);}
+    .glyph.g2 { right: 5vw; top: 5vh; animation-delay: 2s;}
+    .glyph.g3 { left: 2vw; bottom: 3vh; animation-delay: 6s;}
+    .glyph.g4 { right: 4vw; bottom: 1vh; transform: rotate(12deg); animation-delay: 11s;}
+    @keyframes drift {
+      0% { filter: blur(0.5px);}
+      100% { transform: translateY(-18px) scale(1.02) rotate(4deg);}
     }
-    /* Timer */
-    .nemesis-timer {
-      position: absolute; top: 2vw; right: 3vw;
-      background: rgba(25,28,40,0.93);
-      color: #18ffe3;
-      font-size: 1.45vw;
-      letter-spacing: 1px;
-      padding: 0.7vw 2vw;
-      border-radius: 1vw;
-      box-shadow: 0 0 30px 4px #18ffe388;
-      font-family: 'JetBrains Mono', monospace;
-      z-index: 25;
-      border: 2px solid #00ffeeb0;
-      text-shadow: 0 0 7px #00ffee, 0 0 1px #fff;
-      user-select: none;
-    }
-    .timer-paused { opacity:0.7; filter: grayscale(0.8); }
-    /* Centered Silhouette Visual */
-    .silhouette-box {
-      position: relative;
-      display: flex; flex-direction: column; align-items: center;
-      z-index: 10;
-      margin-bottom: 2.2vw;
-    }
-    .silhouette-img {
-      width: 330px; height: 330px;
-      box-shadow: 0 0 60px 20px #111a2f, 0 0 160px 0 #0008;
-      border-radius: 50%;
-      filter: drop-shadow(0 0 24px #18ffe3) drop-shadow(0 0 32px #2e406f);
-      background: rgba(0,0,0,0.8);
-      position: relative;
-      z-index: 4;
-      animation: glowPulse 2.6s infinite alternate;
-    }
-    @keyframes glowPulse {
-      from { box-shadow: 0 0 60px 20px #111a2f, 0 0 160px 0 #0008; }
-      to   { box-shadow: 0 0 100px 44px #18ffe3aa, 0 0 160px 0 #022c55; }
-    }
-    .speech-bubbles {
+
+    /* Main layout */
+    .main-container {
       position: absolute;
-      width: 370px; height: 330px; left: 50%; top: 0;
-      pointer-events: none; z-index: 9;
-      transform: translateX(-50%);
-    }
-    .bubble {
-      position: absolute;
-      background: rgba(32,36,52,0.95);
-      color: #f3f3fa;
-      border: 1.5px solid #fff4;
-      border-radius: 14px 44px 16px 30px;
-      font-size: 1vw;
-      padding: 7px 16px;
-      opacity: 0.68;
-      filter: blur(0.1px) drop-shadow(0 1.5px 6px #0004);
-      animation: bubbleFlicker 5s infinite alternate;
-      user-select: none;
-      pointer-events: none;
-    }
-    /* Unique bubble positions */
-    .bubble1 { left: 60px; top: 12px; animation-delay: 0s; }
-    .bubble2 { right: 10px; top: 48px; animation-delay: 0.8s;}
-    .bubble3 { left: 18px; bottom: 50px; animation-delay: 2.1s;}
-    .bubble4 { right: 38px; bottom: 28px; animation-delay: 1.6s;}
-    .bubble5 { left: 120px; top: 250px; animation-delay: 1.3s;}
-    @keyframes bubbleFlicker {
-      0%, 100% { opacity: 0.57; filter: blur(0.1px);}
-      15% { opacity: 0.91; filter: blur(0px);}
-      50% { opacity: 0.72; }
-      78% { opacity: 0.48; }
-    }
-
-    /* Header/Prompt */
-    .nemesis-header {
-      font-size: 1.6vw;
-      font-weight: 700;
-      background: linear-gradient(90deg, #ff2566, #18ffe3 80%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 2vw;
-      letter-spacing: 0.5px;
-      text-align: center;
-      text-shadow: 0 0 16px #0ff5, 0 0 6px #ff1b;
-      filter: drop-shadow(0 2px 8px #ff006633);
-      z-index: 20;
-      animation: headerGlitch 2.7s infinite alternate;
-    }
-    @keyframes headerGlitch {
-      0% { text-shadow: 0 0 18px #0ff8, 0 0 6px #ff1b;}
-      10% { text-shadow: 2px -2px 16px #18ffe3bb, -2px 2px 10px #ff006699;}
-      12% { text-shadow: 0 0 16px #0ff8, 0 0 8px #fff;}
-      70% { text-shadow: 0 1px 16px #0ff5, 0 0 10px #ff1b;}
-      100% { text-shadow: 0 0 20px #ff006699, 0 0 10px #fff;}
-    }
-
-    /* Input Box */
-    .nemesis-input-wrap {
-      width: 460px; max-width: 97vw;
-      margin: 0 auto 2vw auto;
-      position: relative;
-      z-index: 30;
-      display: flex; flex-direction: column; align-items: center;
-    }
-    .nemesis-input {
-      width: 100%; min-height: 94px;
-      background: #171a26;
-      border: 2.2px solid #18ffe3;
-      border-radius: 15px;
-      padding: 1.1vw 1vw;
-      color: #eee;
-      font-size: 1.17vw;
-      font-family: 'JetBrains Mono', monospace;
-      box-shadow: 0 0 18px #18ffe333, 0 0 6px #ff006644;
-      resize: none; outline: none;
-      transition: border-color 0.23s, box-shadow 0.23s;
-      caret-color: #ff2566;
-      line-height: 1.45;
-      letter-spacing: 0.2px;
-      animation: inputFlicker 3.7s infinite alternate;
-      z-index: 30;
-    }
-    .nemesis-input:focus {
-      border-color: #ff2566;
-      box-shadow: 0 0 36px #ff2566aa, 0 0 8px #18ffe377;
-      background: #181926;
-      animation: none;
-    }
-    @keyframes inputFlicker {
-      0%,100% { box-shadow: 0 0 13px #18ffe344, 0 0 3px #ff006622;}
-      50% { box-shadow: 0 0 19px #ff006622, 0 0 8px #18ffe355;}
-    }
-    .ghost-text {
-      position: absolute; left: 1.7vw; top: 1.3vw; font-size: 1.17vw;
-      color: #bbbbcc; opacity: 0.55;
-      pointer-events: none;
-      user-select: none;
-      z-index: 100;
-      animation: ghostGlitch 2.4s infinite alternate;
-    }
-    @keyframes ghostGlitch {
-      0% { opacity: 0.45;}
-      10% { opacity: 0.63;}
-      25% { opacity: 0.45;}
-      100% { opacity: 0.7;}
-    }
-    .input-error {
-      color: #ff2566;
-      margin: 5px 0 0 6px;
-      font-size: 1.02vw;
-      text-shadow: 0 0 4px #111,0 0 6px #ff1b;
-      letter-spacing: 0.3px;
-    }
-
-    /* Submit Button */
-    .nemesis-submit {
-      width: 70%;
-      margin: 2vw auto 0 auto; padding: 1vw 0;
-      background: linear-gradient(90deg,#181b25 60%,#ff2566 100%);
-      color: #fff;
-      font-size: 1.15vw;
-      font-family: 'JetBrains Mono', monospace;
-      border: none;
-      border-radius: 13px;
-      box-shadow: 0 0 12px #ff256677,0 0 6px #18ffe344;
-      letter-spacing: 0.4px;
-      font-weight: 700;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      z-index: 100;
-      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
-      animation: btnPulse 2.4s infinite alternate;
-      outline: none;
-      text-shadow: 0 1px 10px #18ffe377;
-    }
-    .nemesis-submit:disabled {
-      background: #202030;
-      color: #aaa;
-      filter: grayscale(1) brightness(0.7);
-      cursor: not-allowed;
-      box-shadow: none;
-      animation: none;
-    }
-    .nemesis-submit:not(:disabled):hover {
-      background: linear-gradient(90deg,#181b25 20%,#ff2566 90%);
-      color: #fff;
-      box-shadow: 0 0 30px #ff2566cc,0 0 14px #18ffe399;
-      animation: none;
-    }
-    @keyframes btnPulse {
-      from { box-shadow: 0 0 12px #ff256655,0 0 4px #18ffe355;}
-      to   { box-shadow: 0 0 28px #ff256688,0 0 16px #18ffe366;}
-    }
-
-    /* AI Processing State */
-    .ai-processing {
-      width: 420px; max-width:95vw;
-      margin: 3vw auto 0 auto;
-      background: #151823bb;
-      color: #18ffe3;
-      border: 1.5px solid #18ffe3;
-      border-radius: 18px;
-      box-shadow: 0 0 18px #18ffe355;
-      font-size: 1.2vw;
-      text-align: center;
-      padding: 2vw 1vw 2vw 1vw;
-      animation: aiScanGlow 1.1s infinite alternate;
-      position: relative; z-index: 300;
-    }
-    @keyframes aiScanGlow {
-      0%   { box-shadow: 0 0 12px #18ffe355; border-color: #18ffe3;}
-      100% { box-shadow: 0 0 38px #ff256633; border-color: #ff2566;}
-    }
-    /* 3D neural scan (fake, animated) */
-    .ai-scan {
-      width: 54px; height: 54px; margin: 0 auto 1vw auto;
-      border-radius: 50%; background: #18ffe333;
-      border: 4px dashed #ff2566;
-      animation: spin 1.6s linear infinite;
-      box-shadow: 0 0 18px #ff2566cc, 0 0 2px #18ffe388;
-      position: relative;
-    }
-    .ai-scan::before {
-      content: ''; display: block;
-      position: absolute; left: 10px; top: 10px;
-      width: 30px; height: 30px;
-      border-radius: 50%; border: 2.5px solid #18ffe3bb;
-      border-top-color: transparent;
-      animation: spin 1s linear reverse infinite;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       z-index: 3;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .continue-btn {
-      margin: 2vw auto 0 auto;
-      display: block;
-      width: 70%;
-      background: linear-gradient(90deg,#181b25 60%,#18ffe3 100%);
-      color: #111;
-      font-size: 1.13vw;
-      font-family: 'JetBrains Mono', monospace;
+
+    .nemesis-header {
+      font-size: 1.5em;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin-bottom: 36px;
+      color: #70c2ff;
       font-weight: 700;
-      border: none;
-      border-radius: 13px;
-      box-shadow: 0 0 16px #18ffe344;
-      letter-spacing: 0.35px;
-      padding: 1.1vw 0;
-      transition: background 0.2s, box-shadow 0.2s, color 0.2s;
-      cursor: pointer;
-      opacity: 0; pointer-events: none;
-      animation: none;
-      text-shadow: 0 1px 6px #fff;
+      text-shadow: 0 0 8px #00ffee88, 0 0 2px #ffffff55;
+      animation: headerGlow 2.2s infinite alternate;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
     }
-    .continue-btn.visible {
-      opacity: 1; pointer-events: auto;
-      transition: opacity 0.6s cubic-bezier(.87,-0.11,.16,1.11);
-      animation: btnPulse 2.7s infinite alternate;
+    @keyframes headerGlow {
+      0% { text-shadow: 0 0 6px #00ffee66, 0 0 2px #fff; }
+      100% { text-shadow: 0 0 18px #7dfaffee, 0 0 8px #00ffeeee; }
     }
 
-    /* Status Bar */
-    .nemesis-statusbar {
-      position: fixed; left: 0; bottom: 0; width: 100vw; z-index: 400;
-      background: linear-gradient(90deg,#111624 80%,#ff2566 110%);
-      color: #fff;
-      font-size: 1.11vw;
-      letter-spacing: 0.2px;
-      text-align: center;
-      padding: 0.7vw 0;
-      box-shadow: 0 0 18px #18ffe355 inset;
-      font-family: 'JetBrains Mono', monospace;
-      border-top: 2.5px solid #18ffe3;
+    .silhouette-box {
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .silhouette-img {
+      display: block;
+      width: 320px;
+      max-width: 58vw;
+      margin: 0 auto;
+      filter: drop-shadow(0 0 35px #89f7ff66) blur(0.5px);
+      border-radius: 16px;
+      background: linear-gradient(120deg, #21223988 0%, #232c4180 100%);
+      box-shadow: 0 0 48px 0 #6d4eff66, 0 0 24px 0 #00f0ff44;
+      z-index: 3;
+    }
+
+    /* Animated speech bubbles */
+    .bubble {
+      position: absolute;
+      color: #c5d7fa;
+      background: rgba(28,31,40,0.98);
+      border: 1.5px solid #636c7b70;
+      box-shadow: 0 1px 10px #37379944, 0 0 0px #b8f6ff33;
+      border-radius: 18px 18px 18px 5px;
+      padding: 8px 18px;
+      font-size: 0.98em;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.7s, transform 0.5s;
+      z-index: 4;
+      filter: blur(0.3px);
+      font-family: inherit;
+      animation: bubbleFade 7s linear infinite;
+    }
+    @keyframes bubbleFade {
+      0%   { opacity: 0; }
+      5%   { opacity: 0.8; }
+      10%  { opacity: 1; }
+      80%  { opacity: 1; }
+      95%  { opacity: 0.8;}
+      100% { opacity: 0; }
+    }
+
+    /* Input area */
+    .nemesis-input-section {
+      width: 390px;
+      max-width: 92vw;
+      margin: 0 auto;
+      background: rgba(22,26,28,0.8);
+      border-radius: 17px;
+      box-shadow: 0 0 12px #00faff2c, 0 2px 14px #39268d2a;
+      padding: 28px 28px 22px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .ghost-textarea {
+      width: 100%;
+      height: 94px;
+      resize: none;
+      font-family: inherit;
+      font-size: 1.12em;
+      color: #bfe8f6;
+      background: linear-gradient(96deg,#16181a 90%, #27283d 100%);
+      border: 2.4px solid #394e678f;
+      border-radius: 12px;
+      padding: 13px 18px;
+      outline: none;
+      box-shadow: 0 0 10px 1.5px #00ffee29;
+      margin-bottom: 18px;
+      transition: border 0.2s, box-shadow 0.22s;
+      caret-color: #7dfaff;
+      position: relative;
+      letter-spacing: 0.03em;
+      filter: blur(0) brightness(1.04);
+    }
+    .ghost-textarea.pulse {
+      border: 2.7px solid #70c2ffcc;
+      box-shadow: 0 0 18px #00ffeec7, 0 0 3px #32b6e3a7;
+      animation: textareaPulse 0.22s;
+    }
+    @keyframes textareaPulse {
+      0% { box-shadow: 0 0 5px #00ffee99;}
+      100% { box-shadow: 0 0 18px #00ffeec7;}
+    }
+    .ghost-overlay {
+      pointer-events: none;
+      color: #6fa3d9c2;
+      position: absolute;
+      left: 32px; top: 38px;
+      z-index: 2;
+      width: 85%;
+      font-size: 1em;
+      opacity: 0.78;
+      transition: opacity 0.34s;
+      font-family: inherit;
+      letter-spacing: 0.03em;
       user-select: none;
-      opacity: 0.96;
-      text-shadow: 0 1px 8px #18ffe388;
     }
 
-    /* Cognitive Blackout Overlay */
-    #cognitive-blackout {
-      display: none;
-      position: fixed; z-index: 999999;
-      top:0; left:0; width:100vw; height:100vh;
-      background: #0a0812;
-      opacity: 0.97;
-      color: #18ffe3;
-      font-size: 2.2vw;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: bold;
-      justify-content: center; align-items: center;
+    /* Button Styles */
+    .nemesis-btn {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 1.13em;
+      padding: 12px 30px;
+      border-radius: 13px;
+      border: none;
+      color: #1d1e25;
+      background: linear-gradient(90deg,#67ffec 5%,#73a6f7 98%);
+      box-shadow: 0 0 18px #00ffee66, 0 2px 8px #011a2240;
+      margin-top: 7px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: filter 0.18s, box-shadow 0.16s, background 0.24s;
+      text-shadow: 0 1px 10px #00ffee17;
+      outline: none;
+    }
+    .nemesis-btn:active {
+      filter: brightness(1.03) saturate(1.12);
+      box-shadow: 0 0 24px #00ffeecc;
+    }
+    .nemesis-btn[disabled] {
+      background: #404353 !important;
+      color: #aaa !important;
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+
+    /* Timer top right */
+    .nemesis-timer {
+      position: fixed;
+      top: 30px;
+      right: 42px;
+      background: #16181aef;
+      border-radius: 13px;
+      padding: 10px 18px;
+      font-size: 1.13em;
+      color: #d9edff;
+      letter-spacing: 0.04em;
+      box-shadow: 0 0 12px #2ce5ff44, 0 1px 5px #3a224d2f;
+      z-index: 10;
+      font-family: inherit;
+      border: 1.4px solid #32b6e3b0;
+      font-weight: 600;
+    }
+    .nemesis-timer.paused {
+      color: #a1b6ca;
+      background: #202228f7;
+      border-color: #2d2d33b6;
+      opacity: 0.7;
+      animation: timerPulse 0.6s alternate infinite;
+    }
+    @keyframes timerPulse {
+      0% { filter: brightness(1.1);}
+      100% { filter: brightness(0.86);}
+    }
+
+    /* Loader overlay */
+    .nemesis-loader {
+      position: fixed;
+      z-index: 12;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(18,22,28,0.98);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: opacity 0.44s;
+    }
+    .loader-spinner {
+      width: 54px; height: 54px;
+      border: 6px solid #212b42;
+      border-top: 6px solid #00ffeecc;
+      border-radius: 50%;
+      animation: spin 1.1s linear infinite;
+      margin-bottom: 24px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .loader-text {
+      font-size: 1.23em;
+      color: #c6f8f9;
+      text-shadow: 0 0 12px #00ffee66;
+      letter-spacing: 0.03em;
+      font-family: inherit;
+      margin-bottom: 7px;
       text-align: center;
-      letter-spacing: 1.5px;
-      backdrop-filter: blur(7px);
-      transition: opacity 0.4s;
-      pointer-events: all;
+      opacity: 0.88;
     }
 
-    /* Misc */
-    ::selection { background: #ff25664c; color: #fff;}
-    body { -webkit-user-select: none; -ms-user-select: none; user-select: none;}
-    input, textarea, button { -webkit-user-select: auto; user-select: auto;}
-    /* Disable right-click/drag/copy-paste globally */
+    /* Vulnerability annotation */
+    .vuln-reveal {
+      position: fixed;
+      bottom: 32px; right: 52px;
+      background: #282c39d8;
+      color: #f6f7fe;
+      font-size: 1.12em;
+      border-radius: 12px 24px 14px 6px;
+      padding: 17px 25px;
+      box-shadow: 0 0 18px #8fc3ff4d;
+      z-index: 20;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      animation: vulnFade 1.3s 0.2s forwards, glitchText 1.2s 2.1s infinite alternate;
+      font-weight: 700;
+      border: 1.7px solid #6d97d9d9;
+      text-shadow: 0 2px 8px #68ffe633;
+      filter: blur(0.4px);
+    }
+    @keyframes vulnFade {
+      from { opacity: 0; transform: scale(0.96);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    @keyframes glitchText {
+      0% { text-shadow: 0 0 2px #70c2ff, 0 0 0 #00ffee;}
+      60% { text-shadow: 1.5px 0 #00ffee88, -2px 2px #ca81fc55;}
+      100% { text-shadow: -2px 2px #70c2ff, 2px 1px #efc3ff44;}
+    }
+
+    .next-btn {
+      position: fixed;
+      right: 60px;
+      bottom: 24px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 22;
+      animation: fadeInNext 1.5s 1.4s forwards;
+      background: linear-gradient(90deg,#8afeff 5%,#5b91f3 98%);
+    }
+    @keyframes fadeInNext {
+      from { opacity: 0;}
+      to { opacity: 1; pointer-events: all;}
+    }
+
+    /* Blocked overlay for mobile */
+    .block-mobile-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0e1012ee;
+      color: #fff;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: inherit;
+      font-size: 1.28em;
+      letter-spacing: 0.05em;
+      text-align: center;
+      padding: 32px;
+    }
+    .block-mobile-overlay strong {
+      color: #00ffee;
+      font-size: 1.1em;
+      display: block;
+      margin: 12px 0;
+    }
+    .warning {
+      color: #ff3355;
+      font-size: 0.96em;
+      margin-top: 8px;
+    }
+
+    /* Hide scroll */
+    ::-webkit-scrollbar { width: 0 !important; }
+    body { -ms-overflow-style: none; scrollbar-width: none;}
   </style>
 </head>
 <body>
-  <!-- Mobile Block Overlay -->
-  <div id="mobile-warning">Project Nemesis<br>Access Denied.<br><span style="color:#fff;font-size:1.3vw;">Laptop or Tablet required.<br>Mobile devices are not permitted.</span></div>
-  <!-- Cognitive Blackout Overlay -->
-  <div id="cognitive-blackout">Cognitive Blackout:<br>No Evidence Leaves This Room.</div>
-  <!-- Static/Glitch Overlay -->
-  <div class="bg-static"></div>
-  <div class="matrix-corner top-left">101010<br>001011<br>010101<br>100110<br>011001</div>
-  <div class="matrix-corner bottom-right">110010<br>111000<br>101100<br>011011<br>000101</div>
-  <div class="main-wrap">
-    <!-- Timer -->
-    <div class="nemesis-timer" id="timer"></div>
-    <!-- Silhouette + Speech Bubbles -->
-    <div class="silhouette-box">
-      <img src="silhouette.png" alt="Silhouette" class="silhouette-img" draggable="false">
-      <div class="speech-bubbles">
-        <div class="bubble bubble1">fraud</div>
-        <div class="bubble bubble2">wannabe</div>
-        <div class="bubble bubble3">phony</div>
-        <div class="bubble bubble4">poser</div>
-        <div class="bubble bubble5">overrated</div>
-      </div>
-    </div>
-    <!-- Header -->
+  <div id="glitch"></div>
+  <div class="glyph g1">&#9883;</div>
+  <div class="glyph g2">&#9762;</div>
+  <div class="glyph g3">&#9775;</div>
+  <div class="glyph g4">&#9906;</div>
+
+  <!-- Timer -->
+  <div class="nemesis-timer" id="nemesis-timer">07:00</div>
+
+  <div class="main-container" id="main-container">
     <div class="nemesis-header">
       🧠 Question 1: What’s the worst thing someone could say about you publicly?
     </div>
-    <!-- Input Area -->
-    <div class="nemesis-input-wrap">
-      <textarea id="nemesis-input" class="nemesis-input" rows="4" spellcheck="false"
-        maxlength="320" autocomplete="off" autocapitalize="none" autocorrect="off"></textarea>
-      <div id="ghost-text" class="ghost-text"></div>
-      <div id="input-error" class="input-error"></div>
-      <button id="submit-btn" class="nemesis-submit" disabled>Reveal My Weakness</button>
+    <div class="silhouette-box">
+      <img src="silhouette.png" alt="Silhouette" class="silhouette-img" id="silhouette-img">
+      <!-- Speech bubbles -->
+      <div class="bubble" style="top:20px;left:-90px;">fraud</div>
+      <div class="bubble" style="top:0px;right:-120px;">wannabe</div>
+      <div class="bubble" style="top:130px;left:-65px;">phony</div>
+      <div class="bubble" style="bottom:20px;left:-100px;">poser</div>
+      <div class="bubble" style="top:90px;right:-100px;">overrated</div>
     </div>
-    <!-- AI Processing State -->
-    <div id="ai-processing" class="ai-processing" style="display:none;">
-      <div class="ai-scan"></div>
-      <span id="ai-message">Detecting Core Vulnerability…</span>
-      <div id="ai-result" style="display:none; margin-top:1vw;">
-        <strong>Core Vulnerability Detected:</strong><br>
-        <span style="font-size:1.32vw;color:#ff2566;">Reputation Fragility</span>
+    <form class="nemesis-input-section" autocomplete="off" onsubmit="return false;">
+      <div style="width:100%;position:relative;">
+        <textarea
+          class="ghost-textarea"
+          id="ghost-textarea"
+          maxlength="256"
+          spellcheck="false"
+          autocomplete="off"
+          autocorrect="off"
+          rows="4"
+          required
+          onfocus="ghostShatter()" 
+          oninput="handleInput()"
+        ></textarea>
+        <div class="ghost-overlay" id="ghost-overlay"></div>
       </div>
-      <button id="continue-btn" class="continue-btn">Face The Next Question</button>
-    </div>
-  </div>
-  <!-- Status Bar -->
-  <div class="nemesis-statusbar">
-    Nemesis Cognitive Engine: <span style="color:#18ffe3;">ACTIVE</span> | Surveillance: <span style="color:#ff2566;">ENGAGED</span>
+      <button type="button" class="nemesis-btn" id="submit-btn">Reveal My Vulnerability</button>
+    </form>
   </div>
 
+  <!-- Loader, hidden by default -->
+  <div class="nemesis-loader" id="nemesis-loader" style="display:none;">
+    <div class="loader-spinner"></div>
+    <div class="loader-text" id="loader-text">Analyzing cognitive response…<br>Compiling adversarial profile…</div>
+  </div>
+
+  <!-- Vulnerability reveal -->
+  <div class="vuln-reveal" id="vuln-reveal" style="display:none;">
+    → Core Vulnerability: Reputation Fragility
+  </div>
+  <button class="nemesis-btn next-btn" id="next-btn" style="display:none;">Advance to Next Adversary Trial</button>
+
+  <!-- Block mobile overlay -->
+  <div id="block-mobile-overlay" class="block-mobile-overlay" style="display:none;">
+    <div>
+      <strong>Device Not Supported</strong>
+      This experience is only for laptop/desktop or tablet.<br>
+      <span class="warning">Mobile and small screens are strictly blocked.</span>
+    </div>
+  </div>
+  <audio id="type-sound" src="https://cdn.pixabay.com/audio/2022/11/16/audio_12c6bda21a.mp3" preload="auto"></audio>
+  <audio id="beep-sound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12d0bfe91d.mp3" preload="auto"></audio>
+
   <script>
-    // ========== DEVICE BLOCKER ==========
-    function isMobile() {
-      // Block all mobile phones (portrait < 800px, or mobile UA)
-      return (/Mobi|Android|iPhone|BlackBerry|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent) || window.innerWidth < 900);
+    // --- MOBILE/TABLET BLOCK ---
+    function isMobileDevice() {
+      return (typeof window.orientation !== "undefined") || navigator.userAgent.match(/Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i);
     }
-    function checkMobile() {
-      if (isMobile()) {
-        document.getElementById('mobile-warning').style.display = 'flex';
+    function blockMobileIfNeeded() {
+      const minW = 768;
+      if (isMobileDevice() || window.innerWidth < minW) {
+        document.getElementById('block-mobile-overlay').style.display = 'flex';
         document.body.classList.add('blocked');
       } else {
-        document.getElementById('mobile-warning').style.display = 'none';
+        document.getElementById('block-mobile-overlay').style.display = 'none';
         document.body.classList.remove('blocked');
       }
     }
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener('resize', blockMobileIfNeeded);
+    window.addEventListener('DOMContentLoaded', blockMobileIfNeeded);
 
-    // ========== TIMER ==========
-    let timerSec = 7 * 60;
-    let timerInt = null, timerPaused = false;
-    function updateTimer() {
-      let min = Math.floor(timerSec / 60), sec = timerSec % 60;
-      let txt = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-      document.getElementById('timer').innerHTML = '⏳ ' + txt;
-      if (timerSec <= 60 && !timerPaused) document.getElementById('timer').style.boxShadow = '0 0 50px #ff2566aa';
-      else document.getElementById('timer').style.boxShadow = '';
-      if (timerSec > 0 && !timerPaused) timerSec--;
-      else if (timerSec <= 0) { clearInterval(timerInt); document.getElementById('timer').innerHTML = '🛑 Time Up'; }
+    // --- GHOST TYPING ---
+    const ghostLines = [
+      "He’s just a brand, not a builder.",
+      "Everything he made was hype — no substance."
+    ];
+    let ghostActive = true;
+    let ghostIndex = 0;
+    let ghostChar = 0;
+    let ghostTypingTimer;
+    let ghostRestoring = false;
+
+    const ghostOverlay = document.getElementById('ghost-overlay');
+    const ghostTextarea = document.getElementById('ghost-textarea');
+
+    function renderGhostText() {
+      ghostOverlay.innerHTML = ghostLines.join("<br>");
+    }
+
+    function startGhostTyping() {
+      ghostOverlay.innerHTML = "";
+      ghostActive = true;
+      ghostIndex = 0;
+      ghostChar = 0;
+      ghostOverlay.style.opacity = "0.8";
+      ghostTypingTimer = setInterval(() => {
+        let txt = "";
+        for(let i=0;i<ghostLines.length;i++) {
+          if (i < ghostIndex) {
+            txt += ghostLines[i] + "<br>";
+          } else if (i === ghostIndex) {
+            txt += ghostLines[i].substring(0, ghostChar) + "<span class='ghost-cursor'>|</span><br>";
+          }
+        }
+        ghostOverlay.innerHTML = txt;
+        ghostChar++;
+        if(ghostChar > ghostLines[ghostIndex].length) {
+          ghostIndex++;
+          ghostChar = 0;
+        }
+        if(ghostIndex >= ghostLines.length) {
+          clearInterval(ghostTypingTimer);
+          ghostOverlay.innerHTML = ghostLines.join("<br>");
+          ghostActive = false;
+        }
+      }, 42);
+    }
+    // On load, show ghost text
+    document.addEventListener("DOMContentLoaded", () => {
+      renderGhostText();
+      // Place the ghost text in the textarea as well (for shatter/fade effect)
+      ghostTextarea.value = ghostLines.join('\n');
+    });
+
+    function ghostShatter() {
+      if (ghostActive || ghostOverlay.style.opacity > 0) {
+        ghostOverlay.style.opacity = "0";
+        setTimeout(() => { ghostOverlay.innerHTML = ""; }, 250);
+        ghostTextarea.value = "";
+        ghostActive = false;
+      }
+    }
+    function handleInput() {
+      // Border pulse
+      ghostTextarea.classList.add("pulse");
+      setTimeout(()=>ghostTextarea.classList.remove("pulse"), 210);
+
+      // Prevent pasting/copying
+      ghostTextarea.onpaste = (e)=>{ e.preventDefault(); return false; }
+      ghostTextarea.oncopy = (e)=>{ e.preventDefault(); return false; }
+      ghostTextarea.oncut = (e)=>{ e.preventDefault(); return false; }
+
+      if (ghostTextarea.value.length === 0 && !ghostRestoring) {
+        // Animate ghost text back in
+        ghostRestoring = true;
+        ghostOverlay.style.opacity = "0.8";
+        ghostTextarea.blur();
+        setTimeout(()=> {
+          ghostTextarea.value = "";
+          startGhostTyping();
+          setTimeout(()=>{ ghostRestoring = false; }, 1600);
+        }, 450);
+      }
+    }
+    ghostTextarea.addEventListener('keydown', function(e) {
+      if (["v","V","c","C"].includes(e.key) && (e.ctrlKey || e.metaKey)) e.preventDefault();
+    });
+
+    // --- SPEECH BUBBLES (random fade) ---
+    function animateBubbles() {
+      const bubbles = document.querySelectorAll('.bubble');
+      let del = 0;
+      bubbles.forEach((bub, i) => {
+        setTimeout(() => {
+          bub.style.opacity = 1;
+          bub.style.transform = "translateY(-10px) scale(1.05)";
+          setTimeout(() => {
+            bub.style.opacity = 0.2;
+            bub.style.transform = "translateY(10px) scale(0.97)";
+          }, 4100 + 900*Math.random());
+        }, del + Math.random()*1000);
+        del += 130;
+      });
+      setTimeout(animateBubbles, 5000);
+    }
+    document.addEventListener('DOMContentLoaded', animateBubbles);
+
+    // --- TIMER ---
+    let timerSec = 420;
+    let timerRunning = true;
+    let timerPaused = false;
+    const timerElem = document.getElementById('nemesis-timer');
+
+    function pad(x) { return String(x).padStart(2,'0'); }
+    function renderTimer() {
+      const min = Math.floor(timerSec/60);
+      const sec = timerSec%60;
+      timerElem.textContent = pad(min)+":"+pad(sec);
+      if(timerSec <= 0) {
+        timerElem.textContent = "00:00";
+        timerElem.style.color = "#ff3b44";
+        timerElem.classList.add('paused');
+        timerRunning = false;
+      }
     }
     function startTimer() {
-      updateTimer();
-      timerInt = setInterval(updateTimer, 1000);
-    }
-    function pauseTimer() {
-      timerPaused = true;
-      document.getElementById('timer').classList.add('timer-paused');
-    }
-    function resumeTimer() {
-      timerPaused = false;
-      document.getElementById('timer').classList.remove('timer-paused');
+      renderTimer();
+      if(!timerRunning) return;
+      setTimeout(()=> {
+        if(timerRunning && !timerPaused) {
+          timerSec--;
+          renderTimer();
+          startTimer();
+        }
+      }, 1000);
     }
     startTimer();
 
-    // ========== INPUT/INTERACTION ==========
-    const ghostOptions = [
-      'He’s just a brand, not a builder.',
-      'Everything he made was hype — no substance.'
-    ];
-    let ghostIndex = 0;
-    let ghostTimeout = null;
-    let input = document.getElementById('nemesis-input');
-    let ghostDiv = document.getElementById('ghost-text');
-    let inputErr = document.getElementById('input-error');
-    let submitBtn = document.getElementById('submit-btn');
-    let aiDiv = document.getElementById('ai-processing');
-    let aiMsg = document.getElementById('ai-message');
-    let aiResult = document.getElementById('ai-result');
-    let contBtn = document.getElementById('continue-btn');
-
-    function setGhostText(idx) {
-      ghostDiv.textContent = ghostOptions[idx % ghostOptions.length];
-      ghostDiv.style.display = 'block';
+    function pauseTimer() {
+      timerPaused = true;
+      timerElem.classList.add("paused");
     }
-    setGhostText(ghostIndex);
-
-    // Ghost typing animation
-    function ghostCycle() {
-      ghostIndex++; setGhostText(ghostIndex);
-      ghostTimeout = setTimeout(ghostCycle, 4200);
-    }
-    ghostTimeout = setTimeout(ghostCycle, 4200);
-
-    input.addEventListener('focus', () => {
-      ghostDiv.style.transition = 'opacity 0.22s cubic-bezier(.61,-0.15,.17,1.09)';
-      ghostDiv.style.opacity = 0;
-      setTimeout(()=>ghostDiv.style.display='none',170);
-    });
-    input.addEventListener('blur', () => {
-      if (input.value.trim() === '') {
-        setTimeout(() => { setGhostText(ghostIndex); ghostDiv.style.opacity = 1; }, 120);
-      }
-    });
-    // When deleting, if blank, re-show ghost text with "glitch" effect
-    input.addEventListener('input', () => {
-      if (input.value.trim() === '') {
-        setGhostText(ghostIndex);
-        ghostDiv.style.opacity = 1;
-      } else {
-        ghostDiv.style.display = 'none';
-      }
-      validateInput();
-    });
-
-    // Validation: must be at least 2 lines, not just blank lines
-    function validateInput() {
-      let txt = input.value.trim();
-      let lines = txt.split('\n').filter(l=>l.trim().length > 0);
-      if (lines.length >= 2 && txt.length >= 20) {
-        submitBtn.disabled = false;
-        inputErr.textContent = '';
-      } else {
-        submitBtn.disabled = true;
-        inputErr.textContent = 'Minimum 2 lines required. No skipping this.';
-      }
+    function resumeTimer() {
+      timerPaused = false;
+      timerElem.classList.remove("paused");
     }
 
-    // ========== SUBMISSION / AI PROCESS ==========
-    submitBtn.addEventListener('click', () => {
+    // --- SIMULATED SUBMISSION FLOW ---
+    const submitBtn = document.getElementById('submit-btn');
+    const loader = document.getElementById('nemesis-loader');
+    const vulnReveal = document.getElementById('vuln-reveal');
+    const nextBtn = document.getElementById('next-btn');
+
+    submitBtn.addEventListener('click', async function() {
+      // Validation
+      if (ghostTextarea.value.trim().length < 5) {
+        ghostTextarea.focus();
+        ghostTextarea.classList.add("pulse");
+        return;
+      }
+      // Lock input
+      ghostTextarea.readOnly = true;
       submitBtn.disabled = true;
-      input.disabled = true;
-      aiDiv.style.display = 'block';
-      aiMsg.textContent = 'Detecting Core Vulnerability…';
-      aiResult.style.display = 'none';
-      contBtn.classList.remove('visible');
       pauseTimer();
 
-      // Random AI "analysis" delay
-      let delay = Math.floor(Math.random()*9)+4; // 4–12 seconds
-      setTimeout(()=>{
-        aiMsg.textContent = '';
-        aiResult.style.display = 'block';
-        contBtn.classList.add('visible');
-      }, delay*1000);
+      // Show loader, random delay
+      loader.style.display = "flex";
+      let dots = 0;
+      let phase = 1;
+      const loaderText = document.getElementById('loader-text');
+      const phases = [
+        "Analyzing cognitive response…",
+        "Compiling adversarial profile…"
+      ];
+      let totalTime = 4000 + Math.random()*8000; // 4-12 seconds
+      let elapsed = 0;
+      const intv = setInterval(() => {
+        loaderText.innerHTML = phases[phase-1] + '<br>' + '.'.repeat((dots%4)+1);
+        dots++;
+        if (dots % 7 === 0 && phase < phases.length) phase++;
+        elapsed += 340;
+        if (elapsed > totalTime) {
+          clearInterval(intv);
+          loader.style.display = "none";
+          revealVulnerability();
+        }
+      }, 340);
     });
-    // Continue
-    contBtn.addEventListener('click', () => {
+
+    function revealVulnerability() {
+      // Show annotation
+      vulnReveal.style.display = "block";
+      // Animate in the "Next" button
+      nextBtn.style.display = "block";
+      nextBtn.style.opacity = 1;
+      nextBtn.style.pointerEvents = 'all';
+      setTimeout(() => {
+        nextBtn.focus();
+      }, 1500);
+    }
+
+    // --- NEXT BUTTON LOGIC ---
+    nextBtn.addEventListener('click', function() {
       window.location.href = "page3.html";
     });
 
-    // Resume timer after AI
-    contBtn.addEventListener('mouseover', ()=>{resumeTimer();});
+    // --- SECURITY/RESTRICTION LOGIC ---
+    // Block context menu, clipboard, back navigation, etc.
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+    document.addEventListener('copy', function(e) { e.preventDefault(); });
+    document.addEventListener('paste', function(e) { e.preventDefault(); });
+    document.addEventListener('cut', function(e) { e.preventDefault(); });
+    document.addEventListener('selectstart', function(e) { if(e.target.tagName !== "TEXTAREA") e.preventDefault(); });
 
-    // ========== SECURITY / ANTI-CHEAT ==========
-    // Block right-click, copy, paste, text selection, drag, PrintScreen/screenshot
-    window.addEventListener('contextmenu', e=>e.preventDefault());
-    window.addEventListener('dragstart', e=>e.preventDefault());
-    window.addEventListener('selectstart', e=>e.preventDefault());
-    window.addEventListener('keydown', function(e){
-      // Block PrintScreen, Ctrl+C/V, F12, Ctrl+S, Ctrl+P
-      if (
-        (e.key === "PrintScreen") ||
-        (e.ctrlKey && ['c','v','u','s','p'].includes(e.key.toLowerCase())) ||
-        (e.metaKey && ['c','v','u','s','p'].includes(e.key.toLowerCase())) ||
-        (e.key === "F12")
-      ) {
-        document.getElementById('cognitive-blackout').style.display = 'flex';
-        setTimeout(()=>{document.getElementById('cognitive-blackout').style.display='none';}, 2600);
-        e.preventDefault(); return false;
+    // Disable PrintScreen as much as possible (focus loss overlay)
+    let lastActive = Date.now();
+    window.onblur = () => {
+      document.body.classList.add('blocked');
+      setTimeout(()=>{document.body.classList.remove('blocked');},1100);
+    }
+    window.onfocus = () => { document.body.classList.remove('blocked'); };
+
+    // Block navigation (back/forward)
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+      history.pushState(null, null, document.URL);
+    });
+
+    // Disable save/refresh memory
+    window.onbeforeunload = function(){ return undefined; }
+
+    // Try to block print screen and other screenshot shortcuts (limited by browser security)
+    document.addEventListener('keyup', function(e) {
+      if(e.key === "PrintScreen" || (e.ctrlKey && e.key === "p")) {
+        document.body.classList.add('blocked');
+        setTimeout(()=>{document.body.classList.remove('blocked');},1100);
+        alert("Screenshots are not permitted in this simulation.");
       }
     });
-    // Block screenshot key on macOS (Cmd+Shift+4 or 3)
-    window.addEventListener('keyup', function(e){
-      if ((e.key === "PrintScreen") || (e.metaKey && e.shiftKey && (e.key==='3' || e.key==='4'))) {
-        document.getElementById('cognitive-blackout').style.display = 'flex';
-        setTimeout(()=>{document.getElementById('cognitive-blackout').style.display='none';}, 2200);
-        e.preventDefault(); return false;
+
+    // --- SOUNDS (optional ambient typing/console beep) ---
+    let typeSound = document.getElementById('type-sound');
+    let beepSound = document.getElementById('beep-sound');
+    ghostTextarea.addEventListener('keydown', function(e){
+      if (!e.metaKey && !e.ctrlKey && !ghostRestoring) {
+        if(typeSound && typeSound.currentTime < 0.1) {
+          typeSound.currentTime = 0;
+          typeSound.play();
+        }
       }
     });
-    // Block clipboard events on input
-    input.addEventListener('paste', e=>e.preventDefault());
-    input.addEventListener('copy', e=>e.preventDefault());
 
-    // Block navigation away
-    window.onbeforeunload = function(){
-      return "Nemesis Protocol: You cannot escape this trial.";
-    };
+    // --- AMBIENT SOUND TOGGLE (optional) ---
+    // Could add a mute/unmute button if desired.
+    // Skipped for brevity.
 
-    // Block save page
-    document.addEventListener('keydown', function(e){
-      if (e.ctrlKey && (e.key==='s' || e.key==='S')) {e.preventDefault();return false;}
-    });
-
-    // Hide blackout overlay on click/tap (if any)
-    document.getElementById('cognitive-blackout').addEventListener('click',function(){
-      this.style.display='none';
-    });
   </script>
 </body>
 </html>
