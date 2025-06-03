@@ -2,536 +2,390 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Initiation Protocol: Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=1280">
-  <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Roboto+Mono:400,700" rel="stylesheet">
+  <title>INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</title>
+  <meta name="viewport" content="width=1200, initial-scale=1">
   <style>
-    :root {
-      --bg: #111;
-      --pale-blue: #b7c4ce;
-      --icy-blue: #a6cfe8;
-      --mono: 'Fira Mono', 'Roboto Mono', 'Menlo', 'Consolas', monospace;
-      --red: #EF5350;
-      --red-trans: rgba(239, 83, 80, 0.16);
-      --white: #fff;
-      --gray: #22292d;
-      --box-bg: #161b20;
-      --ghost: #b7c4ce;
-      --button-outline: #ef5350;
-      --button-hover: rgba(239, 83, 80, 0.10);
-      --transp: rgba(255,255,255,0.08);
-      --text-shadow: 0 2px 18px #101820;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&display=swap');
     html, body {
-      background: var(--bg);
-      color: var(--pale-blue);
+      height: 100%;
       margin: 0;
       padding: 0;
-      width: 100vw;
-      min-height: 100vh;
-      font-family: var(--mono);
-      letter-spacing: 0.02em;
-      user-select: none;
+      background: #111;
+      color: #b2c6d9;
+      font-family: 'Fira Mono', 'Roboto Mono', 'Menlo', 'Consolas', monospace;
       overflow: hidden;
-      height: 100vh;
+      user-select: none;
     }
-
-    /* --- TIMER --- */
-    .timer-rect {
+    #mobile-overlay {
+      position: fixed;
+      z-index: 10000;
+      inset: 0;
+      background: #111;
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 2vw;
+      text-align: center;
+    }
+    .container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* Header */
+    .header {
+      position: absolute;
+      top: 35px;
+      left: 0;
+      width: 100vw;
+      text-align: center;
+      letter-spacing: 0.05em;
+      font-size: 1.38vw;
+      color: #b2c6d9;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+    /* Timer */
+    .timer {
       position: absolute;
       top: 40px;
-      right: 52px;
-      border: 1.2px solid var(--red);
-      border-radius: 4px;
-      padding: 5px 17px 5px 17px;
-      display: flex;
-      align-items: center;
-      background: transparent;
-    }
-    .timer-label {
-      font-family: var(--mono);
-      font-size: 1.02rem;
-      font-weight: bold;
-      color: var(--red);
-      letter-spacing: 0.10em;
-      margin-right: 7px;
-    }
-    .timer-value {
-      font-family: var(--mono);
-      font-size: 1.03rem;
-      color: var(--red);
-      letter-spacing: 0.05em;
-      font-weight: 600;
-    }
-
-    /* --- HEADER --- */
-    .header {
-      width: 100vw;
-      text-align: center;
-      font-family: var(--mono);
-      font-size: 1.65rem;
-      letter-spacing: 0.16em;
-      color: var(--pale-blue);
-      font-weight: 600;
-      margin-top: 56px;
-      text-transform: uppercase;
-      text-shadow: var(--text-shadow);
-      z-index: 10;
-    }
-
-    /* --- QUESTION --- */
-    .question {
-      margin-top: 54px;
-      text-align: center;
-      font-family: var(--mono);
-      color: var(--pale-blue);
-      font-size: 1.47rem;
-      font-weight: 400;
-      letter-spacing: 0.025em;
-      z-index: 11;
-    }
-
-    /* --- SILHOUETTE --- */
-    .silhouette-bg {
-      position: fixed;
-      left: 50%;
-      top: 53%;
-      transform: translate(-50%, -50%);
-      z-index: 2;
-      width: 56vw;
-      min-width: 660px;
-      max-width: 820px;
-      opacity: 0.65;
-      pointer-events: none;
-      user-select: none;
-      filter: brightness(0.91) contrast(0.88);
-    }
-
-    /* --- FLOATING WORDS --- */
-    .floating {
-      position: absolute;
-      font-family: var(--mono);
+      right: 65px;
+      background: rgba(17, 17, 17, 0.85);
+      color: #EF5350;
+      border: 1.5px solid #EF5350;
+      border-radius: 5px;
+      padding: 7px 30px 7px 22px;
+      font-size: 1.07vw;
+      font-family: 'Fira Mono', monospace;
       font-weight: 500;
-      pointer-events: none;
-      opacity: 0.36;
-      z-index: 4;
-      text-shadow: 0 1px 18px #14181d, 0 2px 32px #13151c;
-      user-select: none;
-    }
-    .float-fraud {
-      left: 10vw;
-      top: 42vh;
-      font-size: 2.55rem;
-      color: var(--white);
-      opacity: 0.23;
-      letter-spacing: 0.08em;
-      font-weight: 400;
-    }
-    .float-overrated {
-      right: 10vw;
-      top: 32vh;
-      font-size: 2.2rem;
-      color: var(--red);
-      opacity: 0.31;
-      letter-spacing: 0.06em;
-      font-weight: 700;
-    }
-    .float-faker1 {
-      left: 26vw;
-      bottom: 18vh;
-      font-size: 1.7rem;
-      color: #d6dde7;
-      opacity: 0.22;
-      font-weight: 500;
-    }
-    .float-faker2 {
-      right: 19vw;
-      bottom: 25vh;
-      font-size: 1.45rem;
-      color: #ccd3da;
-      opacity: 0.21;
-      font-weight: 400;
-    }
-    .float-faker3 {
-      left: 49vw;
-      top: 56vh;
-      font-size: 1.45rem;
-      color: #b7c4ce;
-      opacity: 0.28;
-      font-weight: 400;
-    }
-    .float-faker4 {
-      right: 11vw;
-      bottom: 11vh;
-      font-size: 1.32rem;
-      color: #fff;
-      opacity: 0.13;
-      font-weight: 400;
-    }
-
-    /* --- INPUT BOX --- */
-    .textbox-row {
-      display: flex;
-      justify-content: center;
-      margin-top: 44px;
+      letter-spacing: 0.04em;
+      text-align: right;
       z-index: 20;
-      position: relative;
-      width: 100vw;
     }
-    .fake-textarea {
-      width: 635px;
-      min-height: 64px;
-      max-height: 125px;
-      background: var(--box-bg);
-      border: 1.7px solid #23272e;
-      border-radius: 7px;
-      color: var(--ghost);
-      font-family: var(--mono);
-      font-size: 1.23rem;
-      line-height: 1.50;
-      padding: 16px 21px 16px 21px;
+    /* Question */
+    .question {
+      position: absolute;
+      top: 160px;
+      width: 100vw;
+      text-align: center;
+      font-size: 2vw;
+      letter-spacing: 0.02em;
+      font-weight: 700;
+      color: #b2c6d9;
+      z-index: 5;
+    }
+    /* Silhouette Image */
+    .silhouette {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.65;
+      width: 57vw;
+      max-width: 800px;
+      min-width: 410px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    /* Crowd Words */
+    .crowd-word {
+      position: absolute;
+      font-family: 'Fira Mono', monospace;
+      font-size: 2.2vw;
+      opacity: 0.37;
+      z-index: 7;
+      font-weight: 700;
+      pointer-events: none;
+      filter: blur(0.5px);
+    }
+    .crowd-fraud {
+      left: 13vw; top: 325px; color: #fff; font-size: 2.5vw; opacity: 0.45;
+    }
+    .crowd-overrated {
+      right: 14vw; top: 285px; color: #e16363; font-size: 1.5vw; opacity: 0.38;
+    }
+    .crowd-faker1 {
+      left: 34vw; bottom: 160px; color: #ccc; font-size: 1.2vw; opacity: 0.36;
+    }
+    .crowd-faker2 {
+      right: 29vw; top: 55vh; color: #bbb; font-size: 1.4vw; opacity: 0.34;
+    }
+    .crowd-faker3 {
+      right: 20vw; bottom: 130px; color: #fff; font-size: 1.2vw; opacity: 0.31;
+    }
+    /* Input box */
+    .input-box {
+      position: absolute;
+      top: 285px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 41vw;
+      max-width: 600px;
+      min-width: 350px;
+      height: 98px;
+      background: #171e25;
+      border-radius: 10px;
+      border: 1.5px solid #333d47;
+      box-sizing: border-box;
+      font-size: 1.1vw;
+      font-family: 'Fira Mono', monospace;
+      color: #b2c6d9;
+      padding: 24px 25px;
       outline: none;
       resize: none;
-      letter-spacing: 0.03em;
-      margin-right: 0px;
-      box-shadow: 0 2.5px 28px #161a1c15;
-      overflow-x: hidden;
-      overflow-y: auto;
-      text-align: left;
-      user-select: text;
+      letter-spacing: 0.01em;
       white-space: pre-line;
-    }
-    .fake-textarea[readonly] {
-      color: var(--ghost);
-      background: var(--box-bg);
-      opacity: 1.0;
-    }
-
-    /* --- SUBMIT BUTTON --- */
-    .submit-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      width: 635px;
-      margin: 18px auto 0;
-      z-index: 21;
-    }
-    .btn-submit {
-      font-family: var(--mono);
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--red);
-      background: transparent;
-      border: 1.7px solid var(--button-outline);
-      border-radius: 7px;
-      padding: 11px 30px 10px 30px;
-      margin-right: 0;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      cursor: pointer;
-      outline: none;
-      transition: background 0.18s;
-      box-shadow: 0 2.5px 24px #1d0d0d09;
-    }
-    .btn-submit:hover, .btn-submit:focus {
-      background: var(--button-hover);
-    }
-    .btn-submit:active {
-      background: var(--red-trans);
-    }
-
-    /* --- NEMESIS ANALYSIS --- */
-    .nemesis-row {
-      position: absolute;
-      left: 50%;
-      top: 59.8vh;
-      transform: translate(-50%, 0);
-      z-index: 25;
-      text-align: center;
-      display: none;
-      width: 100vw;
+      z-index: 20;
+      line-height: 1.5;
       pointer-events: none;
-    }
-    .nemesis-txt {
-      color: var(--red);
-      font-family: var(--mono);
-      font-size: 1.18rem;
-      font-weight: bold;
-      letter-spacing: 0.09em;
-      margin-bottom: 34px;
-      text-shadow: 0 2px 18px #230f0f40;
-      transition: opacity 0.56s;
-    }
-    .nemesis-box {
-      margin: 0 auto;
-      margin-top: 18px;
-      display: none;
-      padding: 11px 32px 10px 32px;
-      border: 2px solid var(--red);
-      border-radius: 7px;
-      color: var(--red);
-      background: transparent;
-      font-family: var(--mono);
-      font-weight: 700;
-      font-size: 1.08rem;
-      letter-spacing: 0.19em;
-      text-transform: uppercase;
-      box-shadow: 0 2.5px 22px #230f0f1a;
-      opacity: 0.95;
-      pointer-events: none;
-    }
-
-    /* --- FACE NEXT TRUTH --- */
-    .next-row {
-      position: absolute;
-      right: 64px;
-      bottom: 50px;
-      z-index: 100;
-      display: none;
-    }
-    .btn-next {
-      font-family: var(--mono);
-      font-size: 1.10rem;
-      font-weight: 700;
-      color: var(--icy-blue);
-      background: transparent;
-      border: none;
-      outline: none;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      padding: 12px 20px 10px 20px;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background 0.13s;
-      box-shadow: 0 2.5px 20px #1a273022;
-    }
-    .btn-next:hover, .btn-next:focus {
-      background: rgba(100, 160, 255, 0.08);
-    }
-
-    /* --- OVERLAY FOR MOBILE --- */
-    .mobile-block {
-      position: fixed;
-      z-index: 99999;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: #111;
-      color: #ef5350;
-      font-family: var(--mono);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.7rem;
-      text-align: center;
-      letter-spacing: 0.05em;
-      padding: 30px;
       user-select: none;
     }
-
-    /* --- BLUR OVERLAY --- */
+    /* Submit Button */
+    .submit-btn {
+      position: absolute;
+      left: 19vw;
+      top: 440px;
+      width: 265px;
+      height: 43px;
+      border: 2px solid #e16363;
+      background: rgba(17,17,17,0.22);
+      border-radius: 6px;
+      color: #e16363;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.09vw;
+      letter-spacing: 0.09em;
+      font-weight: 600;
+      cursor: pointer;
+      text-transform: uppercase;
+      z-index: 20;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 0px 0px #e16363;
+    }
+    .submit-btn:hover {
+      background: rgba(225,99,99,0.11);
+      color: #fa8080;
+      box-shadow: 0 0 12px 0px #e1636399;
+    }
+    .submit-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    /* Analysis Text */
+    .analysis {
+      position: absolute;
+      top: 552px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.35vw;
+      color: #e16363;
+      font-family: 'Fira Mono', monospace;
+      font-weight: 700;
+      text-align: center;
+      opacity: 0;
+      letter-spacing: 0.01em;
+      z-index: 22;
+      transition: opacity 0.6s;
+      text-shadow: 0 0 5px #e1636322;
+    }
+    .analysis.show {
+      opacity: 1;
+      transition: opacity 0.8s;
+    }
+    /* Vulnerability Box */
+    .vulnerability {
+      position: absolute;
+      top: 610px;
+      left: 22vw;
+      width: 300px;
+      height: 47px;
+      background: rgba(17, 17, 17, 0.8);
+      border: 2px solid #e16363;
+      border-radius: 6px;
+      color: #e16363;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.14vw;
+      letter-spacing: 0.09em;
+      font-weight: 600;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 44px;
+      opacity: 0;
+      z-index: 24;
+      transition: opacity 0.5s 0.7s;
+    }
+    .vulnerability.show {
+      opacity: 1;
+      transition: opacity 1s 0.3s;
+    }
+    /* Next Button */
+    .next-btn {
+      position: absolute;
+      bottom: 66px;
+      right: 8vw;
+      width: 240px;
+      height: 46px;
+      background: rgba(22,35,47,0.17);
+      border: none;
+      border-radius: 6px;
+      color: #bfe8f7;
+      font-family: 'Fira Mono', monospace;
+      font-size: 1.14vw;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 8px 0 #bfe8f733;
+      display: none;
+      z-index: 32;
+      transition: background 0.2s, color 0.2s;
+    }
+    .next-btn:hover {
+      background: rgba(180, 250, 255, 0.1);
+      color: #fff;
+    }
+    /* Overlay Blur for Screenshot */
     .blur-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(17, 17, 17, 0.9);
-      backdrop-filter: blur(7px);
-      z-index: 50000;
-      pointer-events: all;
+      inset: 0;
+      background: rgba(10, 12, 16, 0.88);
+      z-index: 10002;
+      filter: blur(3px);
       display: none;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--mono);
-      color: #f2f7fb;
-      font-size: 2.1rem;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-align: center;
+      pointer-events: none;
     }
-
-    /* --- Hide scrollbars everywhere --- */
-    ::-webkit-scrollbar { width: 0; background: transparent;}
-    body { -ms-overflow-style: none; scrollbar-width: none;}
+    @media (max-width: 899px) {
+      #mobile-overlay {
+        display: flex !important;
+      }
+      .container { display: none !important; }
+    }
   </style>
 </head>
 <body>
-
-  <!-- Timer Box -->
-  <div class="timer-rect">
-    <span class="timer-label">SESSION TIMER</span>
-    <span class="timer-value" id="timer">00:00 MIN</span>
+  <div id="mobile-overlay">
+    <div>Nemesis Protocol only runs on tablets and computers.<br>Please use a larger device.</div>
   </div>
-
-  <!-- HEADER -->
-  <div class="header">
-    INITIATION PROTOCOL: &nbsp; PSYCHOLOGICAL FINGERPRINTING
-  </div>
-
-  <!-- QUESTION -->
-  <div class="question">
-    What’s the worst thing someone could say about you publicly?
-  </div>
-
-  <!-- SILHOUETTE -->
-  <img src="silhouette.png" alt="" class="silhouette-bg" draggable="false" />
-
-  <!-- Floating Words -->
-  <span class="floating float-fraud">fraud</span>
-  <span class="floating float-overrated">overrated</span>
-  <span class="floating float-faker1">faker</span>
-  <span class="floating float-faker2">faker</span>
-  <span class="floating float-faker3">faker</span>
-  <span class="floating float-faker4">faker</span>
-
-  <!-- Fake Input and Submit Row -->
-  <div class="textbox-row" id="inputSection">
-    <textarea class="fake-textarea" id="fakeTextarea" readonly rows="2">'He's just a brand, not a builder.
-Everything he made was hype – no substance'</textarea>
-  </div>
-  <div class="submit-row" id="submitRow">
-    <button class="btn-submit" id="btnSubmit">SUBMIT TO ADVERSARY</button>
-  </div>
-
-  <!-- Nemesis Analysis -->
-  <div class="nemesis-row" id="nemesisRow">
-    <div class="nemesis-txt" id="nemesisTxt" style="display:none;">
-      Nemesis Analysis: Scanning Vulnerabilities...
+  <div class="container" id="main-container">
+    <!-- Silhouette -->
+    <img src="silhouette.png" class="silhouette" alt="" draggable="false" />
+    <!-- Crowd Words -->
+    <div class="crowd-word crowd-fraud">fraud</div>
+    <div class="crowd-word crowd-overrated">overrated</div>
+    <div class="crowd-word crowd-faker1">faker</div>
+    <div class="crowd-word crowd-faker2">faker</div>
+    <div class="crowd-word crowd-faker3">faker</div>
+    <!-- Header and Timer -->
+    <div class="header">INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</div>
+    <div class="timer" id="timer">SESSION TIMER<br>00:00 MIN</div>
+    <!-- Main Question -->
+    <div class="question">What's the worst thing someone could say about you publicly?</div>
+    <!-- Input box -->
+    <div class="input-box" id="inputBox" readonly>
+      'He's just a brand, not a builder.<br>Everything he made was hype – no substance'
     </div>
-    <div class="nemesis-box" id="nemesisBox">
-      REPETATION FRAGTITY
-    </div>
+    <!-- Submit Button -->
+    <button class="submit-btn" id="submitBtn">SUBMIT TO ADVERSARY</button>
+    <!-- Analysis & Vulnerability -->
+    <div class="analysis" id="analysisText">Nemesis Analysis: Scanning<br>Vulnerabilities...</div>
+    <div class="vulnerability" id="vulnerabilityBox">REPETATION FRAGTITY</div>
+    <!-- Next Button -->
+    <button class="next-btn" id="nextBtn">FACE NEXT TRUTH</button>
+    <!-- Screenshot Blur Overlay -->
+    <div class="blur-overlay" id="blurOverlay"></div>
   </div>
-
-  <!-- Face Next Truth -->
-  <div class="next-row" id="nextRow">
-    <button class="btn-next" id="btnNext">FACE NEXT TRUTH</button>
-  </div>
-
-  <!-- Mobile Blocker -->
-  <div class="mobile-block" id="mobileBlock" style="display:none;">
-    <div>
-      This experience is not available on mobile devices.<br>Please use a desktop browser.
-    </div>
-  </div>
-
-  <!-- Blur Overlay -->
-  <div class="blur-overlay" id="blurOverlay">
-    SCREEN CAPTURE BLOCKED
-  </div>
-
   <script>
-    // Mobile detection
-    function isMobile() {
-      return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-    window.onload = function() {
-      if (isMobile()) {
-        document.getElementById('mobileBlock').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    // Responsive: No mobile
+    function checkMobile() {
+      if(window.innerWidth < 900) {
+        document.getElementById('mobile-overlay').style.display = 'flex';
+        document.getElementById('main-container').style.display = 'none';
+      } else {
+        document.getElementById('mobile-overlay').style.display = 'none';
+        document.getElementById('main-container').style.display = '';
       }
     }
+    window.addEventListener('resize', checkMobile);
+    window.addEventListener('DOMContentLoaded', checkMobile);
 
-    // Timer
-    let timerVal = 0;
-    let timerInt = null;
-    let paused = false;
-    function pad(x) { return (x < 10 ? '0' : '') + x; }
-    function updateTimer() {
-      let min = Math.floor(timerVal / 60), sec = timerVal % 60;
-      document.getElementById('timer').textContent = `${pad(min)}:${pad(sec)} MIN`;
-    }
+    // Timer logic
+    let timer = 0, interval = null, analysisPaused = false;
     function startTimer() {
-      timerInt = setInterval(function() {
-        if (!paused) {
-          timerVal++;
-          updateTimer();
+      interval = setInterval(() => {
+        if(!analysisPaused) {
+          timer++;
+          let min = String(Math.floor(timer/60)).padStart(2,'0');
+          let sec = String(timer%60).padStart(2,'0');
+          document.getElementById('timer').innerHTML = 'SESSION TIMER<br>'+min+':'+sec+' MIN';
         }
-      }, 1000);
+      },1000);
     }
-    function stopTimer() { paused = true; }
-    function resumeTimer() { paused = false; }
-
     startTimer();
 
-    // Disable context menu, clipboard, printscreen, drag, select
-    window.addEventListener('contextmenu', e => e.preventDefault());
-    window.addEventListener('dragstart', e => e.preventDefault());
-    window.addEventListener('selectstart', e => e.preventDefault());
-    window.addEventListener('copy', e => e.preventDefault());
-    window.addEventListener('cut', e => e.preventDefault());
-    window.addEventListener('paste', e => e.preventDefault());
-
-    // Block printscreen: show blur overlay for 2s on PrtSc or Cmd+Shift+4, etc.
-    let blurTimer = null;
-    function showBlurOverlay() {
-      let blur = document.getElementById('blurOverlay');
-      blur.style.display = 'flex';
-      clearTimeout(blurTimer);
-      blurTimer = setTimeout(()=>{ blur.style.display = 'none'; }, 2000);
-    }
-    // Windows PrintScreen
-    window.addEventListener('keyup', function(e) {
-      if (e.key === 'PrintScreen') showBlurOverlay();
-      // macOS screenshot
-      if ((e.metaKey && e.shiftKey && (e.key==='4'||e.key==='5'||e.key==='3'))) showBlurOverlay();
-    });
-    // Prevent ctrl+c/x/v and right mouse button
-    window.addEventListener('keydown', function(e) {
-      if ((e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) ||
-          (e.metaKey && (e.key === 'c' || e.key === 'v' || e.key === 'x'))) {
+    // Prevent clipboard, drag, right click, context, screenshot
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
+    document.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('keydown', function(e){
+      // Ctrl+C/V/X/PrintScreen
+      if ((e.ctrlKey && ['c','v','x'].includes(e.key.toLowerCase())) || e.key === 'PrintScreen') {
         e.preventDefault();
-        showBlurOverlay();
+        if(e.key === 'PrintScreen') {
+          let blur = document.getElementById('blurOverlay');
+          blur.style.display = 'block';
+          setTimeout(()=>{ blur.style.display = 'none'; }, 2000);
+        }
       }
-      // Block right-click keyboard
-      if (e.key === "ContextMenu") e.preventDefault();
-    });
+      // Prevent F12, Ctrl+Shift+I, Ctrl+S
+      if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'i') || e.key === 'F12' || (e.ctrlKey && e.key.toLowerCase() === 's')) {
+        e.preventDefault();
+      }
+    }, true);
 
-    // SUBMIT TO ADVERSARY -> Analysis sequence
-    let submitted = false;
-    document.getElementById('btnSubmit').onclick = function() {
-      if (submitted) return;
-      submitted = true;
-      // Hide input & submit button
-      document.getElementById('inputSection').style.display = 'none';
-      document.getElementById('submitRow').style.display = 'none';
+    // Button/Analysis logic
+    const submitBtn = document.getElementById('submitBtn');
+    const analysisText = document.getElementById('analysisText');
+    const vulnerabilityBox = document.getElementById('vulnerabilityBox');
+    const nextBtn = document.getElementById('nextBtn');
+    const inputBox = document.getElementById('inputBox');
+    let submitting = false;
+
+    submitBtn.onclick = function(){
+      if(submitting) return;
+      submitting = true;
+      // Hide input/submit
+      inputBox.style.opacity = "0.25";
+      submitBtn.style.display = "none";
       // Pause timer
-      stopTimer();
-      // Show nemesis row after random delay (4–12s)
-      let nemesisRow = document.getElementById('nemesisRow');
-      setTimeout(function() {
-        nemesisRow.style.display = 'block';
-        // Fade in nemesis-txt
-        let ntxt = document.getElementById('nemesisTxt');
-        ntxt.style.display = 'block';
-        ntxt.style.opacity = 0;
-        setTimeout(()=>{ntxt.style.opacity = 1;}, 30);
-        // After 1s, fade in nemesis box
-        setTimeout(function(){
-          let nbox = document.getElementById('nemesisBox');
-          nbox.style.display = 'block';
-          nbox.style.opacity = 0;
-          setTimeout(()=>{nbox.style.opacity = 0.95;}, 30);
-          // After 0.7s, show Face Next Truth
-          setTimeout(function(){
-            document.getElementById('nextRow').style.display = 'block';
-          }, 700);
-        }, 1050);
-      }, Math.floor(4000 + Math.random()*8000)); // 4–12s
+      analysisPaused = true;
+      // Show analysis after 4-12s
+      const analysisDelay = Math.floor(4000 + Math.random()*8000);
+      setTimeout(()=>{
+        analysisText.classList.add('show');
+        setTimeout(()=>{
+          vulnerabilityBox.classList.add('show');
+          nextBtn.style.display = 'block';
+          // Resume timer
+          analysisPaused = false;
+        }, 1300);
+      }, analysisDelay);
     };
 
-    // FACE NEXT TRUTH -> Go to next page
-    document.getElementById('btnNext').onclick = function() {
-      window.location.href = 'page3.html';
+    nextBtn.onclick = function(){
+      window.location.href = "page3.html";
     };
 
-    // Safety: Block F12 and developer shortcuts
-    window.addEventListener('keydown', function(e) {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-        (e.metaKey && e.altKey && e.key === 'I')
-      ) {
-        e.preventDefault();
-        showBlurOverlay();
-      }
-    });
+    // Prevent navigation away (optional, strict)
+    window.onbeforeunload = function() { return "Are you sure? Your progress will be lost."; };
+
+    // Make sure container is not selectable/draggable
+    document.getElementById('main-container').setAttribute('draggable', false);
   </script>
 </body>
 </html>
