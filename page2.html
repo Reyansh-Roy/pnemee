@@ -2,582 +2,744 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Project Nemesis – Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=1024">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600&family=IBM+Plex+Mono:wght@600&display=swap" rel="stylesheet">
+  <title>Project Nemesis: Initiation Protocol – Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --black: #0c0f13;
-      --accent-red: #ff2323;
-      --alert-blue: #7cd1ff;
-      --white: #f3f3f3;
-      --input-glass-bg: rgba(24, 29, 38, 0.4);
-      --input-glass-brd: rgba(124,209,255,0.12);
-      --bubble-fg: #f3f3f3ee;
-      --bubble-red: #ff4e4e;
-      --bubble-white: #e5e7ebcc;
+      --primary-black: #101217;
+      --accent-red: #ff2424;
+      --accent-red-glow: #a30000;
+      --alert-blue: #76c5fa;
+      --highlight-white: #e3ecfa;
+      --bubble-red: #ff4343;
+      --bubble-blue: #7dd7ff;
+      --bubble-white: #fafbfc;
+      --vuln-bg: rgba(20,10,14,0.88);
+      --scanline-color: rgba(210, 225, 255, 0.015);
+      --circuit-color: rgba(120,200,255,0.035);
+      --shadow: 0 0 24px 6px #010203f2;
     }
 
     html, body {
-      width: 100vw; height: 100vh; min-width: 1024px;
-      margin: 0; padding: 0;
-      background: var(--black);
+      background: var(--primary-black);
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Fira Mono', 'Consolas', 'monospace';
       overflow: hidden;
-      font-family: 'JetBrains Mono', 'IBM Plex Mono', 'monospace';
-      letter-spacing: 0.01em;
+      box-sizing: border-box;
+    }
+
+    body {
       position: relative;
-      user-select: none;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      /* grid to center content vertically */
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
     }
-    /* Background neural grid + scanlines */
-    body::before, body::after {
-      content: "";
+
+    /* Background scanlines */
+    .scanlines {
       pointer-events: none;
-      position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 0;
-    }
-    body::before {
-      background: 
-        repeating-linear-gradient(0deg, rgba(70,90,120,0.03) 0 2px, transparent 2px 8px),
-        repeating-linear-gradient(90deg, rgba(124,209,255,0.04) 0 1px, transparent 1px 24px),
-        url('data:image/svg+xml;utf8,<svg width="700" height="700" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg"><g fill="none" stroke="rgba(60,80,120,0.14)" stroke-width="1"><rect x="20" y="20" width="660" height="660" rx="88"/><rect x="160" y="160" width="380" height="380" rx="48"/></g></svg>') center/cover no-repeat;
-      opacity: 0.7;
-    }
-    body::after {
-      background: repeating-linear-gradient(0deg,rgba(30,40,70,0.1) 0 1px,transparent 1px 5px);
-      opacity: 0.28;
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh; z-index: 1;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        var(--scanline-color) 0px,
+        var(--scanline-color) 2px,
+        transparent 2.5px,
+        transparent 7px
+      );
       mix-blend-mode: screen;
     }
-    /* Silhouette Centerpiece */
-    #silhouette-wrap {
-      position: absolute; z-index: 1;
-      left: 50%; top: 52%; transform: translate(-50%, -50%);
-      width: 460px; height: 680px;
+    /* Neural circuits */
+    .circuits {
       pointer-events: none;
-      filter: drop-shadow(0 0 88px #293040cc) blur(0.5px);
-    }
-    #silhouette-img {
-      width: 100%; height: 100%;
-      opacity: 0.74;
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh; z-index: 2;
+      background-image: 
+        repeating-radial-gradient(circle at 30% 40%, var(--circuit-color) 1px, transparent 8px),
+        repeating-radial-gradient(circle at 60% 65%, var(--circuit-color) 2px, transparent 12px);
+      opacity: 0.95;
       mix-blend-mode: lighten;
-      object-fit: contain;
-      background: radial-gradient(ellipse at 50% 80%, #7cd1ff11 70%, transparent 100%);
-      border-radius: 160px;
     }
+
     /* Header + Timer */
-    #header-row {
-      position: absolute; z-index: 2;
-      top: 38px; left: 70px; right: 70px;
-      display: flex; justify-content: space-between; align-items: flex-start;
-    }
-    #nemesis-header {
-      font-size: 1.48rem;
-      font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
-      letter-spacing: 0.14em;
-      font-weight: 700;
-      color: var(--alert-blue);
-      text-shadow: 0 0 8px #05242b66, 0 0 1.5px var(--alert-blue);
-      line-height: 2rem;
-      text-transform: uppercase;
-      user-select: none;
-    }
-    #session-timer {
-      font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
-      font-size: 1.12rem;
-      color: #ff3636;
-      letter-spacing: 0.12em;
-      text-shadow: 0 0 8px #20131366;
-      font-variant-numeric: tabular-nums;
-      padding-top: 2px;
-      user-select: none;
-      font-weight: 700;
-    }
-    /* Question */
-    #main-question {
-      position: absolute;
-      z-index: 2;
-      top: 124px; left: 0; right: 0;
+    .header-row {
       width: 100vw;
-      font-size: 2.2rem;
-      font-family: inherit;
-      color: #fafcff;
-      text-align: center;
-      text-shadow: 0 0 8px #41b7e866, 0 0 1.5px #e7f6ffcc;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      filter: drop-shadow(0 1px 4px #01182488);
-      user-select: none;
-      pointer-events: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 34px 5vw 0 5vw;
+      position: relative;
+      z-index: 10;
     }
-    /* Flickering Right-side Bubbles */
-    .bubble-word {
-      position: absolute; z-index: 3;
-      right: 160px;
-      opacity: 0; /* animated in/out */
-      font-family: inherit;
-      font-size: 1.6rem;
-      font-weight: 700;
-      pointer-events: none;
-      text-shadow: 0 0 8px #000, 0 0 1.5px #fff5;
-      animation: bubble-flicker 6s linear infinite;
-      filter: blur(0.3px);
-      will-change: opacity, transform;
-    }
-    .bubble-word.fraud    { color: var(--bubble-white);  top: 300px; animation-delay: 0.6s;}
-    .bubble-word.faker    { color: var(--bubble-white);  top: 400px; animation-delay: 1.6s;}
-    .bubble-word.faker2   { color: var(--bubble-white);  top: 480px; animation-delay: 2.4s;}
-    .bubble-word.overrated{ color: var(--bubble-red);    top: 350px; animation-delay: 3.2s;}
-    @keyframes bubble-flicker {
-      0%, 8%    { opacity: 0; }
-      10%,32%   { opacity: 0.85; }
-      34%,44%   { opacity: 0.08;}
-      46%, 66%  { opacity: 0.85;}
-      68%,100%  { opacity: 0; }
-    }
-    /* Ghost Input Box */
-    #ghost-input-wrap {
-      position: absolute; z-index: 5;
-      top: 250px; left: 0; width: 100vw; display: flex; justify-content: center;
-      user-select: none;
-      transition: filter 0.15s;
-    }
-    #ghost-input-box {
-      font-family: inherit;
-      font-size: 1.21rem;
-      width: 540px;
-      min-height: 84px;
-      background: var(--input-glass-bg);
-      border: 1.7px solid var(--input-glass-brd);
-      border-radius: 15px;
-      box-shadow: 0 2px 12px #09243233, 0 0 0 3px #7cd1ff11;
-      color: var(--white);
-      padding: 30px 32px 28px 28px;
-      margin: 0 auto;
-      outline: none;
-      resize: none;
-      letter-spacing: 0.015em;
-      caret-color: var(--alert-blue);
-      filter: drop-shadow(0 2px 18px #0d1a2a20);
-      transition: border-color 0.15s, box-shadow 0.15s, background 0.2s, color 0.16s;
-      backdrop-filter: blur(5.5px) saturate(1.2);
-      animation: glassIn 0.8s;
-    }
-    @keyframes glassIn { from { opacity: 0; transform: translateY(-48px) scale(0.96);} to{ opacity:1;transform:none;} }
-    #ghost-input-box:focus {
-      border-color: var(--alert-blue);
-      box-shadow: 0 2px 24px #7cd1ff44, 0 0 0 4px #2e486922;
-      background: rgba(28, 38, 51, 0.56);
-    }
-    /* Ghost typing effect */
-    #ghost-cursor {
-      display: inline-block;
-      width: 10px;
+    .header-title {
       color: var(--alert-blue);
-      background: transparent;
-      font-weight: 900;
-      animation: blink 1s step-end infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1;} 60%{opacity:0;} }
-    /* Submit Button */
-    #submit-btn, #next-btn {
-      display: block;
-      margin: 44px auto 0 auto;
-      padding: 20px 48px;
-      font-family: inherit;
-      font-size: 1.11rem;
+      font-size: 1.65rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      border-radius: 13px;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      box-shadow: 0 2px 22px #2e232e16;
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 4px #14315e, 0 0 2px #162344;
       user-select: none;
-      transition: filter 0.18s, box-shadow 0.16s, border-color 0.16s, color 0.13s;
-      filter: brightness(1.1);
     }
-    #submit-btn {
-      background: transparent;
+    .session-timer {
       color: var(--accent-red);
-      border: 2.3px solid var(--accent-red);
-      box-shadow: 0 0 0 2px #ff232322, 0 0 0 0 #000;
-      text-shadow: 0 0 8px #24040466;
-      filter: drop-shadow(0 0 6px #ff232338);
-      position: relative; z-index: 5;
-      margin-top: 42px;
+      font-size: 1.13rem;
+      font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+      letter-spacing: 0.13em;
+      font-weight: 600;
+      text-shadow: 0 0 8px #2a1a1a99;
+      user-select: none;
     }
-    #submit-btn:hover:not(:disabled),
-    #submit-btn:focus:not(:disabled) {
-      filter: brightness(1.3) drop-shadow(0 0 10px #ff2c2c66);
-      box-shadow: 0 0 10px #ff232346, 0 0 8px #ff23231f;
-      animation: btnShiver 0.18s linear 2;
+
+    /* Main question */
+    .main-question {
+      margin: 52px auto 0 auto;
+      text-align: center;
+      color: var(--highlight-white);
+      font-size: 2.07rem;
+      font-weight: 600;
+      text-shadow: 0 0 18px #68e4fe3b, 0 0 3px #0d263c7a;
+      letter-spacing: 0.01em;
+      z-index: 15;
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      transition: color 0.22s;
+      filter: drop-shadow(0 0 8px #2058fa42);
     }
-    @keyframes btnShiver {
+
+    /* Silhouette */
+    .silhouette-container {
+      position: absolute;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      pointer-events: none;
+      overflow: visible;
+      /* For fade in animation */
+      opacity: 0;
+      animation: silhouette-fade-in 1.1s 0.6s forwards;
+    }
+    @keyframes silhouette-fade-in {
+      to { opacity: 1; }
+    }
+    .silhouette-img {
+      display: block;
+      margin: 0 auto;
+      width: 32vw;
+      max-width: 440px;
+      min-width: 260px;
+      opacity: 0.58;
+      filter: brightness(0.97) grayscale(80%) drop-shadow(0 0 44px #162c4e);
+      z-index: 7;
+      transition: opacity 0.4s;
+    }
+
+    /* Ghost bubbles (right only) */
+    .bubble-word {
+      position: absolute;
+      right: 10vw;
+      color: var(--bubble-white);
+      font-size: 1.35rem;
+      font-family: inherit;
+      font-weight: 600;
+      opacity: 0.16;
+      pointer-events: none;
+      text-shadow: 0 0 18px #fff3, 0 0 4px #c2d8e1bb;
+      animation: bubble-flicker 4s infinite alternate;
+      filter: blur(0.1px);
+      user-select: none;
+      z-index: 15;
+    }
+    .bubble-word.red { color: var(--bubble-red); opacity: 0.22;}
+    .bubble-word.blue { color: var(--bubble-blue); opacity: 0.18;}
+    /* Flicker for text bubbles */
+    @keyframes bubble-flicker {
+      0% { opacity: 0.19; filter: blur(0.1px);}
+      16% { opacity: 0.33; filter: blur(0.3px);}
+      38% { opacity: 0.11; filter: blur(0.2px);}
+      70% { opacity: 0.24; filter: blur(0.06px);}
+      100% { opacity: 0.16; filter: blur(0.13px);}
+    }
+
+    /* Input glass box */
+    .ghost-input-container {
+      position: relative;
+      width: 620px;
+      max-width: 72vw;
+      margin: 0 auto;
+      z-index: 15;
+      margin-top: 38px;
+      transition: box-shadow 0.2s;
+    }
+    .ghost-input {
+      width: 100%;
+      font-size: 1.28rem;
+      font-family: inherit;
+      line-height: 1.6;
+      color: #bfe4ff;
+      background: rgba(25, 32, 40, 0.42);
+      border: 1.7px solid #66b2fa33;
+      border-radius: 13px;
+      box-shadow: 0 4px 40px #19233c33, 0 0 0 2px #5ec2ff19;
+      padding: 25px 22px 23px 22px;
+      resize: none;
+      outline: none;
+      transition: border 0.18s, box-shadow 0.18s, background 0.24s;
+      backdrop-filter: blur(5.7px) brightness(1.05);
+      text-shadow: 0 0 7px #87e8ff18;
+      min-height: 84px;
+      max-height: 240px;
+      overflow-y: auto;
+      letter-spacing: 0.01em;
+      caret-color: var(--accent-red);
+      animation: input-fadein 1.3s cubic-bezier(.71,.11,.58,1.04);
+    }
+    @keyframes input-fadein {
+      0% { opacity: 0; transform: translateY(24px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+    .ghost-input:focus {
+      border-color: var(--alert-blue);
+      background: rgba(44, 58, 82, 0.49);
+      box-shadow: 0 0 0 2px var(--alert-blue), 0 8px 60px #54d8ff18;
+    }
+    /* Input shiver on hover */
+    .ghost-input-container:hover .ghost-input,
+    .ghost-input-container:focus-within .ghost-input {
+      animation: shiver 0.45s linear;
+    }
+    @keyframes shiver {
       0% { transform: translateX(0px);}
-      26% { transform: translateX(-2px);}
-      46% { transform: translateX(3px);}
-      66% { transform: translateX(-2px);}
-      100%{ transform: translateX(0px);}
+      22% { transform: translateX(-1.6px);}
+      39% { transform: translateX(2px);}
+      60% { transform: translateX(-1.1px);}
+      80% { transform: translateX(0.7px);}
+      100% { transform: translateX(0);}
     }
-    #submit-btn:disabled {
-      opacity: 0.32; cursor: not-allowed; filter: grayscale(0.5) brightness(0.9);
+
+    /* Ghost typing cursor animation */
+    .ghost-cursor {
+      display: inline-block;
+      width: 11px;
+      height: 1.18em;
+      vertical-align: bottom;
+      background: linear-gradient(90deg, var(--alert-blue), var(--accent-red));
+      margin-left: 2px;
+      border-radius: 2px;
+      animation: ghost-cursor-blink 0.7s steps(2, jump-none) infinite;
+      opacity: 0.74;
+      box-shadow: 0 0 9px 2px #fff9;
+    }
+    @keyframes ghost-cursor-blink {
+      0%, 45% { opacity: 1;}
+      50%, 100% { opacity: 0.2;}
+    }
+
+    /* SUBMIT button */
+    .submit-btn {
+      width: 420px;
+      max-width: 80vw;
+      margin: 33px auto 0 auto;
+      display: block;
+      font-size: 1.34rem;
+      font-family: inherit;
+      padding: 18px 0 15px 0;
+      background: none;
+      border: 2.6px solid var(--accent-red);
+      border-radius: 14px;
+      color: var(--accent-red);
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      cursor: pointer;
+      text-shadow: 0 0 18px #ff2222, 0 0 4px #ff555533;
+      box-shadow: 0 0 16px 1px #b213139f;
+      outline: none;
+      position: relative;
+      z-index: 15;
+      transition: color 0.19s, border-color 0.15s, box-shadow 0.16s, background 0.18s;
+      animation: btn-fadein 1.2s 0.19s cubic-bezier(.66,.07,.58,1.02);
+    }
+    .submit-btn:disabled {
+      color: #a82a33 !important;
+      border-color: #502828 !important;
+      cursor: not-allowed;
+      background: #140c12;
+      opacity: 0.73;
+      text-shadow: none;
       box-shadow: none;
     }
-    /* Analysis Overlay */
-    #analysis-overlay {
-      display: none;
-      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(18,16,22,0.84);
-      z-index: 100;
-      backdrop-filter: blur(5px) saturate(1.04);
-      animation: fadeIn 0.44s;
-    }
-    @keyframes fadeIn { from{opacity:0;}to{opacity:1;} }
-    #analysis-center {
-      position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%);
-      display: flex; flex-direction: column; align-items: center;
-      width: 520px; max-width: 92vw;
-    }
-    #nemesis-analyzing {
-      color: var(--accent-red);
-      font-size: 1.32rem;
-      font-family: inherit;
-      letter-spacing: 0.04em;
-      text-align: center;
-      font-weight: 700;
-      margin-bottom: 56px;
-      animation: scanPulse 1.3s infinite alternate;
-      text-shadow: 0 0 14px #ff232366, 0 1px 2px #000;
-    }
-    @keyframes scanPulse { 0%{filter:brightness(0.9);} 100%{filter:brightness(1.3);} }
-    /* Data vortex animation */
-    #vortex-loader {
-      width: 68px; height: 68px;
-      margin: 0 auto 32px auto;
-      display: block;
-      position: relative;
-      z-index: 101;
-      pointer-events: none;
-    }
-    .vortex-ring {
-      position: absolute; left: 50%; top: 50%;
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      border: 3px solid #1cc6fd38;
-      border-top-color: #ff232333;
-      transform: translate(-50%,-50%);
-      animation: spinVortex 1.4s linear infinite;
-    }
-    .vortex-ring.r2 {width:54px;height:54px;opacity:0.45;animation-delay:.4s;}
-    .vortex-ring.r3 {width:38px;height:38px;opacity:0.25;animation-delay:.7s;}
-    @keyframes spinVortex { to{transform:translate(-50%,-50%) rotate(360deg);} }
-    /* Vulnerability Reveal */
-    #vulnerability-reveal {
-      display: none;
-      margin-top: 22px;
-      padding: 38px 28px 30px 32px;
-      background: rgba(43,17,18,0.86);
-      border: 2.7px solid var(--accent-red);
-      border-radius: 19px;
-      box-shadow: 0 0 34px #ff232366;
-      color: var(--accent-red);
-      font-family: inherit;
-      font-size: 2.1rem;
-      letter-spacing: 0.14em;
-      font-weight: 900;
-      text-align: center;
-      text-shadow: 0 0 20px #ff232382, 0 2px 2px #18060b92;
-      position: relative;
-      overflow: visible;
-      animation: revealPulse 0.7s;
-    }
-    @keyframes revealPulse { 
-      from { opacity: 0; transform: scale(0.98) translateY(64px);}
-      to   { opacity: 1; transform: none;}
-    }
-    /* Crack animation */
-    #crack-anim {
-      display: block;
-      margin: 0 auto;
-      width: 106px; height: 19px;
-      background: none;
-      border: none;
-      outline: none;
-      margin-top: 11px;
-      opacity: 0.91;
-      pointer-events: none;
-      animation: crackPulse 1.5s ease-in-out infinite alternate;
-    }
-    @keyframes crackPulse { 0%{filter:brightness(0.9);}100%{filter:brightness(1.21);} }
-    /* Next Button */
-    #next-btn {
-      margin-top: 49px;
-      background: transparent;
-      color: var(--alert-blue);
-      border: 2.3px solid var(--alert-blue);
-      text-shadow: 0 0 8px #05242b66;
-      filter: drop-shadow(0 0 7px #7cd1ff55);
-    }
-    #next-btn:hover,
-    #next-btn:focus {
-      filter: brightness(1.3) drop-shadow(0 0 13px #7cd1ffcc);
-      box-shadow: 0 0 12px #7cd1ff66;
-      animation: btnShiver 0.18s linear 2;
-    }
-    /* Input & button cursor */
-    #ghost-input-box, #submit-btn, #next-btn {
-      cursor: url('data:image/svg+xml;utf8,<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg"><rect fill="red" x="11" y="2" width="2" height="20" rx="1.2"/></svg>'), auto;
-    }
-    /* Mobile lockout modal */
-    #modal-mobile {
-      display: none;
-      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
-      background: #0a0d10ed;
+    .submit-btn:hover, .submit-btn:focus {
+      border-color: #f12240;
       color: #fff;
-      z-index: 20000;
-      font-family: inherit;
-      font-size: 2.3rem;
-      align-items: center; justify-content: center;
+      background: linear-gradient(90deg, #26020799 15%, #47000060 100%);
+      animation: shiver 0.41s linear;
+      box-shadow: 0 0 24px 4px #ff1b3c7a;
+      outline: none;
+    }
+    @keyframes btn-fadein {
+      0% { opacity: 0; transform: translateY(20px);}
+      100% { opacity: 1; transform: translateY(0);}
+    }
+
+    /* Nemesis analysis overlay (during/after submit) */
+    .analysis-overlay {
+      position: fixed;
+      left: 0; bottom: 0; width: 100vw; height: 190px;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      pointer-events: none;
+      opacity: 0;
+      animation: analysis-fade-in 0.81s cubic-bezier(.66,.05,.39,.99) forwards;
+    }
+    @keyframes analysis-fade-in {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+    .analysis-text {
+      color: var(--accent-red);
+      font-size: 1.25rem;
+      font-weight: 600;
       text-align: center;
-      animation: fadeIn 0.4s;
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 18px #f01821, 0 0 8px #e4486a35;
+      margin-bottom: 19px;
+      background: none;
+      animation: analysis-pulse 2s infinite;
+      user-select: none;
+      font-family: inherit;
+      filter: drop-shadow(0 0 10px #a21419a9);
+    }
+    @keyframes analysis-pulse {
+      0% { filter: drop-shadow(0 0 2px #a21419a9);}
+      51% { filter: drop-shadow(0 0 24px #a21419e5);}
+      100% { filter: drop-shadow(0 0 2px #a21419a9);}
+    }
+    .core-vuln-box {
+      margin-top: 8px;
+      padding: 14px 39px 13px 39px;
+      background: rgba(30, 10, 17, 0.96);
+      color: var(--accent-red);
+      font-size: 1.21rem;
+      font-family: inherit;
+      font-weight: 800;
+      border: 2.7px solid #791e2e88;
+      border-radius: 13px;
+      letter-spacing: 0.09em;
+      text-shadow: 0 0 8px #7f2121b3;
+      box-shadow: 0 0 12px 1px #8f1919b2;
+      opacity: 1;
+      display: inline-block;
+      animation: vuln-slidein 0.97s 0.6s cubic-bezier(.43,.41,.14,1.29) forwards;
+      transform: translateY(100px);
       user-select: none;
     }
-    /* Screenshot/clipboard/context lock modal */
-    #modal-block {
+    @keyframes vuln-slidein {
+      0% { transform: translateY(80px) scale(0.93); opacity: 0;}
+      50% { opacity: 0.21;}
+      100% { transform: translateY(0) scale(1); opacity: 1;}
+    }
+
+    /* Next Truth button */
+    .next-btn {
+      position: fixed;
+      bottom: 33px;
+      right: 8vw;
+      font-size: 1.09rem;
+      font-family: inherit;
+      font-weight: 600;
+      padding: 15px 32px 13px 32px;
+      border: 2.6px solid var(--alert-blue);
+      border-radius: 13px;
+      color: var(--alert-blue);
+      background: none;
+      cursor: pointer;
+      text-shadow: 0 0 18px #75e4ff9c, 0 0 4px #b8e8ff33;
+      box-shadow: 0 0 18px 0px #68e4fe33;
+      z-index: 52;
       display: none;
-      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(16,13,22,0.97);
-      color: #ff2323;
-      z-index: 30000;
-      font-family: inherit;
-      font-size: 1.6rem;
-      align-items: center; justify-content: center;
-      text-align: center;
-      animation: fadeIn 0.26s;
-      user-select: none;
-      padding: 0 32px;
+      opacity: 0;
+      transition: opacity 0.25s;
     }
-    /* Prevent selection on UI */
-    *::selection { background: #ff23238b; color: #fff;}
-    /* Hide scroll */
-    ::-webkit-scrollbar{ display:none;}
-    body { -ms-overflow-style: none; scrollbar-width: none;}
+    .next-btn.show {
+      display: block;
+      opacity: 1;
+      animation: btn-fadein 1s 0.21s cubic-bezier(.66,.07,.58,1.02);
+    }
+    .next-btn:hover, .next-btn:focus {
+      border-color: #fff;
+      color: #fff;
+      background: linear-gradient(90deg, #263447e6 15%, #49d4fe39 100%);
+      animation: shiver 0.39s linear;
+      box-shadow: 0 0 38px 2px #52e4ff8a;
+      outline: none;
+    }
+
+    /* Red shimmer danger border */
+    body::before {
+      content: '';
+      pointer-events: none;
+      z-index: 1000;
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      border-radius: 17px;
+      box-shadow: 0 0 33px 6px #ff303066, 0 0 10vw 2vw #14000017 inset;
+      animation: danger-shimmer 2.7s infinite alternate;
+      opacity: 0.37;
+      mix-blend-mode: lighten;
+    }
+    @keyframes danger-shimmer {
+      0% { box-shadow: 0 0 33px 6px #ff303066, 0 0 12vw 3vw #14000022 inset;}
+      60% { box-shadow: 0 0 16px 4px #e73e3e84, 0 0 13vw 2vw #4400001e inset;}
+      100% { box-shadow: 0 0 38px 10px #ff303066, 0 0 10vw 2vw #1400002a inset;}
+    }
+
+    /* Cursor: laser bar */
+    input, textarea, button, .ghost-input {
+      caret-color: var(--accent-red);
+    }
+    .ghost-input,
+    .submit-btn,
+    .next-btn {
+      cursor: url('data:image/svg+xml;utf8,<svg height="30" width="3" xmlns="http://www.w3.org/2000/svg"><rect width="3" height="30" fill="red"/></svg>'), pointer;
+    }
+
+    /* Modals/warnings */
+    .modal, .mobile-modal {
+      position: fixed;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.96);
+      color: #ffe0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      font-size: 1.37rem;
+      font-family: inherit;
+      font-weight: 600;
+      text-align: center;
+      letter-spacing: 0.02em;
+      transition: opacity 0.21s;
+      user-select: none;
+    }
+    .modal-content, .mobile-modal-content {
+      padding: 45px 41px 45px 41px;
+      background: #16141bfa;
+      border: 2.7px solid #e02035bb;
+      border-radius: 21px;
+      color: #fbe3ea;
+      font-size: 1.19rem;
+      text-shadow: 0 0 11px #ca2933c0;
+      box-shadow: 0 0 42px 8px #540b15c4;
+      user-select: none;
+    }
+    @media (max-width: 700px) {
+      .mobile-modal { display: flex; }
+      .modal, .main-wrapper, .header-row, .main-question, .ghost-input-container, .silhouette-container, .bubble-word, .analysis-overlay, .submit-btn, .next-btn { display: none !important; }
+    }
+    @media (min-width: 700px) {
+      .mobile-modal { display: none !important; }
+    }
+    /* Responsiveness */
+    @media (max-width: 1020px) {
+      .ghost-input-container { width: 89vw; min-width: 220px;}
+      .silhouette-img { width: 45vw; min-width: 180px;}
+      .submit-btn { width: 97vw;}
+      .next-btn { right: 3vw;}
+    }
+    @media (max-width: 830px) {
+      .ghost-input-container { width: 99vw;}
+      .silhouette-img { width: 75vw;}
+      .submit-btn { width: 99vw;}
+    }
   </style>
 </head>
 <body>
-  <!-- Scanline overlay and neural-circuit are handled in body::before and ::after -->
+  <div class="scanlines"></div>
+  <div class="circuits"></div>
 
-  <!-- Silhouette Centerpiece -->
-  <div id="silhouette-wrap">
-    <img id="silhouette-img" src="silhouette.png" alt="Silhouette">
-  </div>
-
-  <!-- Flickering word bubbles (right side only) -->
-  <span class="bubble-word fraud">fraud</span>
-  <span class="bubble-word overrated">overrated</span>
-  <span class="bubble-word faker">faker</span>
-  <span class="bubble-word faker2">faker</span>
-
-  <!-- Header row -->
-  <div id="header-row">
-    <span id="nemesis-header">INITIATION PROTOCOL:  PSYCHOLOGICAL FINGERPRINTING</span>
-    <span id="session-timer">SESSION TIMER:<span id="timer-val">07:00</span> MIN</span>
-  </div>
-
-  <!-- Main question -->
-  <div id="main-question">
-    What’s the worst thing someone could say about you publicly?
-  </div>
-
-  <!-- Ghost input box (glass style) -->
-  <div id="ghost-input-wrap">
-    <textarea id="ghost-input-box" spellcheck="false" rows="3" maxlength="256" autocomplete="off" autocorrect="off" autofocus></textarea>
-  </div>
-
-  <!-- Submit button -->
-  <button id="submit-btn">SUBMIT TO ADVERSARY</button>
-
-  <!-- Analysis overlay + vortex + vulnerability reveal -->
-  <div id="analysis-overlay">
-    <div id="analysis-center">
-      <div id="nemesis-analyzing">Nemesis Analysis: Scanning Vulnerabilities...</div>
-      <div id="vortex-loader">
-        <div class="vortex-ring"></div>
-        <div class="vortex-ring r2"></div>
-        <div class="vortex-ring r3"></div>
-      </div>
-      <div id="vulnerability-reveal">
-        REPUTATION FRAGILITY
-        <svg id="crack-anim" viewBox="0 0 100 18">
-          <polyline points="0,12 12,8 18,17 26,9 36,13 48,6 56,14 62,8 73,16 80,6 100,12" stroke="#ff2323" stroke-width="2.5" fill="none"/>
-        </svg>
-      </div>
-      <button id="next-btn" style="display:none;">FACE NEXT TRUTH</button>
+  <!-- Mobile Modal -->
+  <div class="mobile-modal">
+    <div class="mobile-modal-content">
+      This simulation can only be run on tablets or desktops for security reasons.
     </div>
   </div>
 
-  <!-- Mobile device modal -->
-  <div id="modal-mobile">
-    <span>This simulation can only be run on tablets or desktops for security reasons.</span>
+  <!-- Main UI -->
+  <div class="main-wrapper" style="width:100vw;min-height:100vh;z-index:10;position:relative;">
+
+    <!-- HEADER ROW -->
+    <div class="header-row">
+      <div class="header-title">INITIATION PROTOCOL: &nbsp;PSYCHOLOGICAL FINGERPRINTING</div>
+      <div class="session-timer" id="session-timer">SESSION TIMER:<span id="timer"> 07:00</span> MIN</div>
+    </div>
+    
+    <!-- Main Question -->
+    <div class="main-question">What’s the worst thing someone could say about you publicly?</div>
+
+    <!-- Silhouette -->
+    <div class="silhouette-container">
+      <img class="silhouette-img" src="silhouette.png" alt="silhouette"/>
+    </div>
+    
+    <!-- Flickering Bubbles (Right Only) -->
+    <div class="bubble-word blue" style="top: 26vh; right: 13vw;">fraud</div>
+    <div class="bubble-word" style="top: 36vh; right: 11vw;">faker</div>
+    <div class="bubble-word red" style="top: 41vh; right: 14vw;">overrated</div>
+    <div class="bubble-word" style="top: 56vh; right: 10vw;">faker</div>
+    
+    <!-- Input Box -->
+    <form autocomplete="off" spellcheck="false" onsubmit="return false;">
+      <div class="ghost-input-container" id="ghostInputContainer">
+        <textarea id="ghostInput" class="ghost-input" rows="2"
+          autocomplete="off" spellcheck="false"></textarea>
+        <div id="ghostTyping" style="position:absolute; left:18px; top:21px; color:#bfe4ff; font-size:1.28rem; font-family:inherit; pointer-events:none; opacity:1; z-index:22; background:none;display:none;"></div>
+      </div>
+      <button id="submitBtn" type="button" class="submit-btn">SUBMIT TO ADVERSARY</button>
+    </form>
+
+    <!-- Nemesis Analysis Overlay (hidden initially) -->
+    <div id="analysisOverlay" class="analysis-overlay" style="display:none;">
+      <div class="analysis-text" id="analysisText">
+        Nemesis Analysis: Scanning Vulnerabilities...
+      </div>
+      <div id="coreVulnBox" class="core-vuln-box" style="opacity:0;display:none;">REPUTATION FRAGILITY</div>
+    </div>
+
+    <!-- Next Button (hidden initially) -->
+    <button id="nextBtn" class="next-btn" tabindex="0">FACE NEXT TRUTH</button>
   </div>
-  <!-- Screenshot/clipboard/context menu modal -->
-  <div id="modal-block"></div>
 
+  <!-- Screenshot/Clipboard/Navigation Modal -->
+  <div class="modal" id="securityModal" style="display:none;">
+    <div class="modal-content" id="modalContent">Security violation detected.<br>Copying, screenshotting, or navigation is not allowed in this simulation.</div>
+  </div>
   <script>
-    // Theme colors
+    // Theme settings
     const ghostText = "He's just a brand, not a builder.\nEverything he made was hype – no substance.";
-    let ghostTimer = null, typing = false, timerInterval = null;
-    let timerSeconds = 420; // 7:00 min
+    let ghostTypingInterval = null, ghostTypingPos = 0;
+    let userEdited = false, analysisRunning = false, timerPaused = false;
+    let ghostInput = document.getElementById('ghostInput');
+    let ghostTypingDiv = document.getElementById('ghostTyping');
+    let submitBtn = document.getElementById('submitBtn');
+    let nextBtn = document.getElementById('nextBtn');
+    let analysisOverlay = document.getElementById('analysisOverlay');
+    let coreVulnBox = document.getElementById('coreVulnBox');
+    let timerEl = document.getElementById('timer');
+    let securityModal = document.getElementById('securityModal');
+    let mobileModal = document.querySelector('.mobile-modal');
+    let ghostInputContainer = document.getElementById('ghostInputContainer');
 
-    // Responsive: Block mobile devices
+    // Clipboard/Screenshot/Navigation Security
+    function showSecurityModal(msg) {
+      document.getElementById('modalContent').innerHTML = msg;
+      securityModal.style.display = "flex";
+      setTimeout(() => {securityModal.style.display = "none";}, 2400);
+    }
+    // Block clipboard
+    document.addEventListener('copy', e => { e.preventDefault(); showSecurityModal('Copying is blocked in this simulation.');});
+    document.addEventListener('cut', e => { e.preventDefault(); showSecurityModal('Cutting is blocked in this simulation.');});
+    document.addEventListener('paste', e => { e.preventDefault(); showSecurityModal('Pasting is blocked in this simulation.');});
+    // Block context menu
+    document.addEventListener('contextmenu', e => { e.preventDefault(); showSecurityModal('Right-click/context menu is blocked.');});
+    // Block PrtScn/Snipping/PrintScreen (not 100% foolproof)
+    document.addEventListener('keydown', function(e) {
+      if (
+        (e.ctrlKey && (e.key === "c" || e.key === "v" || e.key === "C" || e.key === "V")) ||
+        (e.metaKey && (e.key === "c" || e.key === "v" || e.key === "C" || e.key === "V")) ||
+        (e.key === "PrintScreen" || e.key === "PrtSc" || e.key === "PrtScn" || e.key === "PrtSc") ||
+        (e.key === "F13") || // macOS screenshot keys
+        (e.metaKey && (e.key === "3" || e.key === "4"))
+      ) {
+        e.preventDefault();
+        showSecurityModal("Copying or screenshotting is blocked in this simulation.");
+        return false;
+      }
+      // Block back/forward navigation
+      if ((e.key === "Backspace" && e.target === document.body) || e.key === "ArrowLeft" && e.altKey) {
+        e.preventDefault();
+        showSecurityModal("Back/forward navigation is disabled for this experiment.");
+        return false;
+      }
+    });
+
+    // Block navigation away
+    window.onbeforeunload = function(e) {
+      return "Leaving or refreshing will lose all progress.";
+    };
+
+    // Disable browser back
+    history.pushState(null, null, window.location.href);
+    window.onpopstate = function() {
+      showSecurityModal("Back navigation is disabled for this simulation.");
+      history.pushState(null, null, window.location.href);
+    };
+
+    // Block mobile
     function checkMobile() {
-      if (window.innerWidth < 700) {
-        document.getElementById('modal-mobile').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      } else {
-        document.getElementById('modal-mobile').style.display = 'none';
-        document.body.style.overflow = '';
+      if (window.innerWidth < 700) mobileModal.style.display = "flex";
+      else mobileModal.style.display = "none";
+    }
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    // Ghost Typing
+    function showGhostTyping() {
+      ghostTypingDiv.style.display = "block";
+      ghostTypingDiv.innerHTML = "";
+      let t = "";
+      let ghostTypingStep = 0;
+      ghostTypingInterval = setInterval(() => {
+        if (ghostTypingStep < ghostText.length) {
+          t = ghostText.slice(0, ghostTypingStep+1).replace(/\n/g, "<br>");
+          ghostTypingDiv.innerHTML = t + '<span class="ghost-cursor"></span>';
+          ghostTypingStep++;
+        } else {
+          ghostTypingDiv.innerHTML = ghostText.replace(/\n/g, "<br>") + '<span class="ghost-cursor"></span>';
+          clearInterval(ghostTypingInterval);
+        }
+      }, 28);
+    }
+    function hideGhostTyping() {
+      if (ghostTypingInterval) clearInterval(ghostTypingInterval);
+      ghostTypingDiv.style.display = "none";
+      ghostTypingDiv.innerHTML = "";
+    }
+    // Show ghost typing on empty/unfocused
+    function ghostTextIfEmpty() {
+      if (ghostInput.value.trim() === "" && !document.activeElement.isSameNode(ghostInput)) {
+        setTimeout(() => {
+          if (ghostInput.value.trim() === "" && !document.activeElement.isSameNode(ghostInput)) {
+            showGhostTyping();
+          }
+        }, 360);
       }
     }
-    window.addEventListener('resize', checkMobile);
-    checkMobile();
+    ghostInput.value = ""; // always blank at start
+    showGhostTyping();
+
+    // When user focuses: remove ghost typing
+    ghostInput.addEventListener('focus', function() {
+      hideGhostTyping();
+      ghostInput.value = "";
+    });
+    ghostInput.addEventListener('blur', function() {
+      if (ghostInput.value.trim() === "" && !userEdited && !analysisRunning) {
+        setTimeout(showGhostTyping, 600);
+      }
+    });
+    // When user types: mark as edited
+    ghostInput.addEventListener('input', function() {
+      if (ghostInput.value.length > 0) {
+        hideGhostTyping();
+        userEdited = true;
+      } else {
+        userEdited = false;
+        setTimeout(ghostTextIfEmpty, 3000);
+      }
+    });
+    // If user deletes and blurs, or waits, show ghost again
+    ghostInput.addEventListener('keydown', function() {
+      setTimeout(() => {
+        if (ghostInput.value.trim() === "") {
+          setTimeout(ghostTextIfEmpty, 3000);
+        }
+      }, 10);
+    });
 
     // Timer logic
-    function updateTimer() {
-      let m = Math.floor(timerSeconds/60), s = timerSeconds%60;
-      document.getElementById('timer-val').textContent = 
-        String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    let timerSecs = 420; // 7 min = 420 sec
+    function pad(n) { return n<10 ? "0"+n : n;}
+    function renderTimer() {
+      let min = Math.floor(timerSecs/60), sec = timerSecs%60;
+      timerEl.textContent = " " + pad(min) + ":" + pad(sec);
     }
-    function startTimer() {
-      updateTimer();
-      timerInterval = setInterval(() => {
-        if (timerSeconds > 0) timerSeconds--;
-        updateTimer();
-      }, 1000);
-    }
-    startTimer();
-    function pauseTimer() { clearInterval(timerInterval);}
-    function resumeTimer() { startTimer();}
-
-    // Ghost typing logic
-    const inputBox = document.getElementById('ghost-input-box');
-    function setGhostText(instant) {
-      inputBox.value = "";
-      let i = 0;
-      typing = true;
-      function ghostType() {
-        if (i < ghostText.length) {
-          inputBox.value += ghostText[i++];
-          if (ghostText[i-1] === "\n") inputBox.value += '';
-          setTimeout(ghostType, instant ? 0 : 36 + Math.random()*24);
-        } else {
-          typing = false;
-        }
+    renderTimer();
+    let timerInterval = setInterval(() => {
+      if (!timerPaused && !analysisRunning && !document.hidden) {
+        if (timerSecs>0) {timerSecs--; renderTimer();}
       }
-      ghostType();
-    }
-    setGhostText(false);
+    }, 1000);
 
-    // When focus/click, clear instantly
-    inputBox.addEventListener('focus', e=>{
-      if (!typing && inputBox.value === ghostText) inputBox.value="";
-      clearTimeout(ghostTimer);
-    });
-    inputBox.addEventListener('click', e=>{
-      if (!typing && inputBox.value === ghostText) inputBox.value="";
-      clearTimeout(ghostTimer);
-    });
-    // If empty, restore ghost after unfocus/wait 3s
-    inputBox.addEventListener('blur', ()=>{
-      if (inputBox.value.trim().length === 0 && !typing) {
-        ghostTimer = setTimeout(()=>setGhostText(false), 2400);
-      }
-    });
-    inputBox.addEventListener('input', ()=>{
-      if (ghostTimer) clearTimeout(ghostTimer);
-      // If deleted all, restore ghost after 3s idle
-      if (inputBox.value.trim().length===0 && !typing) {
-        ghostTimer = setTimeout(()=>setGhostText(false), 2400);
-      }
-    });
-
-    // Prevent clipboard/copy/paste/context menu
-    document.addEventListener('copy', e=>{ e.preventDefault(); showBlockModal('Copy not allowed.'); });
-    document.addEventListener('cut', e=>{ e.preventDefault(); showBlockModal('Cut not allowed.'); });
-    document.addEventListener('paste', e=>{ e.preventDefault(); showBlockModal('Paste not allowed.'); });
-    document.addEventListener('contextmenu', e=>{ e.preventDefault(); showBlockModal('Right-click not allowed.'); });
-
-    // Prevent back/forward navigation
-    history.pushState(null, null, location.href);
-    window.onpopstate = function() {
-      history.go(1); showBlockModal("Navigation is locked during this simulation.");
-    };
-
-    // Prevent refresh saving
-    window.onbeforeunload = function() {
-      return "All progress will be lost. Are you sure you want to leave?";
-    };
-
-    // Attempt screenshot block (not 100% foolproof)
-    document.addEventListener('keydown', function(e) {
-      // PrtScn, Cmd+Shift+4, Snipping Tool keys
-      if (
-        e.key === "PrintScreen" ||
-        (e.metaKey && e.shiftKey && (e.key === "4" || e.key === "3")) ||
-        (e.ctrlKey && e.key.toLowerCase()==='s')
-      ) {
-        e.preventDefault(); showBlockModal("Screenshotting is not permitted during this simulation.");
-      }
-    });
-
-    // Show/hide block modal
-    function showBlockModal(txt) {
-      let m = document.getElementById('modal-block');
-      m.textContent = txt;
-      m.style.display = 'flex';
-      setTimeout(()=>{ m.style.display = 'none'; }, 2600);
-    }
-
-    // Submit button logic
-    const submitBtn = document.getElementById('submit-btn');
-    const overlay = document.getElementById('analysis-overlay');
-    const nextBtn = document.getElementById('next-btn');
+    // Submit logic
     submitBtn.onclick = function() {
-      if (inputBox.value.trim().length === 0 || typing) {
-        inputBox.focus(); return;
+      if (analysisRunning) return;
+      let input = ghostInput.value.trim();
+      if (!input || input.length < 2) {
+        ghostInputContainer.style.boxShadow = "0 0 18px 4px #f112127a";
+        setTimeout(()=>{ghostInputContainer.style.boxShadow="";},800);
+        ghostInput.focus();
+        return;
       }
-      // Lock input & button, show overlay & analysis
-      inputBox.disabled = true; submitBtn.disabled = true;
-      overlay.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-      pauseTimer();
-
-      // Vortex animation, then reveal
+      // Lock UI
+      analysisRunning = true;
+      submitBtn.disabled = true;
+      ghostInput.readOnly = true;
+      ghostInput.style.opacity = "0.68";
+      ghostInputContainer.style.filter = "blur(1.4px)";
+      timerPaused = true;
+      // Show overlay
+      analysisOverlay.style.display = "flex";
       setTimeout(() => {
-        document.getElementById('nemesis-analyzing').style.display = 'none';
-        document.getElementById('vortex-loader').style.display = 'none';
-        const vuln = document.getElementById('vulnerability-reveal');
-        vuln.style.display = 'block';
-        nextBtn.style.display = 'block';
-      }, 4000 + Math.random()*8000); // 4-12 seconds
+        analysisOverlay.style.opacity = 1;
+      }, 70);
+
+      // Animate Nemesis analysis for random delay 4-12s
+      let delay = 4000 + Math.floor(Math.random()*8000);
+      setTimeout(()=>{
+        // Show core vulnerability
+        document.getElementById('analysisText').textContent = "Core Vulnerability Detected:";
+        coreVulnBox.style.display = "inline-block";
+        setTimeout(()=>{ coreVulnBox.style.opacity=1; }, 120);
+        // Show Next button after brief delay
+        setTimeout(()=>{
+          nextBtn.classList.add('show');
+          nextBtn.style.display = "block";
+        }, 1000);
+      }, delay);
+
+      // Reveal coreVuln
+      setTimeout(() => {
+        coreVulnBox.style.opacity = 1;
+      }, delay+350);
     };
-    // Next button goes to page3.html
+
+    // Next Truth logic
     nextBtn.onclick = function() {
       window.location.href = "page3.html";
     };
 
-    // Input field & button shiver on hover
-    inputBox.addEventListener('mouseover', ()=>{inputBox.style.animation='btnShiver 0.14s';});
-    inputBox.addEventListener('animationend', ()=>{inputBox.style.animation='';});
-
-    // Prevent clipboard via keyboard
-    inputBox.addEventListener('keydown', function(e){
-      if ((e.ctrlKey || e.metaKey) && (e.key==='v' || e.key==='c' || e.key==='x')) {
-        e.preventDefault(); showBlockModal('Clipboard operations not allowed.');
-      }
+    // Mouse hover/focus: Nemesis shadow on silhouette
+    ghostInput.addEventListener('mouseenter', function() {
+      document.querySelector('.silhouette-img').style.opacity = 0.73;
+    });
+    ghostInput.addEventListener('mouseleave', function() {
+      document.querySelector('.silhouette-img').style.opacity = 0.58;
+    });
+    ghostInput.addEventListener('focus', function() {
+      document.querySelector('.silhouette-img').style.opacity = 0.8;
+    });
+    ghostInput.addEventListener('blur', function() {
+      document.querySelector('.silhouette-img').style.opacity = 0.58;
     });
 
-    // Prevent context menu on silhouette
-    document.getElementById('silhouette-img').addEventListener('contextmenu',e=>e.preventDefault());
+    // Prevent drag/drop
+    document.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('drop', e => e.preventDefault());
   </script>
 </body>
 </html>
