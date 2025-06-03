@@ -2,262 +2,356 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Project Nemesis: Initiation Protocol — Q1</title>
+  <title>Initiation Protocol: Psychological Fingerprinting</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Fira Mono fallback -->
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');
+    /* === RESET & FONTS === */
     html, body {
-      margin: 0; padding: 0;
-      background: linear-gradient(120deg, #0a0a0b 60%, #15111b 100%);
-      height: 100vh; width: 100vw; min-height: 100vh; min-width: 100vw;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0a0a0b 0%, #141317 100%);
+      color: #f8f9fb;
       font-family: 'JetBrains Mono', 'Fira Mono', monospace;
-      color: #f5f6f8;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      min-height: 100vh;
+      width: 100vw;
       overflow: hidden;
       user-select: none;
     }
-    #mobile-block {
-      display: none; position: fixed; z-index: 200;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #0a0a0b; color: #fff; justify-content: center; align-items: center; text-align: center;
-      font-size: 2.2vw; font-family: 'JetBrains Mono', monospace;
+    @font-face {
+      font-family: 'JetBrains Mono';
+      src: local('JetBrains Mono'), local('Fira Mono'), monospace;
     }
-    body, input, textarea, button { -webkit-user-select: none; user-select: none; }
+
+    /* === SECURITY: BLOCK SELECTION/COPY/CONTEXT === */
+    body, input, textarea, button {
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      caret-color: #f8f9fb;
+    }
     ::selection { background: none; }
     body::-webkit-scrollbar { display: none; }
-    /* Security */
-    .no-copy, textarea, input { -webkit-user-select: none; user-select: none; }
-    /* Header */
-    .header {
+
+    /* === SECURITY: BLOCK SCROLL === */
+    html, body { overflow: hidden !important; }
+
+    /* === SECURITY: BLOCK CONTEXT MENU === */
+    body { pointer-events: auto; }
+
+    /* === BLOCK MOBILE === */
+    #mobile-block {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: #0a0a0b;
+      color: #fff;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.7rem;
-      font-weight: 700;
-      text-align: center;
-      color: #fafbfc;
+      font-size: 2.2vw;
       letter-spacing: 0.01em;
-      padding-top: 2.8vh;
-      margin-bottom: 0.4vh;
-      border-top: 2.5px solid #550d51;
-      border-bottom: 0;
-      background: transparent;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    /* === HEADER / TIMER === */
+    .header {
       width: 100vw;
-      box-sizing: border-box;
-      text-shadow: none;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin-top: 2.2vh;
+      color: #ececf0;
+      text-shadow: 0 0 6px #16181b70;
     }
     .timer {
       position: absolute;
-      top: 2.6vh; right: 3vw;
-      font-family: inherit;
-      font-weight: 600;
+      top: 2.2vh;
+      right: 3vw;
       font-size: 1.1rem;
-      letter-spacing: 0.06em;
-      color: #e6e8eb;
-      background: rgba(12,12,18,0.22);
-      border: 1.1px solid #31213a;
-      border-radius: 8px;
-      padding: 3px 16px;
-      min-width: 78px;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      color: #e7e9ed;
+      border: 1px solid #232427;
+      border-radius: 6px;
+      padding: 3px 18px;
+      background: rgba(13,13,14,0.55);
+      box-shadow: 0 0 10px 1px #181a1e20;
       text-align: right;
-      box-shadow: none;
-      z-index: 10;
+      min-width: 82px;
+      transition: border 0.2s;
     }
-    .nem-main {
-      width: 100vw;
-      height: 86vh;
+
+    /* === MAIN WRAPPER === */
+    .main {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
+      min-height: 89vh;
+      width: 100vw;
+      padding-bottom: 30px;
       position: relative;
     }
-    .glyph-bg {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0;
+
+    /* === SILHOUETTE === */
+    .silhouette-wrap {
+      margin-top: 1.2vh;
+      margin-bottom: 2.5vh;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .silhouette-bg-matrix {
+      position: absolute;
+      inset: 0;
       pointer-events: none;
-      opacity: 0.13;
-      filter: blur(0.5px) grayscale(0.94);
-      background: transparent;
-    }
-    /* Silhouette + Bubbles */
-    .silhouette-area {
-      display: flex; flex-direction: row;
-      align-items: center; justify-content: center;
-      margin: 4.5vh 0 2vh 0;
-      position: relative;
-      width: 540px; max-width: 92vw; min-width: 330px;
-      height: 230px;
+      z-index: 1;
+      opacity: 0.27;
+      filter: blur(0.7px);
     }
     .silhouette-img {
-      display: block;
-      width: 158px; min-width: 120px; max-width: 180px;
-      height: 230px; min-height: 140px; max-height: 260px;
-      object-fit: contain;
-      filter: drop-shadow(0 0 32px #301c4e) brightness(0.94);
+      max-width: 265px;
+      max-height: 38vh;
+      min-width: 170px;
+      min-height: 150px;
+      border-radius: 2vw;
+      filter: drop-shadow(0 0 38px #17172588) blur(0.7px);
+      box-shadow: 0 0 35px #1b122d44;
       z-index: 2;
-      background: transparent;
-      margin: 0 6px;
-    }
-    .bubble {
-      position: absolute;
-      font-family: inherit;
-      font-size: 1.01rem;
-      font-weight: 600;
-      color: #19181d;
-      background: #e6e6e3;
-      border-radius: 6px 20px 20px 10px / 13px 17px 12px 16px;
-      padding: 5.5px 18px 5.5px 12px;
-      border: 1px solid #d5d6d3;
-      min-width: 70px;
+      background: #0a0a0b;
+      object-fit: contain;
+      user-drag: none;
       pointer-events: none;
-      box-shadow: none;
-      letter-spacing: 0.025em;
-      opacity: 0.91;
-      z-index: 8;
-      text-align: left;
     }
-    /* Specific bubble placement (precise, asymmetric) */
-    .bubble1 { left: 24px; top: 6px; }
-    .bubble2 { left: 38px; top: 53px; }
-    .bubble3 { left: 41px; top: 110px; }
-    .bubble4 { left: 298px; top: 33px; }
-    .bubble5 { left: 314px; top: 90px; }
-    .bubble6 { left: 315px; top: 158px; }
-    /* Input Area */
+
+    /* === QUESTION === */
+    .question {
+      font-size: 1.18rem;
+      color: #fafbfc;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-align: center;
+      margin-bottom: 2.2vh;
+      margin-top: 0.5vh;
+      text-shadow: 0 0 5px #18181e45;
+      transition: color 0.12s;
+    }
+
+    /* === INPUT === */
     .input-area {
-      width: 390px; max-width: 94vw; margin: 0 auto; position: relative;
-      margin-top: 14px;
-      display: flex; flex-direction: column; align-items: center;
+      width: 100%;
+      max-width: 500px;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     textarea {
-      width: 100%; min-height: 55px; max-height: 108px;
       font-family: 'JetBrains Mono', 'Fira Mono', monospace;
-      font-size: 1.09rem;
+      width: 100%;
+      min-height: 90px;
+      max-height: 150px;
+      background: #111217;
+      border: 1.3px solid #232227;
+      border-radius: 8px;
+      color: #f8f9fb;
+      font-size: 1rem;
       font-weight: 500;
-      background: transparent;
-      border: 1.1px solid #34313d;
-      border-radius: 7px;
-      color: #e6e8f1;
-      padding: 17px 16px;
-      margin-bottom: 12px;
-      outline: none;
+      padding: 18px 20px 18px 20px;
       resize: none;
-      box-shadow: none;
-      caret-color: #a495c8;
-      transition: border 0.18s;
-      z-index: 4;
-      letter-spacing: 0.015em;
+      box-shadow: 0 0 8px #23243318;
+      transition: border 0.2s, box-shadow 0.2s;
+      outline: none;
+      caret-color: #f8f9fb;
+      letter-spacing: 0.02em;
+      margin-bottom: 22px;
+      z-index: 3;
+      opacity: 1;
       position: relative;
     }
-    textarea:focus { border-color: #7b5eb2; }
-    textarea:disabled { color: #7a7c86; background: transparent; border: 1.1px solid #71577b; }
-    .ghost-text {
-      position: absolute; left: 19px; top: 13px; z-index: 5;
-      font-size: 1.09rem; color: #b9b8c6; opacity: 0.67;
-      font-family: inherit; pointer-events: none; user-select: none;
-      letter-spacing: 0.014em; transition: opacity 0.16s;
-      white-space: pre-line; line-height: 1.65;
+    textarea:focus {
+      border: 1.3px solid #bdbcf6;
+      box-shadow: 0 0 10px #9b9cf720;
     }
-    .ghost-glitch { animation: ghostglitch 0.28s; }
+    textarea.disabled, textarea:disabled {
+      background: #171821;
+      color: #999;
+      border: 1.2px solid #dd344490;
+      cursor: not-allowed;
+    }
+    .ghost-text {
+      position: absolute;
+      top: 19px;
+      left: 26px;
+      color: #7e808d;
+      opacity: 0.6;
+      pointer-events: none;
+      font-size: 1rem;
+      white-space: pre-line;
+      font-family: inherit;
+      user-select: none;
+      z-index: 4;
+      transition: opacity 0.23s, filter 0.19s;
+      filter: blur(0.2px);
+      text-shadow: 0 0 1.5px #1a1b2055;
+      animation: ghostin 1.2s;
+    }
+    @keyframes ghostin {
+      0% { opacity: 0; filter: blur(2px);}
+      100% { opacity: 0.6; filter: blur(0.2px);}
+    }
+    .ghost-glitch {
+      animation: ghostglitch 0.28s;
+    }
     @keyframes ghostglitch {
-      0% { opacity: 0.67; filter: blur(0.3px);}
-      60% { opacity: 0.16; filter: blur(2.5px);}
+      0% { opacity: 0.6; filter: blur(0.2px);}
+      55% { opacity: 0.15; filter: blur(2.8px);}
+      80% { opacity: 0.45; filter: blur(0.7px);}
       100% { opacity: 0; filter: blur(0.1px);}
     }
-    /* Button */
+
+    /* === BUTTONS === */
     .btn {
-      font-family: inherit;
-      font-size: 1.12rem;
-      font-weight: 700;
-      color: #f3f3f7;
-      background: #191a21;
-      border: none;
-      border-radius: 6px;
-      padding: 15px 0;
+      display: block;
       width: 100%;
       max-width: 390px;
-      letter-spacing: 0.06em;
-      margin-top: 5px;
-      opacity: 1;
-      transition: background 0.16s, border 0.16s, color 0.14s, opacity 0.2s;
+      margin: 0 auto;
+      margin-bottom: 12px;
+      padding: 15px 0;
+      background: #232227;
+      color: #fafbfc;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 0 15px #17172715;
       cursor: pointer;
+      transition: border 0.18s, background 0.18s, color 0.16s;
       outline: none;
-      box-shadow: none;
+      position: relative;
     }
-    .btn:disabled, .btn.disabled { opacity: 0.41; cursor: not-allowed; }
-    .btn:focus { outline: 2px solid #a592c9; }
-    .btn:hover:not(:disabled) { background: #23223a; color: #e3e5fa; }
-    /* Processing */
+    .btn:focus {
+      border: 1.7px solid #e0e0ef88;
+    }
+    .btn:hover:enabled {
+      border: 1.3px solid #bdbcf6;
+      background: #23232d;
+      color: #f7f8ff;
+    }
+    .btn:disabled, .btn.disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+    }
+    .btn.sharper {
+      border-radius: 5px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      box-shadow: 0 0 7px #1a1a2313;
+    }
+
+    /* === PROCESSING STATE === */
     .processing-row {
-      display: flex; align-items: center; justify-content: center;
-      margin-top: 20px; gap: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 22px;
+      gap: 14px;
     }
     .gear {
-      width: 22px; height: 22px;
-      animation: spin 0.77s linear infinite;
-      opacity: 0.84;
+      width: 24px;
+      height: 24px;
+      animation: spin 0.88s linear infinite;
+      opacity: 0.77;
       filter: grayscale(1) brightness(1.13);
       margin-right: 8px;
     }
-    @keyframes spin { 0% {transform:rotate(0);} 100% {transform:rotate(360deg);} }
+    @keyframes spin {
+      0% { transform: rotate(0);}
+      100% { transform: rotate(360deg);}
+    }
     .processing-txt {
-      font-size: 1.03rem;
-      color: #e6e8eb;
+      font-size: 0.99rem;
+      color: #f3f3f8;
       font-family: inherit;
-      opacity: 0.85;
-      letter-spacing: 0.04em;
-      margin-left: 2px;
+      letter-spacing: 0.025em;
+      font-weight: 500;
+      opacity: 0.88;
+      margin-left: 1px;
       user-select: none;
     }
-    /* Reveal */
+
+    /* === VULNERABILITY REVEAL === */
     .vulnerability {
-      position: fixed; bottom: 32px; right: 34px;
-      display: flex; align-items: center; padding: 10px 22px;
-      background: #101015ef;
-      border-left: 4px solid #f7f7fb;
-      border-radius: 5px;
-      box-shadow: 0 2px 22px #0f112513;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 98%;
+      max-width: 430px;
+      margin: 28px auto 8px auto;
+      padding: 12px 18px 12px 24px;
+      background: #101012ef;
+      border-left: 3.5px solid #f7f7fb;
+      border-radius: 8px;
+      box-shadow: 0 2px 22px #10101515;
       font-family: inherit;
-      font-size: 1.07rem;
-      font-weight: 700;
+      font-size: 1.08rem;
+      font-weight: 600;
       color: #f7f7fb;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
       opacity: 0;
       pointer-events: none;
       transform: translateY(18px);
-      transition: opacity 0.25s, transform 0.25s;
-      z-index: 25;
-      background-clip: padding-box;
-      border-top: none; border-bottom: none; border-right: none;
-      overflow: hidden;
+      transition: opacity 0.23s, transform 0.25s;
+      z-index: 10;
     }
     .vulnerability.visible {
-      opacity: 0.97;
+      opacity: 0.93;
       pointer-events: auto;
       transform: translateY(0);
-      animation: scanline 1.1s linear;
+      animation: scanline 0.9s linear;
     }
     @keyframes scanline {
-      0% { filter: brightness(0.6) blur(2px);}
-      85% { filter: brightness(1.05) blur(0);}
-      100% { filter: brightness(1.15) blur(0);}
+      0% { filter: brightness(0.6) blur(1.8px);}
+      85% { filter: brightness(1.04) blur(0);}
+      100% { filter: brightness(1.18) blur(0);}
     }
+
+    /* === NEXT BUTTON === */
     .btn.next {
       margin-top: 15px;
       background: #232227;
-      color: #eaf0fd;
+      border: 1.7px solid #fafbfc40;
+      color: #fafbfc;
       border-radius: 5px;
       font-weight: 700;
       letter-spacing: 0.08em;
       font-size: 1.08rem;
-      box-shadow: none;
-      border: 1.5px solid #e2e2e740;
-      transition: border 0.13s, color 0.15s, background 0.14s;
-      width: 390px; max-width: 94vw;
+      box-shadow: 0 0 10px #18182518;
+      transition: border 0.16s, color 0.16s, background 0.16s;
     }
     .btn.next:hover:enabled {
-      border: 1.5px solid #f8f8f8a5;
+      border: 1.7px solid #eaeaea99;
       color: #ffffff;
-      background: #222234;
+      background: #232237;
+    }
+
+    /* === SECURITY: BLOCK BACK NAV === */
+    #back-block {
+      display: none;
     }
   </style>
 </head>
@@ -268,27 +362,23 @@
       <span style="font-size: 1.3vw;opacity:.5;display:block;margin-top:15px;">Project Nemesis Initiation Protocol</span>
     </div>
   </div>
-  <div class="header">
-    Question 1: What’s the worst thing someone could say about you publicly?
-    <div class="timer" id="timer">07:00</div>
-  </div>
-  <div class="nem-main">
-    <canvas class="glyph-bg" id="glyph-bg"></canvas>
-    <div class="silhouette-area">
-      <!-- Bubbles -->
-      <div class="bubble bubble1">fraud</div>
-      <div class="bubble bubble2">fraud</div>
-      <div class="bubble bubble3">poser</div>
-      <div class="bubble bubble4">wannabe</div>
-      <div class="bubble bubble5">overrated</div>
-      <div class="bubble bubble6">phony</div>
+
+  <div id="back-block"></div>
+  <div class="header">Question 1: What’s the worst thing someone could say about you publicly?</div>
+  <div class="timer" id="timer">07:00</div>
+  <div class="main">
+    <div class="silhouette-wrap">
+      <!-- Simulated matrix static effect using canvas -->
+      <canvas class="silhouette-bg-matrix" id="matrix-canvas"></canvas>
       <img src="silhouette.png" alt="Silhouette" class="silhouette-img" draggable="false" />
     </div>
+
     <div class="input-area" style="position:relative;">
-      <textarea id="inputBox" maxlength="300" autocomplete="off" spellcheck="false" rows="2" aria-label="Reveal your core vulnerability"></textarea>
+      <textarea id="inputBox" maxlength="300" autocomplete="off" spellcheck="false" rows="3" aria-label="Reveal your core vulnerability"></textarea>
       <div id="ghostText" class="ghost-text"></div>
       <button class="btn" id="revealBtn">REVEAL VULNERABILITY</button>
     </div>
+
     <div class="processing-row" id="processingRow" style="display:none;">
       <svg class="gear" viewBox="0 0 32 32" fill="none">
         <g>
@@ -298,11 +388,13 @@
       </svg>
       <span class="processing-txt">Processing...</span>
     </div>
+
     <div class="vulnerability" id="vulnerabilityBox">
       &rarr; Core Vulnerability: <span style="margin-left:8px;">Reputation Fragility</span>
     </div>
-    <button class="btn next" id="nextBtn" style="display:none;">ADVANCE TO NEXT ADVERSARY TRIAL</button>
+    <button class="btn next sharper" id="nextBtn" style="display:none;">ADVANCE TO NEXT ADVERSARY TRIAL</button>
   </div>
+
   <script>
     // ======== MOBILE BLOCKER ========
     function isMobile() {
@@ -315,21 +407,29 @@
     }
     if (isMobile()) showMobileBlock();
     window.addEventListener('resize', () => { if (isMobile()) showMobileBlock(); });
+
     // ======== SECURITY: BLOCK CONTEXT MENU, COPY, PASTE, PRINTSCREEN ========
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
     document.addEventListener('keydown', function(e) {
+      // Block Print Screen, Ctrl+P, Ctrl+S, Ctrl+U, Ctrl+C/V/X
       if (e.key === "PrintScreen" ||
         ((e.ctrlKey || e.metaKey) && ['p','s','u','c','v','x','a'].includes(e.key.toLowerCase()))
       ) { e.preventDefault(); }
+      // Block back navigation
       if (e.key === "Backspace" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) e.preventDefault();
     });
+
+    // ======== SECURITY: BLOCK NAVIGATION / BACK ========
     history.pushState(null, null, location.href);
     window.onpopstate = function() {
       history.pushState(null, null, location.href);
+      document.getElementById('back-block').style.display = 'block';
+      setTimeout(() => {document.getElementById('back-block').style.display = 'none';}, 4000);
     };
+
     // ======== TIMER ========
     let time = 420; // 7 minutes
     let timerInt = setInterval(updateTimer, 1000);
@@ -342,21 +442,44 @@
       let sec = String(time % 60).padStart(2, '0');
       document.getElementById('timer').textContent = `${min}:${sec}`;
     }
-    // ======== GHOST TEXT ========
+
+    // ======== GHOST TEXT LOGIC ========
     const inputBox = document.getElementById('inputBox');
     const ghostText = document.getElementById('ghostText');
-    const ghostContent = `He’s just a brand, not a builder.`;
-    function showGhost() { ghostText.textContent = ghostContent; ghostText.style.opacity = 0.67; ghostText.classList.remove('ghost-glitch'); }
-    function hideGhost() { ghostText.classList.add('ghost-glitch'); setTimeout(() => { ghostText.style.opacity = 0; }, 120);}
-    inputBox.addEventListener('focus', () => { if (!inputBox.value) hideGhost(); });
-    inputBox.addEventListener('blur', () => { if (!inputBox.value) showGhost(); });
-    inputBox.addEventListener('input', () => { if (inputBox.value.length) { hideGhost(); } else { showGhost(); } });
+    const ghostContent = `He’s just a brand, not a builder.\nEverything he made was hype — no substance.`;
+
+    function showGhost() {
+      ghostText.textContent = ghostContent;
+      ghostText.style.opacity = 0.6;
+      ghostText.classList.remove('ghost-glitch');
+    }
+    function hideGhost() {
+      ghostText.classList.add('ghost-glitch');
+      setTimeout(() => { ghostText.style.opacity = 0; }, 130);
+    }
+    inputBox.addEventListener('focus', () => {
+      if (!inputBox.value) hideGhost();
+    });
+    inputBox.addEventListener('blur', () => {
+      if (!inputBox.value) showGhost();
+    });
+    inputBox.addEventListener('input', () => {
+      if (inputBox.value.length) {
+        hideGhost();
+      } else {
+        showGhost();
+      }
+    });
+
+    // ======== INITIAL GHOST LOAD ========
     showGhost();
+
     // ======== BUTTON INTERACTION ========
     const revealBtn = document.getElementById('revealBtn');
     const processingRow = document.getElementById('processingRow');
     const vulnerabilityBox = document.getElementById('vulnerabilityBox');
     const nextBtn = document.getElementById('nextBtn');
+
     let processed = false;
     revealBtn.onclick = function() {
       if (processed) return;
@@ -365,8 +488,9 @@
       revealBtn.disabled = true;
       revealBtn.classList.add('disabled');
       processingRow.style.display = 'flex';
-      inputBox.style.border = "1.3px solid #e0e1e9";
+      inputBox.style.border = "1.4px solid #e0e1e9";
       timerPaused = true;
+      // Random delay (4–12s)
       let delay = 4000 + Math.floor(Math.random()*8000);
       setTimeout(() => {
         processingRow.style.display = 'none';
@@ -375,32 +499,47 @@
         processed = true;
       }, delay);
     };
+
+    // ======== NEXT BUTTON LOGIC ========
     nextBtn.onclick = () => { window.location.href = 'page3.html'; };
-    // ======== GLYPH CANVAS ========
-    const chars = [
-      'ア','カ','セ','テ','メ','ロ','ヌ','ポ','リ','サ','ヂ','ケ','ヲ','ヨ','ハ','ザ','タ','ベ','ネ','コ','ヤ','ホ','モ','ボ','ギ','ダ','ニ','グ','ジ','パ','ペ','パ','バ','ゲ','ガ','ピ','フ','ヂ','ユ','ユ','マ','ミ','リ','ワ','エ','ナ','ソ','ヴ','ビ','ヂ','オ','ル'
-    ];
-    function glyphBg() {
-      const canvas = document.getElementById('glyph-bg');
-      const ctx = canvas.getContext('2d');
-      let w = canvas.width = window.innerWidth, h = canvas.height = window.innerHeight;
-      function draw() {
-        ctx.clearRect(0,0,w,h);
-        let fontSize = 24, cols = Math.floor(w/fontSize), rows = Math.floor(h/fontSize);
-        for (let i = 0; i < cols; i++) {
-          for (let j = 0; j < rows; j++) {
-            if (Math.random() < 0.23) {
-              ctx.font = `${fontSize-8+Math.random()*7}px JetBrains Mono, Fira Mono, monospace`;
-              ctx.fillStyle = `rgba(204,202,232,${0.08 + Math.random()*0.09})`;
-              ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*fontSize, j*fontSize);
-            }
-          }
-        }
-      }
-      draw();
-      setInterval(draw, 450);
+
+    // ======== GHOST TEXT INITIAL POSITIONING ========
+    function updateGhostPos() {
+      // Ensure ghost text matches textarea font
+      const rect = inputBox.getBoundingClientRect();
+      ghostText.style.width = rect.width + 'px';
+      ghostText.style.height = rect.height + 'px';
     }
-    setTimeout(glyphBg, 400);
+    setTimeout(updateGhostPos, 200);
+    window.addEventListener('resize', updateGhostPos);
+
+    // ======== MATRIX STATIC CANVAS ========
+    function matrixStatic(canvas) {
+      let ctx = canvas.getContext('2d');
+      let w = canvas.width = 260;
+      let h = canvas.height = 185;
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < 30; i++) {
+          let x = Math.random() * w;
+          let y = Math.random() * h;
+          let len = Math.random() * 14 + 8;
+          ctx.globalAlpha = 0.08 + Math.random()*0.08;
+          ctx.strokeStyle = Math.random() > 0.96 ? '#aaa9dd' : '#323043';
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y+len);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      }
+      setInterval(draw, 200);
+    }
+    setTimeout(() => {
+      const canvas = document.getElementById('matrix-canvas');
+      if (canvas) matrixStatic(canvas);
+    }, 500);
+
     // ======== NO STATE SAVED ON REFRESH ========
     window.onbeforeunload = function(){ return undefined; };
   </script>
