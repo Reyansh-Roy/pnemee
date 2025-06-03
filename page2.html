@@ -1,159 +1,501 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Initiation Protocol: Psychological Fingerprinting</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Page 2 – Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body, html {
-      background: #111;
-      color: #b0c4de;
-      font-family: 'Fira Mono', monospace;
+    /* =====================================================================================
+       PAGE2.HTML – Exact recreation of “Psychological Fingerprinting” screen as shown
+       =====================================================================================
+       REQUIREMENTS (strict pixel‐perfect match):
+         • Background: matte black (#111).
+         • Fonts (monospace family): “Fira Mono”, “Roboto Mono”, “Menlo”, “Consolas”, monospace.
+         • Heading (top‐center): pale blue‐gray monospace, ALL CAPS.
+         • Session Timer (top‐right): smaller red monospace in thin border box.
+         • Question (below header, center): large pale blue‐gray monospace, center‐aligned.
+         • Silhouette Image (center background): opacity 0.65, width ≈55% of page, centered, fixed.
+         • Overlay Words (“fraud”, “overrated”, “faker”, “faker”): absolute positions, semi-transparent, same font.
+         • Input Box (beneath question): dark-gray mono box, pre-filled ghost text in pale blue-gray, read-only.
+         • “SUBMIT TO ADVERSARY” button (left under input): red outline, mono, all caps, semi-transparent hover effect.
+         • “Nemesis Analysis: Scanning Vulnerabilities…” (center under silhouette, bold red, mono): appears _only_ after clicking Submit.
+         • “REPETATION F RAGTILITY” (boxed, all caps, red, mono): appears 1 second after “Nemesis Analysis…”, only after Submit.
+         • “FACE NEXT TRUTH” (bottom-right): icy blue monospace all caps; appears only after the above appear.
+         • INTERACTIONS:
+         - Timer: starts at 00:00 on page load, counts up in MM:SS. When “Nemesis Analysis…” displays, timer PAUSES.
+         - Clicking “SUBMIT TO ADVERSARY” hides input & submit, waits random 4–12 seconds, then fades in
+           “Nemesis Analysis: Scanning Vulnerabilities…”. After 1 second, fade in “REPETATION F RAGTILITY” box
+           and THEN show “FACE NEXT TRUTH” button.
+         - Clicking “FACE NEXT TRUTH” navigates to page3.html.
+         - Disable mobile (show full‐page overlay if on phone).
+         - Disable right‐click, Ctrl+C/V/X, PrintScreen (show 2s blur overlay on PrintScreen).
+       =====================================================================================
+    */
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* GLOBAL RESET & BOX‐SIZING                                                                 */
+    * {
       margin: 0;
       padding: 0;
-      height: 100vh;
-      overflow: hidden;
-      position: relative;
+      box-sizing: border-box;
+      user-select: none;        /* disable text selection */
     }
-    .header {
-      text-align: center;
-      text-transform: uppercase;
-      padding-top: 20px;
-      font-size: 18px;
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;         /* no scrolling */
+      background: #111;         /* matte black background */
+      font-family: "Fira Mono", "Roboto Mono", "Menlo", "Consolas", monospace;
+      color: #ADC1C6;           /* default pale blue‐gray */
     }
-    .session-timer {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      color: #EF5350;
-      font-weight: bold;
-      border: 1px solid #EF5350;
-      padding: 2px 8px;
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* DISABLE CONTEXT MENU & CLIPBOARD KEYS                                                    */
+    body {
+      -webkit-touch-callout: none;       /* iOS Safari */
+      -webkit-user-select: none;         /* Safari */
+      -khtml-user-select: none;          /* Konqueror HTML */
+      -moz-user-select: none;            /* Firefox */
+      -ms-user-select: none;             /* Internet Explorer/Edge */
+      user-select: none;                 /* Standard */
     }
-    .question {
-      text-align: center;
-      margin-top: 40px;
-      font-size: 24px;
-    }
-    .input-box {
-      margin: 20px auto;
-      width: 70%;
-      background: #222;
-      color: #b0c4de;
-      padding: 10px;
-      font-size: 18px;
-      border-radius: 4px;
-    }
-    .btn-submit, .btn-next, .btn-red {
-      display: inline-block;
-      cursor: pointer;
-      padding: 10px 20px;
-      font-size: 14px;
-      text-transform: uppercase;
-      font-weight: bold;
-      border-radius: 4px;
-      transition: opacity 0.3s;
-    }
-    .btn-submit {
-      color: #EF5350;
-      border: 1px solid #EF5350;
-      margin-left: 15%;
-    }
-    .btn-next {
-      color: #b0c4de;
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
+    document.oncontextmenu = () => false;
+    document.onkeydown = function(e) {
+      // Disable Ctrl+C, Ctrl+V, Ctrl+X
+      if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) {
+        e.preventDefault();
+      }
+      // Disable PrintScreen (Key “PrintScreen”)
+      if (e.key === "PrintScreen") {
+        e.preventDefault();
+        showBlurOverlay();
+        setTimeout(hideBlurOverlay, 2000);
+      }
+    };
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* MOBILE DETECTION OVERLAY (no mobile support)                                              */
+    #mobile‐overlay {
       display: none;
-    }
-    .analysis {
-      position: absolute;
-      top: 55%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #EF5350;
-      text-align: center;
-      font-weight: bold;
-      display: none;
-    }
-    .vuln-box {
-      border: 1px solid #EF5350;
-      padding: 6px;
-      margin-top: 10px;
-      display: inline-block;
-    }
-    .overlay-text {
-      position: absolute;
-      opacity: 0.2;
-      color: white;
-      font-size: 22px;
-      font-weight: bold;
-      user-select: none;
-    }
-    .silhouette {
       position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.95);
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+      padding-top: 40vh;
+      z-index: 9999;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* BLUR OVERLAY ON PRINTSCREEN                                                               */
+    #blur‐overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9998;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* CONTAINER                                                                                 */
+    #container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* HEADING (top‐center)                                                                       */
+    #heading {
+      position: absolute;
+      top: 2vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      color: #8FB0BD;        /* slightly darker pale blue‐gray */
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* SESSION TIMER (top‐right)                                                                  */
+    #session‐timer‐container {
+      position: absolute;
+      top: 2vh;
+      right: 2vw;
+      border: 1px solid #EF5350;
+      padding: 0.3rem 0.6rem;
+      color: #EF5350;
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      z-index: 10;
+    }
+    #session‐timer {
+      letter-spacing: 1px;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* QUESTION (below heading, center‐aligned)                                                   */
+    #question {
+      position: absolute;
+      top: 12vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
+      color: #ADC1C6;
+      text-align: center;
+      max-width: 80vw;
+      line-height: 1.4;
+      z-index: 10;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* SILHOUETTE IMAGE (center, fixed background)                                               */
+    #silhouette {
+      position: absolute;
       top: 50%;
       left: 50%;
+      width: 55vw;            /* approx 55% of page width */
+      max-width: 900px;
       transform: translate(-50%, -50%);
       opacity: 0.65;
-      width: 55%;
+      z-index: 1;
       pointer-events: none;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* OVERLAY WORDS (absolute)                                                                   */
+    .overlay‐word {
+      position: absolute;
+      font-size: 2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      z-index: 5;
+    }
+    /* “fraud”: big, left side of silhouette */
+    #word‐fraud {
+      top: 30%;
+      left: 55%;
+      transform: translate(-50%, -50%);
+      color: rgba(173, 193, 198, 0.4);    /* pale blue‐gray, 40% opacity */
+    }
+    /* “overrated”: red, right side of silhouette */
+    #word‐overrated {
+      top: 31%;
+      left: 79%;
+      transform: translate(-50%, -50%);
+      color: rgba(239, 83, 80, 0.5);      /* red #EF5350, 50% opacity */
+    }
+    /* “faker” (upper): medium, bottom‐right of silhouette */
+    #word‐faker1 {
+      top: 59%;
+      left: 58%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      color: rgba(200, 200, 200, 0.35);   /* light gray (#C8C8C8), 35% opacity */
+    }
+    /* “faker” (lower): smaller, lower‐right */
+    #word‐faker2 {
+      top: 63%;
+      left: 77%;
+      transform: translate(-50%, -50%);
+      font-size: 1.2rem;
+      color: rgba(220, 220, 220, 0.3);   /* very light gray, 30% opacity */
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* INPUT BOX (beneath question)                                                                */
+    #input‐box {
+      position: absolute;
+      top: 24vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70vw;
+      max-width: 900px;
+      height: 6vh;
+      background: #222;           /* dark gray */
+      border: 1px solid #444;     /* slightly lighter border */
+      border-radius: 4px;
+      padding: 0.8rem 1rem;
+      color: #ADC1C6;             /* pale blue‐gray text */
+      font-size: 1rem;
+      resize: none;
+      line-height: 1.3;
+      z-index: 10;
+    }
+    #input‐box:focus {
+      outline: none;
+    }
+    /* Placeholder styling (ghost text) */
+    ::placeholder {
+      color: #ADC1C6;
+      opacity: 0.8;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* “SUBMIT TO ADVERSARY” BUTTON (left under input)                                            */
+    #submit‐btn {
+      position: absolute;
+      top: 32vh;
+      left: 15vw;
+      padding: 0.6rem 1.2rem;
+      background: transparent;
+      border: 1px solid rgba(239, 83, 80, 0.7);
+      color: #EF5350;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.25s ease;
+    }
+    #submit‐btn:hover {
+      background: rgba(239, 83, 80, 0.2);
+    }
+    #submit‐btn:active {
+      background: rgba(239, 83, 80, 0.3);
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* NEMESIS ANALYSIS TEXT (center under silhouette) – initially hidden                          */
+    #analysis‐text {
+      position: absolute;
+      top:  FiftySevenVh; /* placeholder, adjust via CSS */ 
+      top: calc(50vh + 15vh); /* ~65% down from top – center below silhouette neck */
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.2rem;
+      color: #EF5350;        /* red */
+      font-weight: bold;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.5s ease‐in;
+      white-space: pre;     /* preserve newline between lines */
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* “REPETATION F RAGTILITY” BOX (under analysis) – initially hidden                            */
+    #fragility‐box {
+      position: absolute;
+      top: calc(50vh + 22vh);  /* slightly below “analysis‐text” */
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 0.8rem 1.5rem;
+      border: 1px solid rgba(239, 83, 80, 0.7);
+      color: #EF5350;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.5s ease‐in;
+    }
+
+    /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+    /* “FACE NEXT TRUTH” BUTTON (bottom‐right) – initially hidden                                  */
+    #next‐btn {
+      position: absolute;
+      bottom: 5vh;
+      right: 5vw;
+      padding: 0.8rem 1.5rem;
+      background: transparent;
+      border: 1px solid rgba(173, 193, 198, 0.8);
+      color: #ADC1C6;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+      transition: opacity 0.5s ease‐in, background 0.25s ease;
+    }
+    #next‐btn:hover {
+      background: rgba(173, 193, 198, 0.2);
+    }
+    #next‐btn:active {
+      background: rgba(173, 193, 198, 0.3);
     }
   </style>
 </head>
 <body>
+  <!-- FULL‐PAGE MOBILE OVERLAY (shown if on mobile) -->
+  <div id="mobile‐overlay">“Mobile not supported”</div>
 
-  <div class="header">INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</div>
-  <div class="session-timer">SESSION TIMER 00:00 MIN</div>
+  <!-- BLUR OVERLAY FOR PrintScreen DETECTION -->
+  <div id="blur‐overlay"></div>
 
-  <div class="question">What's the worst thing someone could say about you publicly?</div>
+  <!-- MAIN CONTAINER -->
+  <div id="container">
+    <!-- HEADING -->
+    <div id="heading">
+      INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING
+    </div>
 
-  <div class="input-box">'He's just a brand, not a builder. Everything he made was hype – no substance'</div>
+    <!-- SESSION TIMER (top‐right) -->
+    <div id="session‐timer‐container">
+      SESSION TIMER
+      <div id="session‐timer">00:00 MIN</div>
+    </div>
 
-  <div class="btn-submit">SUBMIT TO ADVERSARY</div>
+    <!-- QUESTION -->
+    <div id="question">
+      What’s the worst thing someone could say about you publicly?
+    </div>
 
-  <img src="assets/silhouette.png" class="silhouette">
+    <!-- SILHOUETTE IMAGE -->
+    <img
+      id="silhouette"
+      src="assets/silhouette.png"
+      alt="Silhouette Background"
+    />
 
-  <div class="overlay-text" style="top:40%;left:10%;">fraud</div>
-  <div class="overlay-text" style="top:60%;right:10%;color:#EF5350;">overrated</div>
-  <div class="overlay-text" style="bottom:20%;left:20%;">faker</div>
+    <!-- OVERLAY WORDS -->
+    <div id="word‐fraud" class="overlay‐word">fraud</div>
+    <div id="word‐overrated" class="overlay‐word">overrated</div>
+    <div id="word‐faker1" class="overlay‐word">faker</div>
+    <div id="word‐faker2" class="overlay‐word">faker</div>
 
-  <div class="analysis">
-    Nemesis Analysis: Scanning Vulnerabilities...
-    <div class="vuln-box">REPETATION FRAGTITY</div>
+    <!-- INPUT BOX (read‐only textarea) -->
+    <textarea
+      id="input‐box"
+      placeholder="'He’s just a brand, not a builder. Everything he made was hype – no substance'"
+      readonly
+    ></textarea>
+
+    <!-- SUBMIT TO ADVERSARY BUTTON -->
+    <button id="submit‐btn">SUBMIT TO ADVERSARY</button>
+
+    <!-- NEMESIS ANALYSIS TEXT (hidden initially) -->
+    <div id="analysis‐text">
+      Nemesis Analysis: Scanning\nVulnerabilities…
+    </div>
+
+    <!-- REPETATION F RAGTILITY BOX (hidden initially) -->
+    <div id="fragility‐box">REPETATION F RAGTILITY</div>
+
+    <!-- FACE NEXT TRUTH BUTTON (hidden initially) -->
+    <button id="next‐btn">FACE NEXT TRUTH</button>
   </div>
 
-  <div class="btn-next">FACE NEXT TRUTH</div>
+  <script>
+    /* =====================================================================================
+       JAVASCRIPT FOR PAGE2.HTML
+       ===================================================================================== */
 
-<script>
-  const submitBtn = document.querySelector('.btn-submit');
-  const analysisDiv = document.querySelector('.analysis');
-  const nextBtn = document.querySelector('.btn-next');
-  const inputBox = document.querySelector('.input-box');
+    // ELEMENT REFERENCES
+    const sessionTimerEl = document.getElementById("session‐timer");
+    const submitBtn = document.getElementById("submit‐btn");
+    const inputBox = document.getElementById("input‐box");
+    const analysisText = document.getElementById("analysis‐text");
+    const fragilityBox = document.getElementById("fragility‐box");
+    const nextBtn = document.getElementById("next‐btn");
+    const mobileOverlay = document.getElementById("mobile‐overlay");
+    const blurOverlay = document.getElementById("blur‐overlay");
 
-  submitBtn.onclick = () => {
-    submitBtn.style.display = 'none';
-    inputBox.style.display = 'none';
+    // TIMER LOGIC
+    let totalSeconds = 0;
+    let timerInterval = null;
+    let isAnalysisVisible = false;
 
-    const delay = Math.random() * 8000 + 4000;
-    setTimeout(() => {
-      analysisDiv.style.display = 'block';
-      setTimeout(() => {
-        nextBtn.style.display = 'block';
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        totalSeconds++;
+        const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+        const secs = String(totalSeconds % 60).padStart(2, "0");
+        sessionTimerEl.textContent = \`\${mins}:\${secs} MIN\`;
       }, 1000);
-    }, delay);
-  };
+    }
 
-  nextBtn.onclick = () => {
-    window.location.href = 'page3.html';
-  };
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
 
-  document.oncontextmenu = () => false;
-  document.onkeydown = e => {
-    if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) e.preventDefault();
-  };
-</script>
+    // RANDOM INTEGER BETWEEN min AND max (inclusive)
+    function randomBetween(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
+    // SHOW BLUR OVERLAY (on PrintScreen)
+    function showBlurOverlay() {
+      blurOverlay.style.display = "block";
+    }
+    function hideBlurOverlay() {
+      blurOverlay.style.display = "none";
+    }
+
+    // DETECT MOBILE / SMALL SCREEN – show overlay if width < 600px
+    function detectMobile() {
+      if (window.innerWidth < 600 || window.innerHeight < 500) {
+        mobileOverlay.style.display = "block";
+      }
+    }
+    window.addEventListener("load", () => {
+      detectMobile();
+      startTimer();
+    });
+
+    // SUBMIT BUTTON CLICK HANDLER
+    submitBtn.addEventListener("click", () => {
+      // Hide the input & submit elements immediately
+      inputBox.style.display = "none";
+      submitBtn.style.display = "none";
+
+      // After random delay (4–12 seconds), fade in “Nemesis Analysis…”
+      const delaySeconds = randomBetween(4, 12) * 1000;
+      setTimeout(() => {
+        // Pause the timer as soon as analysis appears
+        pauseTimer();
+        analysisText.style.opacity = "1";
+
+        // After 1 second, fade in “REPETATION F RAGTILITY”
+        setTimeout(() => {
+          fragilityBox.style.opacity = "1";
+
+          // Then show “FACE NEXT TRUTH” button
+          setTimeout(() => {
+            nextBtn.style.opacity = "1";
+            nextBtn.style.pointerEvents = "auto";
+          }, 500); // small delay before next‐btn appears
+        }, 1000);
+      }, delaySeconds);
+    });
+
+    // “FACE NEXT TRUTH” CLICK HANDLER → redirect to page3.html
+    nextBtn.addEventListener("click", () => {
+      window.location.href = "page3.html";
+    });
+
+    // DISABLE RIGHT‐CLICK
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+    });
+
+    // DISABLE Ctrl+C/V/X
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && ["c", "v", "x"].includes(e.key.toLowerCase())) {
+        e.preventDefault();
+      }
+    });
+
+    // DISABLE PrintScreen – handled above in document.onkeydown
+
+    /* =====================================================================================
+       END OF PAGE2.HTML SCRIPT
+       ===================================================================================== */
+  </script>
 </body>
 </html>
