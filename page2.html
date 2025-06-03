@@ -2,546 +2,600 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Initiation Protocol: Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+  <title>Project Nemesis – Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <!-- IBM Plex Mono and JetBrains Mono fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <style>
-    /* === RESET & FONTS === */
+    :root {
+      --black: #0a0a0d;
+      --accent-red: #ff3146;
+      --alert-blue: #35a7ff;
+      --highlight-white: #ecf4ff;
+      --timer-orange: #ff755a;
+      --bubble-red: #ff3146;
+      --bubble-white: #ffffffee;
+      --bubble-fade: 0.12;
+      --font: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+      --crack-glow: 0 0 16px 6px #ff314666, 0 0 4px 2px #ff3146bb;
+    }
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #0a0a0b 0%, #141317 100%);
-      color: #f8f9fb;
-      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      min-height: 100vh;
+      background: var(--black);
+      font-family: var(--font);
+      letter-spacing: 0.03em;
+      color: var(--highlight-white);
+      overflow: hidden;
+      min-width: 700px;
+    }
+    body {
       width: 100vw;
+      height: 100vh;
+      background: var(--black);
+      /* Subtle neural grid & scanline overlay */
+      background-image: 
+        repeating-linear-gradient(0deg, rgba(53,167,255,0.06) 0 2px, transparent 2px 6px),
+        repeating-linear-gradient(90deg, rgba(255,49,70,0.04) 0 1px, transparent 1px 20px),
+        url('data:image/svg+xml;utf8,<svg width="1200" height="700" viewBox="0 0 1200 700" xmlns="http://www.w3.org/2000/svg"><g opacity="0.07"><path d="M0,50 Q400,250 800,50 T1200,50" stroke="cyan" fill="none"/><path d="M0,350 Q400,550 800,350 T1200,350" stroke="red" fill="none"/></g></svg>');
+      background-size: cover, cover, cover;
+      position: relative;
       overflow: hidden;
       user-select: none;
     }
-    @font-face {
-      font-family: 'JetBrains Mono';
-      src: local('JetBrains Mono'), local('Fira Mono'), monospace;
+    /* Header */
+    #header {
+      position: absolute;
+      top: 32px;
+      left: 0;
+      width: 100vw;
+      text-align: center;
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 2.1rem;
+      letter-spacing: 0.07em;
+      color: var(--alert-blue);
+      text-shadow: 0 0 9px #0af7ff44;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeInDown 1s 0.2s forwards;
     }
-
-    /* === SECURITY: BLOCK SELECTION/COPY/CONTEXT === */
-    body, input, textarea, button {
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: transparent;
+    /* Timer */
+    #session-timer {
+      position: absolute;
+      top: 38px;
+      right: 62px;
+      color: var(--timer-orange);
+      font-family: var(--font);
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      z-index: 11;
+      opacity: 0.85;
+      text-shadow: 0 0 6px #ff755a66;
+      font-weight: 600;
+      background: transparent;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeInRight 1.1s 0.6s forwards;
+    }
+    /* Silhouette */
+    #silhouette-container {
+      position: absolute;
+      left: 50%;
+      top: 54%;
+      transform: translate(-50%, -50%);
+      width: 390px;
+      height: 540px;
+      z-index: 1;
+      filter: brightness(1.1) contrast(1.2) blur(0.5px);
+      opacity: 0;
+      animation: fadeInScale 2s 0.6s forwards;
+      pointer-events: none;
+    }
+    #silhouette {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0.75;
+      filter: drop-shadow(0 0 70px #000a) brightness(0.96);
+      user-drag: none; user-select: none;
+      pointer-events: none;
+    }
+    /* Text bubbles flicker */
+    .bubble {
+      position: absolute;
+      font-size: 1.25rem;
+      font-family: var(--font);
+      font-weight: 700;
+      opacity: 0.13;
+      animation: bubbleFlicker 3s infinite alternate;
+      pointer-events: none;
       user-select: none;
-      caret-color: #f8f9fb;
+      text-shadow: 0 0 12px #000c, 0 0 4px #ff3146;
+      filter: blur(0.4px);
     }
-    ::selection { background: none; }
-    body::-webkit-scrollbar { display: none; }
-
-    /* === SECURITY: BLOCK SCROLL === */
-    html, body { overflow: hidden !important; }
-
-    /* === SECURITY: BLOCK CONTEXT MENU === */
-    body { pointer-events: auto; }
-
-    /* === BLOCK MOBILE === */
-    #mobile-block {
+    .bubble.red { color: var(--bubble-red);}
+    .bubble.white { color: var(--bubble-white);}
+    .bubble.fade { opacity: var(--bubble-fade);}
+    /* Main question */
+    #main-question {
+      position: absolute;
+      top: 160px;
+      left: 0; right: 0;
+      width: 100vw;
+      text-align: center;
+      font-size: 1.55rem;
+      font-family: var(--font);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--highlight-white);
+      text-shadow: 0 0 10px #74e3fe44;
+      z-index: 15;
+      filter: brightness(1.15) contrast(1.13);
+      opacity: 0;
+      animation: fadeInDown 1.1s 0.8s forwards;
+    }
+    /* Input/ghost typing */
+    #input-section {
+      position: absolute;
+      left: 50%;
+      top: 270px;
+      transform: translateX(-50%);
+      width: 600px;
+      z-index: 19;
+      opacity: 0;
+      animation: fadeInUp 1.1s 1.1s forwards;
+    }
+    #user-input {
+      width: 100%;
+      min-height: 58px;
+      background: rgba(8,14,26,0.94);
+      border: 1.8px solid #2a3a46;
+      box-shadow: 0 0 22px 2px #0008 inset, 0 0 2px #35a7ff55;
+      border-radius: 12px;
+      font-family: var(--font);
+      font-size: 1.16rem;
+      color: var(--highlight-white);
+      outline: none;
+      padding: 22px 28px;
+      transition: border 0.17s, box-shadow 0.17s;
+      resize: none;
+      letter-spacing: 0.04em;
+      caret-color: var(--accent-red);
+      animation: ghostShiver 2.1s infinite alternate;
+    }
+    #user-input:focus {
+      border: 2px solid var(--accent-red);
+      box-shadow: 0 0 30px 2px #ff314655, 0 0 0 2px #ff314677;
+      animation: ghostShiverActive 0.18s 3 alternate;
+      background: rgba(8,14,26,0.98);
+    }
+    #user-input::selection {
+      background: var(--alert-blue);
+      color: #000;
+    }
+    /* Ghost typing cursor effect */
+    .ghost-cursor {
+      display: inline-block;
+      width: 0.75ch;
+      background: transparent;
+      border-right: 2.5px solid #6bf3ffbb;
+      margin-left: -2px;
+      animation: ghostCursorBlink 0.75s steps(1) infinite;
+    }
+    /* SUBMIT button */
+    #submit-btn {
+      margin: 32px auto 0 auto;
+      display: block;
+      width: 370px;
+      padding: 20px 0;
+      font-size: 1.22rem;
+      font-family: var(--font);
+      font-weight: 700;
+      color: var(--accent-red);
+      background: transparent;
+      border: 2.7px solid var(--accent-red);
+      border-radius: 17px;
+      cursor: pointer;
+      box-shadow: 0 0 24px 2px #ff31462a, 0 0 4px 0 #ff314655;
+      letter-spacing: 0.12em;
+      outline: none;
+      text-shadow: 0 0 7px #ff314666;
+      transition: box-shadow 0.2s, background 0.13s, color 0.11s;
+      animation: fadeInUp 1.1s 1.4s forwards, ghostShiver 2.7s infinite alternate;
+      opacity: 0;
+    }
+    #submit-btn:hover, #submit-btn:focus {
+      color: var(--highlight-white);
+      background: linear-gradient(90deg, #ff31463c 0%, #111924 100%);
+      box-shadow: 0 0 44px 6px #ff314688, 0 0 0 3px #ff314677;
+      animation: ghostShiverActive 0.19s 3 alternate;
+    }
+    /* Analysis overlay */
+    #processing-overlay {
       display: none;
       position: fixed;
-      inset: 0;
-      z-index: 99999;
-      background: #0a0a0b;
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2.2vw;
-      letter-spacing: 0.01em;
+      z-index: 30;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(8,14,26,0.86);
+      animation: fadeIn 0.25s;
       align-items: center;
       justify-content: center;
+    }
+    #processing-content {
       text-align: center;
+      z-index: 32;
     }
-
-    /* === HEADER / TIMER === */
-    .header {
-      width: 100vw;
-      text-align: center;
-      font-size: 1.25rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      margin-top: 2.2vh;
-      color: #ececf0;
-      text-shadow: 0 0 6px #16181b70;
-    }
-    .timer {
-      position: absolute;
-      top: 2.2vh;
-      right: 3vw;
-      font-size: 1.1rem;
-      font-family: inherit;
-      letter-spacing: 0.04em;
-      color: #e7e9ed;
-      border: 1px solid #232427;
-      border-radius: 6px;
-      padding: 3px 18px;
-      background: rgba(13,13,14,0.55);
-      box-shadow: 0 0 10px 1px #181a1e20;
-      text-align: right;
-      min-width: 82px;
-      transition: border 0.2s;
-    }
-
-    /* === MAIN WRAPPER === */
-    .main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 89vh;
-      width: 100vw;
-      padding-bottom: 30px;
-      position: relative;
-    }
-
-    /* === SILHOUETTE === */
-    .silhouette-wrap {
-      margin-top: 1.2vh;
-      margin-bottom: 2.5vh;
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .silhouette-bg-matrix {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.27;
-      filter: blur(0.7px);
-    }
-    .silhouette-img {
-      max-width: 265px;
-      max-height: 38vh;
-      min-width: 170px;
-      min-height: 150px;
-      border-radius: 2vw;
-      filter: drop-shadow(0 0 38px #17172588) blur(0.7px);
-      box-shadow: 0 0 35px #1b122d44;
-      z-index: 2;
-      background: #0a0a0b;
-      object-fit: contain;
-      user-drag: none;
-      pointer-events: none;
-    }
-
-    /* === QUESTION === */
-    .question {
-      font-size: 1.18rem;
-      color: #fafbfc;
-      font-family: inherit;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-      text-align: center;
-      margin-bottom: 2.2vh;
-      margin-top: 0.5vh;
-      text-shadow: 0 0 5px #18181e45;
-      transition: color 0.12s;
-    }
-
-    /* === INPUT === */
-    .input-area {
-      width: 100%;
-      max-width: 500px;
-      min-width: 220px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    textarea {
-      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
-      width: 100%;
-      min-height: 90px;
-      max-height: 150px;
-      background: #111217;
-      border: 1.3px solid #232227;
-      border-radius: 8px;
-      color: #f8f9fb;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 18px 20px 18px 20px;
-      resize: none;
-      box-shadow: 0 0 8px #23243318;
-      transition: border 0.2s, box-shadow 0.2s;
-      outline: none;
-      caret-color: #f8f9fb;
-      letter-spacing: 0.02em;
-      margin-bottom: 22px;
-      z-index: 3;
-      opacity: 1;
-      position: relative;
-    }
-    textarea:focus {
-      border: 1.3px solid #bdbcf6;
-      box-shadow: 0 0 10px #9b9cf720;
-    }
-    textarea.disabled, textarea:disabled {
-      background: #171821;
-      color: #999;
-      border: 1.2px solid #dd344490;
-      cursor: not-allowed;
-    }
-    .ghost-text {
-      position: absolute;
-      top: 19px;
-      left: 26px;
-      color: #7e808d;
-      opacity: 0.6;
-      pointer-events: none;
-      font-size: 1rem;
-      white-space: pre-line;
-      font-family: inherit;
-      user-select: none;
-      z-index: 4;
-      transition: opacity 0.23s, filter 0.19s;
-      filter: blur(0.2px);
-      text-shadow: 0 0 1.5px #1a1b2055;
-      animation: ghostin 1.2s;
-    }
-    @keyframes ghostin {
-      0% { opacity: 0; filter: blur(2px);}
-      100% { opacity: 0.6; filter: blur(0.2px);}
-    }
-    .ghost-glitch {
-      animation: ghostglitch 0.28s;
-    }
-    @keyframes ghostglitch {
-      0% { opacity: 0.6; filter: blur(0.2px);}
-      55% { opacity: 0.15; filter: blur(2.8px);}
-      80% { opacity: 0.45; filter: blur(0.7px);}
-      100% { opacity: 0; filter: blur(0.1px);}
-    }
-
-    /* === BUTTONS === */
-    .btn {
-      display: block;
-      width: 100%;
-      max-width: 390px;
-      margin: 0 auto;
-      margin-bottom: 12px;
-      padding: 15px 0;
-      background: #232227;
-      color: #fafbfc;
-      font-family: inherit;
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 0 15px #17172715;
-      cursor: pointer;
-      transition: border 0.18s, background 0.18s, color 0.16s;
-      outline: none;
-      position: relative;
-    }
-    .btn:focus {
-      border: 1.7px solid #e0e0ef88;
-    }
-    .btn:hover:enabled {
-      border: 1.3px solid #bdbcf6;
-      background: #23232d;
-      color: #f7f8ff;
-    }
-    .btn:disabled, .btn.disabled {
-      opacity: 0.52;
-      cursor: not-allowed;
-    }
-    .btn.sharper {
-      border-radius: 5px;
-      font-size: 1.08rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      box-shadow: 0 0 7px #1a1a2313;
-    }
-
-    /* === PROCESSING STATE === */
-    .processing-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 22px;
-      gap: 14px;
-    }
-    .gear {
-      width: 24px;
-      height: 24px;
-      animation: spin 0.88s linear infinite;
-      opacity: 0.77;
-      filter: grayscale(1) brightness(1.13);
-      margin-right: 8px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0);}
-      100% { transform: rotate(360deg);}
-    }
-    .processing-txt {
-      font-size: 0.99rem;
-      color: #f3f3f8;
-      font-family: inherit;
-      letter-spacing: 0.025em;
-      font-weight: 500;
-      opacity: 0.88;
-      margin-left: 1px;
-      user-select: none;
-    }
-
-    /* === VULNERABILITY REVEAL === */
-    .vulnerability {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      width: 98%;
-      max-width: 430px;
-      margin: 28px auto 8px auto;
-      padding: 12px 18px 12px 24px;
-      background: #101012ef;
-      border-left: 3.5px solid #f7f7fb;
-      border-radius: 8px;
-      box-shadow: 0 2px 22px #10101515;
-      font-family: inherit;
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: #f7f7fb;
-      letter-spacing: 0.01em;
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(18px);
-      transition: opacity 0.23s, transform 0.25s;
-      z-index: 10;
-    }
-    .vulnerability.visible {
-      opacity: 0.93;
-      pointer-events: auto;
-      transform: translateY(0);
-      animation: scanline 0.9s linear;
-    }
-    @keyframes scanline {
-      0% { filter: brightness(0.6) blur(1.8px);}
-      85% { filter: brightness(1.04) blur(0);}
-      100% { filter: brightness(1.18) blur(0);}
-    }
-
-    /* === NEXT BUTTON === */
-    .btn.next {
-      margin-top: 15px;
-      background: #232227;
-      border: 1.7px solid #fafbfc40;
-      color: #fafbfc;
-      border-radius: 5px;
+    #processing-text {
+      color: var(--accent-red);
+      font-family: var(--font);
+      font-size: 2.1rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
-      font-size: 1.08rem;
-      box-shadow: 0 0 10px #18182518;
-      transition: border 0.16s, color 0.16s, background 0.16s;
+      letter-spacing: 0.09em;
+      text-shadow: 0 0 22px #ff314699;
+      margin-top: 12px;
+      animation: pulseGlow 1.2s infinite alternate;
     }
-    .btn.next:hover:enabled {
-      border: 1.7px solid #eaeaea99;
-      color: #ffffff;
-      background: #232237;
+    /* Data vortex animation */
+    .vortex {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto;
+      margin-top: 24px;
+      position: relative;
     }
-
-    /* === SECURITY: BLOCK BACK NAV === */
-    #back-block {
+    .vortex span {
+      position: absolute;
+      border: 3.7px solid var(--accent-red);
+      border-radius: 50%;
+      opacity: 0.21;
+      animation: vortexSpin 2s infinite linear;
+    }
+    .vortex .v1 { width:92px; height:92px; top:0; left:0; }
+    .vortex .v2 { width:62px; height:62px; top:15px; left:15px; animation-delay: 0.4s;}
+    .vortex .v3 { width:40px; height:40px; top:26px; left:26px; animation-delay: 0.7s;}
+    /* Vulnerability reveal */
+    #vuln-report {
       display: none;
+      position: fixed;
+      left: 50%; top: 46%;
+      transform: translate(-50%, -50%);
+      z-index: 50;
+      text-align: center;
+      animation: fadeInScale 0.8s;
+    }
+    #vuln-box {
+      background: rgba(27,0,0,0.96);
+      border: 3.5px solid var(--accent-red);
+      border-radius: 14px;
+      color: var(--accent-red);
+      font-size: 2.25rem;
+      font-family: var(--font);
+      font-weight: 900;
+      letter-spacing: 0.17em;
+      padding: 42px 88px;
+      box-shadow: 0 0 70px 8px #ff314699, var(--crack-glow);
+      margin-bottom: 23px;
+      text-shadow: 0 0 28px #ff3146, 0 0 8px #ff3146dd;
+      position: relative;
+      overflow: visible;
+      animation: crackPulse 1.2s infinite alternate;
+    }
+    /* Crack effect */
+    #vuln-crack {
+      width: 102px;
+      height: 34px;
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translate(-50%, -18%);
+      z-index: 51;
+      pointer-events: none;
+      opacity: 0.85;
+      filter: drop-shadow(0 0 13px #ff3146cc);
+      animation: crackGlow 2.2s infinite alternate;
+    }
+    /* FACE NEXT TRUTH */
+    #next-btn {
+      display: none;
+      width: 350px;
+      padding: 19px 0;
+      font-size: 1.13rem;
+      font-family: var(--font);
+      font-weight: 700;
+      color: var(--alert-blue);
+      background: transparent;
+      border: 2.7px solid var(--alert-blue);
+      border-radius: 17px;
+      cursor: pointer;
+      letter-spacing: 0.11em;
+      margin: 32px auto 0 auto;
+      text-shadow: 0 0 14px #35a7ff88;
+      box-shadow: 0 0 38px 6px #35a7ff22;
+      outline: none;
+      transition: box-shadow 0.19s, background 0.17s, color 0.13s;
+      animation: fadeInUp 1.1s 0.3s forwards, ghostShiver 2.3s infinite alternate;
+      opacity: 0;
+    }
+    #next-btn:hover, #next-btn:focus {
+      color: var(--highlight-white);
+      background: linear-gradient(90deg, #35a7ff33 0%, #111924 100%);
+      box-shadow: 0 0 44px 7px #35a7ffbb, 0 0 0 3px #35a7ff77;
+      animation: ghostShiverActive 0.19s 3 alternate;
+    }
+    /* Red laser cursor */
+    button, #user-input, textarea, input {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="48"><rect x="6" y="2" width="4" height="44" rx="2" fill="red" /></svg>') 8 24, pointer;
+    }
+    /* Modals/warnings */
+    #modal {
+      display: none;
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      z-index: 9999;
+      background: rgba(10,10,13,0.99);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-family: var(--font);
+    }
+    #modal-content {
+      color: var(--accent-red);
+      background: #1a1219;
+      padding: 45px 70px 36px 70px;
+      border-radius: 16px;
+      border: 2.5px solid var(--accent-red);
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-align: center;
+      box-shadow: 0 0 55px 6px #ff314655;
+    }
+    /* Animations */
+    @keyframes fadeInDown { from {opacity:0; transform: translateY(-38px);} to {opacity:1; transform: translateY(0);} }
+    @keyframes fadeInUp { from {opacity:0; transform: translateY(40px);} to {opacity:1; transform: translateY(0);} }
+    @keyframes fadeInRight { from {opacity:0; transform: translateX(56px);} to {opacity:0.9; transform: translateX(0);} }
+    @keyframes fadeInScale { from {opacity:0; transform:scale(0.93);} to {opacity:1; transform:scale(1);} }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+    @keyframes ghostShiver { 0%{box-shadow:0 0 0 #fff0;} 90%{box-shadow:0 0 9px #ff314677;} 100%{box-shadow:0 0 12px #ff314677;} }
+    @keyframes ghostShiverActive { 0%{box-shadow:0 0 0 #fff0;} 100%{box-shadow:0 0 13px #ff3146bb;} }
+    @keyframes ghostCursorBlink {0%{border-right:2.5px solid #6bf3ffbb;}49%{border-right:2.5px solid #6bf3ffbb;}50%{border-right:2.5px solid #fff0;}100%{border-right:2.5px solid #fff0;}}
+    @keyframes pulseGlow {0%{text-shadow:0 0 7px #ff3146,0 0 6px #ff3146cc;}100%{text-shadow:0 0 26px #ff3146,0 0 18px #ff3146cc;}}
+    @keyframes crackGlow {0%{filter:drop-shadow(0 0 13px #ff3146cc);}100%{filter:drop-shadow(0 0 36px #ff3146dd);} }
+    @keyframes crackPulse {0%{box-shadow:0 0 70px 8px #ff314699,var(--crack-glow);}100%{box-shadow:0 0 140px 30px #ff314633,var(--crack-glow);} }
+    @keyframes vortexSpin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+    @keyframes bubbleFlicker {
+      0% {opacity:0.1;}
+      20% {opacity:0.28;}
+      50% {opacity:0.13;}
+      70% {opacity:0.21;}
+      100% {opacity:0.06;}
+    }
+    /* Responsive for tablets/desktops only */
+    @media (max-width: 1050px) {
+      #input-section { width: 85vw; }
+      #silhouette-container { width: 58vw; height: 68vh;}
+    }
+    @media (max-width: 700px) {
+      html, body { min-width: 0; }
+      #modal { display: flex !important;}
+      #modal-content {font-size: 1.25rem;}
+      #main-question, #header, #session-timer, #input-section, #silhouette-container, .bubble, #submit-btn, #processing-overlay, #vuln-report { display: none !important;}
     }
   </style>
 </head>
 <body>
-  <div id="mobile-block">
-    <div>
-      This simulation is only accessible on desktop and tablet.<br>
-      <span style="font-size: 1.3vw;opacity:.5;display:block;margin-top:15px;">Project Nemesis Initiation Protocol</span>
+  <!-- Header -->
+  <div id="header">INITIATION PROTOCOL:  PSYCHOLOGICAL FINGERPRINTING</div>
+  <!-- Timer -->
+  <div id="session-timer">SESSION TIMER:<span id="timer-val">07:00 MIN</span></div>
+  <!-- Silhouette -->
+  <div id="silhouette-container"><img src="silhouette.png" id="silhouette" alt="silhouette"></div>
+  <!-- Flickering bubbles -->
+  <span class="bubble red" style="top:200px;left:38vw;animation-delay:0.2s;">fraud</span>
+  <span class="bubble white" style="top:275px;left:60vw;animation-delay:0.6s;">faker</span>
+  <span class="bubble red" style="top:420px;left:42vw;animation-delay:1.7s;">overrated</span>
+  <span class="bubble white" style="top:500px;left:56vw;animation-delay:2.2s;">faker</span>
+  <span class="bubble white" style="top:330px;left:51vw;animation-delay:1.4s;">fraud</span>
+  <span class="bubble red" style="top:475px;left:63vw;animation-delay:2.8s;">faker</span>
+  <span class="bubble red" style="top:340px;left:45vw;animation-delay:2.5s;">overrated</span>
+  <!-- Main question -->
+  <div id="main-question">What’s the worst thing someone could say about you publicly?</div>
+  <!-- Input -->
+  <div id="input-section">
+    <textarea id="user-input" rows="2" autocomplete="off" spellcheck="false" maxlength="220"></textarea>
+    <button id="submit-btn">SUBMIT TO ADVERSARY</button>
+  </div>
+  <!-- AI Processing Overlay -->
+  <div id="processing-overlay">
+    <div id="processing-content">
+      <div class="vortex">
+        <span class="v1"></span><span class="v2"></span><span class="v3"></span>
+      </div>
+      <div id="processing-text">Nemesis Analysis: Scanning Vulnerabilities...</div>
     </div>
   </div>
-
-  <div id="back-block"></div>
-  <div class="header">Question 1: What’s the worst thing someone could say about you publicly?</div>
-  <div class="timer" id="timer">07:00</div>
-  <div class="main">
-    <div class="silhouette-wrap">
-      <!-- Simulated matrix static effect using canvas -->
-      <canvas class="silhouette-bg-matrix" id="matrix-canvas"></canvas>
-      <img src="silhouette.png" alt="Silhouette" class="silhouette-img" draggable="false" />
+  <!-- Vulnerability Reveal -->
+  <div id="vuln-report">
+    <div id="vuln-box">REPUTATION FRAGILITY
+      <img id="vuln-crack" src="data:image/svg+xml;utf8,<svg width='102' height='34' viewBox='0 0 102 34' xmlns='http://www.w3.org/2000/svg'><polyline points='0,17 15,20 30,11 40,20 55,8 65,23 80,13 92,20 102,0' stroke='%23ff3146' stroke-width='3' fill='none' /><polyline points='20,33 25,26 31,33 43,25 51,33 67,24 80,33' stroke='%23ff3146' stroke-width='2' fill='none' /></svg>" />
     </div>
-
-    <div class="input-area" style="position:relative;">
-      <textarea id="inputBox" maxlength="300" autocomplete="off" spellcheck="false" rows="3" aria-label="Reveal your core vulnerability"></textarea>
-      <div id="ghostText" class="ghost-text"></div>
-      <button class="btn" id="revealBtn">REVEAL VULNERABILITY</button>
-    </div>
-
-    <div class="processing-row" id="processingRow" style="display:none;">
-      <svg class="gear" viewBox="0 0 32 32" fill="none">
-        <g>
-          <circle cx="16" cy="16" r="11.5" stroke="#f7f7fb" stroke-width="2" opacity="0.65"/>
-          <path d="M16 4V2M16 30v-2M4 16H2m28 0h-2M8.22 8.22l-1.41-1.41m18.38 18.38-1.41-1.41M8.22 23.78l-1.41 1.41m18.38-18.38-1.41 1.41" stroke="#f7f7fb" stroke-width="2" stroke-linecap="round"/>
-        </g>
-      </svg>
-      <span class="processing-txt">Processing...</span>
-    </div>
-
-    <div class="vulnerability" id="vulnerabilityBox">
-      &rarr; Core Vulnerability: <span style="margin-left:8px;">Reputation Fragility</span>
-    </div>
-    <button class="btn next sharper" id="nextBtn" style="display:none;">ADVANCE TO NEXT ADVERSARY TRIAL</button>
+    <button id="next-btn">FACE NEXT TRUTH</button>
   </div>
-
+  <!-- Modal for device/security warnings -->
+  <div id="modal">
+    <div id="modal-content"></div>
+  </div>
   <script>
-    // ======== MOBILE BLOCKER ========
-    function isMobile() {
-      return (window.innerWidth < 600) || /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-    function showMobileBlock() {
-      document.getElementById('mobile-block').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      document.querySelectorAll('body > *:not(#mobile-block)').forEach(el => { if (el.id !== "mobile-block") el.style.display = "none"; });
-    }
-    if (isMobile()) showMobileBlock();
-    window.addEventListener('resize', () => { if (isMobile()) showMobileBlock(); });
-
-    // ======== SECURITY: BLOCK CONTEXT MENU, COPY, PASTE, PRINTSCREEN ========
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('copy', e => e.preventDefault());
-    document.addEventListener('cut', e => e.preventDefault());
-    document.addEventListener('paste', e => e.preventDefault());
-    document.addEventListener('keydown', function(e) {
-      // Block Print Screen, Ctrl+P, Ctrl+S, Ctrl+U, Ctrl+C/V/X
-      if (e.key === "PrintScreen" ||
-        ((e.ctrlKey || e.metaKey) && ['p','s','u','c','v','x','a'].includes(e.key.toLowerCase()))
-      ) { e.preventDefault(); }
-      // Block back navigation
-      if (e.key === "Backspace" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) e.preventDefault();
-    });
-
-    // ======== SECURITY: BLOCK NAVIGATION / BACK ========
-    history.pushState(null, null, location.href);
-    window.onpopstate = function() {
-      history.pushState(null, null, location.href);
-      document.getElementById('back-block').style.display = 'block';
-      setTimeout(() => {document.getElementById('back-block').style.display = 'none';}, 4000);
-    };
-
-    // ======== TIMER ========
-    let time = 420; // 7 minutes
-    let timerInt = setInterval(updateTimer, 1000);
-    let timerPaused = false;
+    // === PARAMETERS ===
+    const GHOST_TEXT = "He's just a brand, not a builder.\nEverything he made was hype – no substance.";
+    const MIN_ANALYSIS = 4000, MAX_ANALYSIS = 12000;
+    // === TIMER ===
+    let timerSeconds = 420; // 7 minutes
+    let timerInterval = null, timerPaused = false;
     function updateTimer() {
       if (timerPaused) return;
-      if (time <= 0) return;
-      time--;
-      let min = String(Math.floor(time / 60)).padStart(2, '0');
-      let sec = String(time % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${min}:${sec}`;
+      timerSeconds--;
+      if (timerSeconds < 0) timerSeconds = 0;
+      let min = Math.floor(timerSeconds/60).toString().padStart(2,'0');
+      let sec = (timerSeconds%60).toString().padStart(2,'0');
+      document.getElementById('timer-val').innerText = `${min}:${sec} MIN`;
     }
-
-    // ======== GHOST TEXT LOGIC ========
-    const inputBox = document.getElementById('inputBox');
-    const ghostText = document.getElementById('ghostText');
-    const ghostContent = `He’s just a brand, not a builder.\nEverything he made was hype — no substance.`;
-
-    function showGhost() {
-      ghostText.textContent = ghostContent;
-      ghostText.style.opacity = 0.6;
-      ghostText.classList.remove('ghost-glitch');
+    function startTimer() {
+      timerInterval = setInterval(updateTimer, 1000);
     }
-    function hideGhost() {
-      ghostText.classList.add('ghost-glitch');
-      setTimeout(() => { ghostText.style.opacity = 0; }, 130);
+    function pauseTimer() { timerPaused = true; }
+    function resumeTimer() { timerPaused = false; }
+    // === GHOST TYPING ===
+    let ghostTyping = false, ghostIndex = 0, ghostTimeout = null;
+    const userInput = document.getElementById('user-input');
+    function setGhostText() {
+      ghostTyping = true; ghostIndex = 0;
+      userInput.value = '';
+      userInput.readOnly = true;
+      userInput.style.color = '#35a7ff';
+      ghostTypeStep();
     }
-    inputBox.addEventListener('focus', () => {
-      if (!inputBox.value) hideGhost();
-    });
-    inputBox.addEventListener('blur', () => {
-      if (!inputBox.value) showGhost();
-    });
-    inputBox.addEventListener('input', () => {
-      if (inputBox.value.length) {
-        hideGhost();
+    function ghostTypeStep() {
+      if (ghostIndex <= GHOST_TEXT.length) {
+        userInput.value = GHOST_TEXT.slice(0, ghostIndex);
+        ghostIndex++;
+        ghostTimeout = setTimeout(ghostTypeStep, 28 + Math.random()*38);
       } else {
-        showGhost();
+        ghostTyping = false;
+        userInput.readOnly = false;
+        userInput.style.color = '';
+        userInput.blur();
+      }
+    }
+    function killGhostText() {
+      if (ghostTimeout) clearTimeout(ghostTimeout);
+      ghostTyping = false;
+      userInput.readOnly = false;
+      userInput.style.color = '';
+    }
+    // === GHOST REAPPEAR ===
+    let reGhostTimer = null;
+    function triggerReGhost() {
+      if (ghostTyping) return;
+      if (userInput.value.trim() !== '') return;
+      reGhostTimer = setTimeout(setGhostText, 3000);
+    }
+    function killReGhost() {
+      if (reGhostTimer) clearTimeout(reGhostTimer);
+    }
+    // === INPUT EVENTS ===
+    userInput.addEventListener('focus', () => {
+      killGhostText();
+      userInput.value = '';
+      userInput.readOnly = false;
+      userInput.style.color = '';
+      killReGhost();
+    });
+    userInput.addEventListener('blur', triggerReGhost);
+    userInput.addEventListener('input', () => {
+      if (ghostTyping) killGhostText();
+      if (userInput.value.trim() === '') triggerReGhost();
+      else killReGhost();
+    });
+    // === INITIALIZE ===
+    setTimeout(setGhostText, 800);
+    // === SUBMIT BUTTON ===
+    const submitBtn = document.getElementById('submit-btn');
+    let submitted = false;
+    submitBtn.addEventListener('click', () => {
+      if (submitted) return;
+      submitted = true;
+      // Lock UI
+      userInput.readOnly = true;
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.7";
+      pauseTimer();
+      // Show overlay
+      document.getElementById('processing-overlay').style.display = 'flex';
+      // After random delay, show vulnerability
+      setTimeout(() => {
+        document.getElementById('processing-overlay').style.display = 'none';
+        document.getElementById('vuln-report').style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        setTimeout(()=>{document.getElementById('next-btn').style.opacity='1';}, 100);
+      }, Math.floor(Math.random()*(MAX_ANALYSIS-MIN_ANALYSIS)+MIN_ANALYSIS));
+    });
+    // Next button
+    document.getElementById('next-btn').addEventListener('click', () => {
+      window.location.href = "page3.html";
+    });
+    // === CLIPBOARD & SECURITY LOCKDOWNS ===
+    // Block copy, paste, cut, right-click, context menu
+    function blockClipboard(e) { e.preventDefault(); return false; }
+    ['copy','cut','paste'].forEach(ev => document.addEventListener(ev, blockClipboard));
+    document.addEventListener('contextmenu', blockClipboard);
+    userInput.addEventListener('keydown', function(e){
+      // Block clipboard shortcuts
+      if ((e.ctrlKey||e.metaKey) && (e.key==='v'||e.key==='c'||e.key==='x'||e.key==='a')) e.preventDefault();
+      // Block screenshot shortcuts (not foolproof)
+      if (
+        (e.key === 'PrintScreen') ||
+        (e.ctrlKey && e.key.toLowerCase() === 's') ||
+        ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key==='3'||e.key==='4'))
+      ) {
+        showModal("Security Violation:<br>Screen capture, copy, and save are disabled during this simulation.");
+        e.preventDefault();
+        return false;
       }
     });
-
-    // ======== INITIAL GHOST LOAD ========
-    showGhost();
-
-    // ======== BUTTON INTERACTION ========
-    const revealBtn = document.getElementById('revealBtn');
-    const processingRow = document.getElementById('processingRow');
-    const vulnerabilityBox = document.getElementById('vulnerabilityBox');
-    const nextBtn = document.getElementById('nextBtn');
-
-    let processed = false;
-    revealBtn.onclick = function() {
-      if (processed) return;
-      inputBox.disabled = true;
-      inputBox.classList.add('disabled');
-      revealBtn.disabled = true;
-      revealBtn.classList.add('disabled');
-      processingRow.style.display = 'flex';
-      inputBox.style.border = "1.4px solid #e0e1e9";
-      timerPaused = true;
-      // Random delay (4–12s)
-      let delay = 4000 + Math.floor(Math.random()*8000);
-      setTimeout(() => {
-        processingRow.style.display = 'none';
-        vulnerabilityBox.classList.add('visible');
-        nextBtn.style.display = 'block';
-        processed = true;
-      }, delay);
-    };
-
-    // ======== NEXT BUTTON LOGIC ========
-    nextBtn.onclick = () => { window.location.href = 'page3.html'; };
-
-    // ======== GHOST TEXT INITIAL POSITIONING ========
-    function updateGhostPos() {
-      // Ensure ghost text matches textarea font
-      const rect = inputBox.getBoundingClientRect();
-      ghostText.style.width = rect.width + 'px';
-      ghostText.style.height = rect.height + 'px';
-    }
-    setTimeout(updateGhostPos, 200);
-    window.addEventListener('resize', updateGhostPos);
-
-    // ======== MATRIX STATIC CANVAS ========
-    function matrixStatic(canvas) {
-      let ctx = canvas.getContext('2d');
-      let w = canvas.width = 260;
-      let h = canvas.height = 185;
-      function draw() {
-        ctx.clearRect(0, 0, w, h);
-        for (let i = 0; i < 30; i++) {
-          let x = Math.random() * w;
-          let y = Math.random() * h;
-          let len = Math.random() * 14 + 8;
-          ctx.globalAlpha = 0.08 + Math.random()*0.08;
-          ctx.strokeStyle = Math.random() > 0.96 ? '#aaa9dd' : '#323043';
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x, y+len);
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
+    document.addEventListener('keydown', function(e){
+      // Block PrintScreen everywhere
+      if (e.key === 'PrintScreen' || (e.key === 'Insert' && e.shiftKey)) {
+        showModal("Security Violation:<br>Screen capture, copy, and save are disabled during this simulation.");
+        e.preventDefault();
       }
-      setInterval(draw, 200);
+      // Block save
+      if ((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 's') {
+        showModal("Saving is disabled during this simulation.");
+        e.preventDefault();
+      }
+      // Block navigation
+      if ((e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) || (e.key === 'Backspace' && e.target === document.body)) {
+        showModal("Navigation away from this page is disabled during the simulation.");
+        e.preventDefault();
+      }
+    });
+    window.onbeforeunload = () => "Leaving now will erase your progress.";
+    // Disable back/forward navigation
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', function(event) {
+      window.history.pushState(null, '', window.location.href);
+      showModal("Back/forward navigation is disabled during this simulation.");
+    });
+    // Modal helpers
+    function showModal(msg) {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modal-content');
+      content.innerHTML = msg + "<br><br><button style='margin-top:19px;padding:12px 36px;background:#ff3146;color:#fff;border:none;border-radius:7px;font-family:var(--font);font-size:1.12rem;font-weight:700;cursor:pointer;' onclick='document.getElementById(\"modal\").style.display=\"none\";'>OK</button>";
+      modal.style.display = 'flex';
     }
-    setTimeout(() => {
-      const canvas = document.getElementById('matrix-canvas');
-      if (canvas) matrixStatic(canvas);
-    }, 500);
-
-    // ======== NO STATE SAVED ON REFRESH ========
-    window.onbeforeunload = function(){ return undefined; };
+    // Block mobile devices
+    function blockMobile() {
+      if (window.innerWidth < 700) {
+        showModal("This simulation can only be run on tablets or desktops for security reasons.");
+        return true;
+      } else {
+        document.getElementById('modal').style.display = 'none';
+        return false;
+      }
+    }
+    window.addEventListener('resize', blockMobile);
+    if (blockMobile()) { }
+    // === Animation boot ===
+    window.onload = function() {
+      startTimer();
+      document.getElementById('submit-btn').style.opacity='1';
+    };
   </script>
 </body>
 </html>
