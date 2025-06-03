@@ -2,546 +2,586 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Initiation Protocol: Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Nemesis — Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+  <!-- JetBrains Mono font -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
-    /* === RESET & FONTS === */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #0a0a0b 0%, #141317 100%);
-      color: #f8f9fb;
-      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      min-height: 100vh;
-      width: 100vw;
+      background: linear-gradient(135deg, #0a0a0b 60%, #181926 100%);
       overflow: hidden;
+      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+      color: #e4e4e7;
       user-select: none;
     }
-    @font-face {
-      font-family: 'JetBrains Mono';
-      src: local('JetBrains Mono'), local('Fira Mono'), monospace;
+
+    body.blocked-mobile {
+      overflow: hidden;
+      height: 100vh;
     }
 
-    /* === SECURITY: BLOCK SELECTION/COPY/CONTEXT === */
-    body, input, textarea, button {
-      -webkit-user-select: none;
-      -webkit-touch-callout: none;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      caret-color: #f8f9fb;
-    }
-    ::selection { background: none; }
-    body::-webkit-scrollbar { display: none; }
-
-    /* === SECURITY: BLOCK SCROLL === */
-    html, body { overflow: hidden !important; }
-
-    /* === SECURITY: BLOCK CONTEXT MENU === */
-    body { pointer-events: auto; }
-
-    /* === BLOCK MOBILE === */
-    #mobile-block {
+    .overlay-mobile {
       display: none;
       position: fixed;
-      inset: 0;
       z-index: 99999;
-      background: #0a0a0b;
-      color: #fff;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2.2vw;
-      letter-spacing: 0.01em;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    /* === HEADER / TIMER === */
-    .header {
-      width: 100vw;
-      text-align: center;
-      font-size: 1.25rem;
-      font-weight: 600;
-      letter-spacing: 0.01em;
-      margin-top: 2.2vh;
-      color: #ececf0;
-      text-shadow: 0 0 6px #16181b70;
-    }
-    .timer {
-      position: absolute;
-      top: 2.2vh;
-      right: 3vw;
-      font-size: 1.1rem;
-      font-family: inherit;
-      letter-spacing: 0.04em;
-      color: #e7e9ed;
-      border: 1px solid #232427;
-      border-radius: 6px;
-      padding: 3px 18px;
-      background: rgba(13,13,14,0.55);
-      box-shadow: 0 0 10px 1px #181a1e20;
-      text-align: right;
-      min-width: 82px;
-      transition: border 0.2s;
-    }
-
-    /* === MAIN WRAPPER === */
-    .main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 89vh;
-      width: 100vw;
-      padding-bottom: 30px;
-      position: relative;
-    }
-
-    /* === SILHOUETTE === */
-    .silhouette-wrap {
-      margin-top: 1.2vh;
-      margin-bottom: 2.5vh;
-      position: relative;
-      z-index: 2;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .silhouette-bg-matrix {
-      position: absolute;
       inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.27;
-      filter: blur(0.7px);
-    }
-    .silhouette-img {
-      max-width: 265px;
-      max-height: 38vh;
-      min-width: 170px;
-      min-height: 150px;
-      border-radius: 2vw;
-      filter: drop-shadow(0 0 38px #17172588) blur(0.7px);
-      box-shadow: 0 0 35px #1b122d44;
-      z-index: 2;
       background: #0a0a0b;
-      object-fit: contain;
-      user-drag: none;
-      pointer-events: none;
-    }
-
-    /* === QUESTION === */
-    .question {
-      font-size: 1.18rem;
-      color: #fafbfc;
-      font-family: inherit;
-      font-weight: 600;
-      letter-spacing: 0.03em;
+      color: #cfcfd9;
+      font-size: 2.2rem;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      margin-bottom: 2.2vh;
-      margin-top: 0.5vh;
-      text-shadow: 0 0 5px #18181e45;
-      transition: color 0.12s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    body.blocked-mobile .overlay-mobile {
+      display: flex;
     }
 
-    /* === INPUT === */
-    .input-area {
-      width: 100%;
-      max-width: 500px;
-      min-width: 220px;
+    .nemesis-container {
+      width: 100vw;
+      height: 100vh;
+      min-height: 100vh;
+      min-width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
-    }
-    textarea {
-      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
-      width: 100%;
-      min-height: 90px;
-      max-height: 150px;
-      background: #111217;
-      border: 1.3px solid #232227;
-      border-radius: 8px;
-      color: #f8f9fb;
-      font-size: 1rem;
-      font-weight: 500;
-      padding: 18px 20px 18px 20px;
-      resize: none;
-      box-shadow: 0 0 8px #23243318;
-      transition: border 0.2s, box-shadow 0.2s;
-      outline: none;
-      caret-color: #f8f9fb;
-      letter-spacing: 0.02em;
-      margin-bottom: 22px;
-      z-index: 3;
-      opacity: 1;
+      justify-content: center;
       position: relative;
+      z-index: 1;
+      overflow: hidden;
+      /* Subtle matrix background */
+      background: transparent;
     }
-    textarea:focus {
-      border: 1.3px solid #bdbcf6;
-      box-shadow: 0 0 10px #9b9cf720;
-    }
-    textarea.disabled, textarea:disabled {
-      background: #171821;
-      color: #999;
-      border: 1.2px solid #dd344490;
-      cursor: not-allowed;
-    }
-    .ghost-text {
-      position: absolute;
-      top: 19px;
-      left: 26px;
-      color: #7e808d;
-      opacity: 0.6;
+
+    /* Matrix static overlay */
+    .matrix-bg {
       pointer-events: none;
-      font-size: 1rem;
-      white-space: pre-line;
-      font-family: inherit;
-      user-select: none;
-      z-index: 4;
-      transition: opacity 0.23s, filter 0.19s;
-      filter: blur(0.2px);
-      text-shadow: 0 0 1.5px #1a1b2055;
-      animation: ghostin 1.2s;
-    }
-    @keyframes ghostin {
-      0% { opacity: 0; filter: blur(2px);}
-      100% { opacity: 0.6; filter: blur(0.2px);}
-    }
-    .ghost-glitch {
-      animation: ghostglitch 0.28s;
-    }
-    @keyframes ghostglitch {
-      0% { opacity: 0.6; filter: blur(0.2px);}
-      55% { opacity: 0.15; filter: blur(2.8px);}
-      80% { opacity: 0.45; filter: blur(0.7px);}
-      100% { opacity: 0; filter: blur(0.1px);}
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      opacity: 0.13;
+      mix-blend-mode: lighten;
     }
 
-    /* === BUTTONS === */
-    .btn {
-      display: block;
-      width: 100%;
-      max-width: 390px;
-      margin: 0 auto;
-      margin-bottom: 12px;
-      padding: 15px 0;
-      background: #232227;
-      color: #fafbfc;
+    /* Timer style */
+    .timer {
+      position: fixed;
+      top: 36px;
+      right: 48px;
+      color: #ececff;
+      font-size: 1.3rem;
+      background: rgba(20,21,35,0.68);
+      padding: 6px 20px;
+      border-radius: 13px;
+      box-shadow: 0 0 16px #26275c33;
+      letter-spacing: 0.06em;
+      z-index: 10;
+      border: 1px solid #292943;
+      font-weight: 700;
       font-family: inherit;
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      border: none;
-      border-radius: 8px;
-      box-shadow: 0 0 15px #17172715;
-      cursor: pointer;
-      transition: border 0.18s, background 0.18s, color 0.16s;
-      outline: none;
+    }
+
+    /* Header */
+    .nemesis-header {
+      text-align: center;
+      font-size: 1.46rem;
+      font-weight: 700;
+      color: #f8faff;
+      text-shadow: 0 0 4px #8182a5, 0 0 14px #908fff2a;
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+
+    /* Silhouette and speech bubbles */
+    .nemesis-silhouette-wrap {
+      position: relative;
+      margin: 24px 0 26px 0;
+      width: 380px;
+      height: 390px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 0 40px #36386077) blur(0.3px);
+    }
+    .nemesis-silhouette {
+      width: 320px;
+      height: auto;
+      filter: blur(0.4px) drop-shadow(0 0 56px #a1a0cf15);
+      z-index: 4;
       position: relative;
     }
-    .btn:focus {
-      border: 1.7px solid #e0e0ef88;
+    .speech-bubble {
+      position: absolute;
+      padding: 6px 18px;
+      border-radius: 22px;
+      background: rgba(20,21,35,0.88);
+      color: #dedafc;
+      font-size: 1.07rem;
+      font-family: inherit;
+      border: 1px solid #34335444;
+      box-shadow: 0 2px 12px #19173d4a;
+      opacity: 0;
+      transition: opacity 0.7s, transform 0.6s;
+      pointer-events: none;
+      text-shadow: 0 0 4px #838ab177;
+      z-index: 8;
+      animation: bubble-flicker 7s infinite linear;
     }
-    .btn:hover:enabled {
-      border: 1.3px solid #bdbcf6;
-      background: #23232d;
-      color: #f7f8ff;
-    }
-    .btn:disabled, .btn.disabled {
-      opacity: 0.52;
-      cursor: not-allowed;
-    }
-    .btn.sharper {
-      border-radius: 5px;
-      font-size: 1.08rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      box-shadow: 0 0 7px #1a1a2313;
+    @keyframes bubble-flicker {
+      0%, 100% { opacity: 0; transform: translateY(0px) scale(1); }
+      8% { opacity: 1; transform: translateY(-7px) scale(1.08); }
+      12% { opacity: 0.98; }
+      18% { opacity: 0.7;}
+      22% { opacity: 0.3;}
+      25% { opacity: 0;}
+      100% { opacity: 0;}
     }
 
-    /* === PROCESSING STATE === */
-    .processing-row {
+    .bubble1 { left: 8%;  top: 12%; animation-delay: 0s; }
+    .bubble2 { right: 11%; top: 22%; animation-delay: 2.6s; }
+    .bubble3 { left: 4%;  bottom: 23%; animation-delay: 1.7s; }
+    .bubble4 { right: 15%; bottom: 19%; animation-delay: 3.2s; }
+    .bubble5 { left: 50%; top: 3%; transform: translateX(-50%); animation-delay: 4.3s; }
+
+    /* Input Section */
+    .nemesis-form {
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 430px;
+      margin: 0 auto;
+      margin-top: 6px;
+    }
+    .nemesis-textarea-wrap {
+      width: 100%;
+      position: relative;
+    }
+    .nemesis-textarea {
+      width: 100%;
+      min-height: 44px;
+      max-height: 90px;
+      background: rgba(26, 24, 40, 0.85);
+      border: 1.8px solid #45456566;
+      border-radius: 11px;
+      padding: 12px 14px 12px 14px;
+      color: #efefff;
+      font-size: 1.09rem;
+      font-family: inherit;
+      font-weight: 500;
+      outline: none;
+      resize: none;
+      box-shadow: 0 0 12px #42426922;
+      margin-bottom: 10px;
+      transition: border 0.3s, box-shadow 0.2s;
+      caret-color: #c8c8ff;
+      letter-spacing: 0.01em;
+      z-index: 2;
+    }
+    .nemesis-textarea:focus {
+      border: 2.1px solid #7d7ddf;
+      box-shadow: 0 0 18px #7177ff22;
+    }
+    .ghost-input {
+      position: absolute;
+      left: 16px;
+      top: 13px;
+      color: #878bcf;
+      opacity: 0.5;
+      font-size: 1.09rem;
+      pointer-events: none;
+      transition: opacity 0.18s;
+      font-family: inherit;
+      z-index: 1;
+      user-select: none;
+    }
+
+    /* Nemesis Action Buttons */
+    .nemesis-btn {
+      margin-top: 10px;
+      padding: 12px 32px;
+      border: none;
+      border-radius: 17px;
+      background: linear-gradient(90deg, #393c58 0%, #8f98e6 100%);
+      color: #f2f2ff;
+      font-size: 1.07rem;
+      font-family: inherit;
+      font-weight: 700;
+      box-shadow: 0 2px 12px #23213b44;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: filter 0.2s, opacity 0.22s;
+      opacity: 0.94;
+      filter: grayscale(18%);
+    }
+    .nemesis-btn:disabled {
+      opacity: 0.5;
+      filter: grayscale(90%);
+      cursor: not-allowed;
+    }
+    .nemesis-btn:hover:not(:disabled) {
+      filter: brightness(1.19) grayscale(3%);
+      box-shadow: 0 2px 28px #a0b9f94c;
+      opacity: 1;
+    }
+
+    /* Cogwheel and Analysis */
+    .analysis-processing {
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       margin-top: 22px;
-      gap: 14px;
+      min-height: 90px;
     }
-    .gear {
-      width: 24px;
-      height: 24px;
-      animation: spin 0.88s linear infinite;
-      opacity: 0.77;
-      filter: grayscale(1) brightness(1.13);
-      margin-right: 8px;
+    .cogwheel {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      animation: cogspin 1.5s linear infinite;
+      filter: drop-shadow(0 0 10px #9ca4e7);
+      opacity: 0.88;
     }
-    @keyframes spin {
-      0% { transform: rotate(0);}
+    @keyframes cogspin {
+      0% { transform: rotate(0deg);}
       100% { transform: rotate(360deg);}
     }
-    .processing-txt {
-      font-size: 0.99rem;
-      color: #f3f3f8;
-      font-family: inherit;
-      letter-spacing: 0.025em;
-      font-weight: 500;
-      opacity: 0.88;
-      margin-left: 1px;
-      user-select: none;
+    .analysis-text {
+      color: #e1e3ff;
+      font-size: 1.14rem;
+      text-align: center;
+      letter-spacing: 0.02em;
+      opacity: 0.83;
+      text-shadow: 0 0 8px #a6a8d766;
+      font-weight: 700;
     }
 
-    /* === VULNERABILITY REVEAL === */
-    .vulnerability {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      width: 98%;
-      max-width: 430px;
-      margin: 28px auto 8px auto;
-      padding: 12px 18px 12px 24px;
-      background: #101012ef;
-      border-left: 3.5px solid #f7f7fb;
-      border-radius: 8px;
-      box-shadow: 0 2px 22px #10101515;
-      font-family: inherit;
-      font-size: 1.08rem;
-      font-weight: 600;
-      color: #f7f7fb;
-      letter-spacing: 0.01em;
+    /* Core Vulnerability Reveal */
+    .core-vulnerability {
+      position: fixed;
+      right: 52px;
+      bottom: 36px;
+      color: #a5e0ff;
+      font-size: 1.16rem;
+      font-weight: 700;
+      background: rgba(23,34,42,0.83);
+      padding: 13px 26px;
+      border-radius: 18px;
+      box-shadow: 0 0 12px #2a385a60;
+      border: 1.5px solid #22e6ff38;
       opacity: 0;
       pointer-events: none;
-      transform: translateY(18px);
-      transition: opacity 0.23s, transform 0.25s;
-      z-index: 10;
+      z-index: 100;
+      transition: opacity 1.1s;
+      text-shadow: 0 0 4px #8ee6ff;
     }
-    .vulnerability.visible {
-      opacity: 0.93;
-      pointer-events: auto;
-      transform: translateY(0);
-      animation: scanline 0.9s linear;
-    }
-    @keyframes scanline {
-      0% { filter: brightness(0.6) blur(1.8px);}
-      85% { filter: brightness(1.04) blur(0);}
-      100% { filter: brightness(1.18) blur(0);}
+    .core-vulnerability.visible {
+      opacity: 1;
+      pointer-events: all;
     }
 
-    /* === NEXT BUTTON === */
-    .btn.next {
-      margin-top: 15px;
-      background: #232227;
-      border: 1.7px solid #fafbfc40;
-      color: #fafbfc;
-      border-radius: 5px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      font-size: 1.08rem;
-      box-shadow: 0 0 10px #18182518;
-      transition: border 0.16s, color 0.16s, background 0.16s;
-    }
-    .btn.next:hover:enabled {
-      border: 1.7px solid #eaeaea99;
-      color: #ffffff;
-      background: #232237;
+    .next-btn-wrap {
+      margin-top: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    /* === SECURITY: BLOCK BACK NAV === */
-    #back-block {
-      display: none;
+    /* Responsive for large tablets and up */
+    @media (max-width: 850px) {
+      .nemesis-form, .nemesis-silhouette-wrap {
+        width: 94vw;
+        min-width: 94vw;
+        max-width: 96vw;
+      }
+      .core-vulnerability { right: 10vw; }
+      .timer { right: 6vw;}
+    }
+    @media (max-width: 600px), (max-device-width: 950px) and (orientation: portrait) {
+      .nemesis-container, body {
+        display: none !important;
+      }
+      .overlay-mobile {
+        display: flex !important;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="mobile-block">
+
+  <!-- Mobile Block Overlay -->
+  <div class="overlay-mobile">
     <div>
-      This simulation is only accessible on desktop and tablet.<br>
-      <span style="font-size: 1.3vw;opacity:.5;display:block;margin-top:15px;">Project Nemesis Initiation Protocol</span>
+      Nemesis protocol:<br>
+      <span style="font-size:1.1em;color:#90a0c9;">Desktop &amp; Tablet only.</span>
     </div>
   </div>
 
-  <div id="back-block"></div>
-  <div class="header">Question 1: What’s the worst thing someone could say about you publicly?</div>
-  <div class="timer" id="timer">07:00</div>
-  <div class="main">
-    <div class="silhouette-wrap">
-      <!-- Simulated matrix static effect using canvas -->
-      <canvas class="silhouette-bg-matrix" id="matrix-canvas"></canvas>
-      <img src="silhouette.png" alt="Silhouette" class="silhouette-img" draggable="false" />
+  <!-- Main Container -->
+  <div class="nemesis-container">
+    <!-- Timer -->
+    <div class="timer" id="timer">07:00</div>
+
+    <!-- Header -->
+    <div class="nemesis-header">
+      Question 1: What’s the worst thing someone could say about you publicly?
     </div>
 
-    <div class="input-area" style="position:relative;">
-      <textarea id="inputBox" maxlength="300" autocomplete="off" spellcheck="false" rows="3" aria-label="Reveal your core vulnerability"></textarea>
-      <div id="ghostText" class="ghost-text"></div>
-      <button class="btn" id="revealBtn">REVEAL VULNERABILITY</button>
+    <!-- Silhouette and Speech Bubbles -->
+    <div class="nemesis-silhouette-wrap">
+      <img src="silhouette.png" class="nemesis-silhouette" alt="Silhouette">
+
+      <div class="speech-bubble bubble1">fraud</div>
+      <div class="speech-bubble bubble2">wannabe</div>
+      <div class="speech-bubble bubble3">overrated</div>
+      <div class="speech-bubble bubble4">phony</div>
+      <div class="speech-bubble bubble5">poser</div>
     </div>
 
-    <div class="processing-row" id="processingRow" style="display:none;">
-      <svg class="gear" viewBox="0 0 32 32" fill="none">
+    <!-- Input Form -->
+    <form class="nemesis-form" id="nemesisForm" autocomplete="off" onsubmit="return false;">
+      <div class="nemesis-textarea-wrap">
+        <textarea id="nemesisInput" class="nemesis-textarea" rows="2" maxlength="170" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" required></textarea>
+        <span class="ghost-input" id="ghostInput"></span>
+      </div>
+      <button type="submit" class="nemesis-btn" id="submitBtn" disabled>Reveal My Psychological Faultline</button>
+    </form>
+
+    <!-- Processing/Analysis -->
+    <div class="analysis-processing" id="processingBlock" style="display:none;">
+      <svg class="cogwheel" viewBox="0 0 50 50">
         <g>
-          <circle cx="16" cy="16" r="11.5" stroke="#f7f7fb" stroke-width="2" opacity="0.65"/>
-          <path d="M16 4V2M16 30v-2M4 16H2m28 0h-2M8.22 8.22l-1.41-1.41m18.38 18.38-1.41-1.41M8.22 23.78l-1.41 1.41m18.38-18.38-1.41 1.41" stroke="#f7f7fb" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="25" cy="25" r="16" fill="none" stroke="#c0c8ff" stroke-width="5" opacity="0.17"/>
+          <path fill="#b2d0ff" d="M30 5l3 6 6 3-3 6 3 6-6 3-3 6-6-3-6 3-3-6-6-3 3-6-3-6 6-3 3-6 6 3z"/>
         </g>
       </svg>
-      <span class="processing-txt">Processing...</span>
+      <span class="analysis-text">Analyzing Core Vulnerability...</span>
     </div>
 
-    <div class="vulnerability" id="vulnerabilityBox">
-      &rarr; Core Vulnerability: <span style="margin-left:8px;">Reputation Fragility</span>
+    <!-- Next Button -->
+    <div class="next-btn-wrap" id="nextBtnWrap" style="display:none;">
+      <button class="nemesis-btn" id="nextBtn">Advance to Next Layer</button>
     </div>
-    <button class="btn next sharper" id="nextBtn" style="display:none;">ADVANCE TO NEXT ADVERSARY TRIAL</button>
   </div>
 
-  <script>
-    // ======== MOBILE BLOCKER ========
-    function isMobile() {
-      return (window.innerWidth < 600) || /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-    function showMobileBlock() {
-      document.getElementById('mobile-block').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
-      document.querySelectorAll('body > *:not(#mobile-block)').forEach(el => { if (el.id !== "mobile-block") el.style.display = "none"; });
-    }
-    if (isMobile()) showMobileBlock();
-    window.addEventListener('resize', () => { if (isMobile()) showMobileBlock(); });
+  <!-- Core Vulnerability (bottom right) -->
+  <div class="core-vulnerability" id="coreVuln">
+    &rarr; Core Vulnerability: Reputation Fragility
+  </div>
 
-    // ======== SECURITY: BLOCK CONTEXT MENU, COPY, PASTE, PRINTSCREEN ========
+  <!-- Matrix BG Canvas -->
+  <canvas class="matrix-bg" id="matrixBg"></canvas>
+
+  <script>
+    // -- MOBILE/TABLET BLOCK LOGIC --
+    function detectMobile() {
+      return (
+        /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop|webOS|BlackBerry|Windows Phone/i.test(navigator.userAgent) ||
+        window.innerWidth < 700
+      );
+    }
+    if (detectMobile()) {
+      document.body.classList.add('blocked-mobile');
+    }
+
+    // -- MATRIX BG EFFECT --
+    const canvas = document.getElementById('matrixBg');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const matrixChars = "アァカサタナハマヤラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユルグズヅブプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨロヲゴゾドボポヴ".split('');
+    let matrixCols = [];
+    function resetMatrix() {
+      matrixCols = Array.from({ length: Math.ceil(canvas.width / 26) }, () => Math.floor(Math.random() * canvas.height / 2));
+    }
+    resetMatrix();
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(14, 16, 30, 0.09)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = "18px JetBrains Mono";
+      ctx.fillStyle = "#6b7cb4";
+      for (let i = 0; i < matrixCols.length; i++) {
+        let text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+        ctx.fillText(text, i * 26, matrixCols[i] * 24);
+        if (Math.random() > 0.985) matrixCols[i] = 0;
+        matrixCols[i]++;
+        if (matrixCols[i] * 24 > canvas.height) matrixCols[i] = 0;
+      }
+      requestAnimationFrame(drawMatrix);
+    }
+    drawMatrix();
+
+    // -- TIMER LOGIC --
+    let totalSeconds = 7 * 60;
+    let timerPaused = false;
+    let timerInterval = null;
+    const timerDisplay = document.getElementById('timer');
+    function updateTimerDisplay() {
+      let mins = Math.floor(totalSeconds / 60).toString().padStart(2, "0");
+      let secs = (totalSeconds % 60).toString().padStart(2, "0");
+      timerDisplay.textContent = `${mins}:${secs}`;
+    }
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (!timerPaused && totalSeconds > 0) {
+          totalSeconds--;
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+    updateTimerDisplay();
+    startTimer();
+
+    function pauseTimer() { timerPaused = true; }
+    function resumeTimer() { timerPaused = false; }
+
+    // -- GHOST INPUT & TEXTAREA LOGIC --
+    const nemesisInput = document.getElementById('nemesisInput');
+    const ghostInput = document.getElementById('ghostInput');
+    const initialGhosts = [
+      "He’s just a brand, not a builder.",
+      "Everything he made was hype — no substance."
+    ];
+    let ghostIdx = 0;
+    let ghostTimer = null;
+    let ghostAnimActive = true;
+
+    function showGhostInput() {
+      ghostAnimActive = true;
+      ghostInput.style.opacity = '1';
+      let text = initialGhosts[ghostIdx % initialGhosts.length];
+      ghostInput.textContent = "";
+      let i = 0;
+      function typeGhost() {
+        if (!ghostAnimActive) return;
+        if (i <= text.length) {
+          ghostInput.textContent = text.slice(0, i);
+          i++;
+          ghostTimer = setTimeout(typeGhost, 34);
+        }
+      }
+      typeGhost();
+    }
+    function hideGhostInput() {
+      ghostAnimActive = false;
+      ghostInput.textContent = "";
+      ghostInput.style.opacity = '0';
+      if (ghostTimer) clearTimeout(ghostTimer);
+    }
+
+    nemesisInput.addEventListener('focus', hideGhostInput);
+    nemesisInput.addEventListener('input', function() {
+      if (this.value.length === 0 && !nemesisInput.matches(":focus")) {
+        showGhostInput();
+      } else {
+        hideGhostInput();
+      }
+      updateSubmitBtn();
+    });
+    nemesisInput.addEventListener('blur', function() {
+      if (this.value.length === 0) {
+        setTimeout(showGhostInput, 550);
+      }
+    });
+
+    nemesisInput.value = "";
+    showGhostInput();
+
+    // -- SUBMIT BUTTON ENABLE/DISABLE --
+    const submitBtn = document.getElementById('submitBtn');
+    function updateSubmitBtn() {
+      submitBtn.disabled = !(nemesisInput.value.length > 0);
+    }
+
+    // -- SUBMISSION LOGIC --
+    const nemesisForm = document.getElementById('nemesisForm');
+    const processingBlock = document.getElementById('processingBlock');
+    const coreVuln = document.getElementById('coreVuln');
+    const nextBtnWrap = document.getElementById('nextBtnWrap');
+
+    nemesisForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Lock form
+      nemesisInput.readOnly = true;
+      submitBtn.disabled = true;
+      // Hide ghost input
+      hideGhostInput();
+      // Hide form, show processing
+      nemesisForm.style.display = 'none';
+      processingBlock.style.display = 'flex';
+      pauseTimer();
+
+      // Random wait between 4 and 12 seconds
+      const waitSec = Math.floor(4000 + Math.random() * 8000);
+      setTimeout(function() {
+        processingBlock.style.display = 'none';
+        // Reveal core vulnerability
+        coreVuln.classList.add('visible');
+        nextBtnWrap.style.display = 'flex';
+      }, waitSec);
+    });
+
+    // NEXT BUTTON LOGIC
+    document.getElementById('nextBtn').onclick = function() {
+      window.location.href = "page3.html";
+    };
+
+    // -- SECURITY: BLOCK SHORTCUTS, COPY, PRINTSCREEN, ETC --
+    function blockAll(e) {
+      // Block all copy, paste, cut, drag, select, right-click, screenshot, print
+      const blockedKeys = [
+        // Clipboard shortcuts
+        "c", "x", "v", "a", "s", "p", "u", "i", "j", "k", "l",
+        // Printscreen, devtools
+        "PrintScreen"
+      ];
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        blockedKeys.includes(e.key.toLowerCase())
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+      // F12 (DevTools), PrintScreen, right-click
+      if (e.key === "F12" || e.key === "PrintScreen" || e.keyCode === 44) {
+        e.preventDefault();
+        return false;
+      }
+      // Block Alt, Shift+Esc
+      if ((e.altKey && e.key === "Tab") || (e.shiftKey && e.key === "Escape")) {
+        e.preventDefault();
+        return false;
+      }
+    }
+    document.addEventListener('keydown', blockAll, true);
+    document.addEventListener('keyup', blockAll, true);
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
     document.addEventListener('paste', e => e.preventDefault());
-    document.addEventListener('keydown', function(e) {
-      // Block Print Screen, Ctrl+P, Ctrl+S, Ctrl+U, Ctrl+C/V/X
-      if (e.key === "PrintScreen" ||
-        ((e.ctrlKey || e.metaKey) && ['p','s','u','c','v','x','a'].includes(e.key.toLowerCase()))
-      ) { e.preventDefault(); }
-      // Block back navigation
-      if (e.key === "Backspace" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) e.preventDefault();
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('dragstart', e => e.preventDefault());
+    window.addEventListener('beforeunload', function(e) {
+      e.preventDefault();
+      e.returnValue = 'Nemesis session: Navigation will reset your psychological scan.';
     });
 
-    // ======== SECURITY: BLOCK NAVIGATION / BACK ========
-    history.pushState(null, null, location.href);
-    window.onpopstate = function() {
-      history.pushState(null, null, location.href);
-      document.getElementById('back-block').style.display = 'block';
-      setTimeout(() => {document.getElementById('back-block').style.display = 'none';}, 4000);
-    };
-
-    // ======== TIMER ========
-    let time = 420; // 7 minutes
-    let timerInt = setInterval(updateTimer, 1000);
-    let timerPaused = false;
-    function updateTimer() {
-      if (timerPaused) return;
-      if (time <= 0) return;
-      time--;
-      let min = String(Math.floor(time / 60)).padStart(2, '0');
-      let sec = String(time % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${min}:${sec}`;
-    }
-
-    // ======== GHOST TEXT LOGIC ========
-    const inputBox = document.getElementById('inputBox');
-    const ghostText = document.getElementById('ghostText');
-    const ghostContent = `He’s just a brand, not a builder.\nEverything he made was hype — no substance.`;
-
-    function showGhost() {
-      ghostText.textContent = ghostContent;
-      ghostText.style.opacity = 0.6;
-      ghostText.classList.remove('ghost-glitch');
-    }
-    function hideGhost() {
-      ghostText.classList.add('ghost-glitch');
-      setTimeout(() => { ghostText.style.opacity = 0; }, 130);
-    }
-    inputBox.addEventListener('focus', () => {
-      if (!inputBox.value) hideGhost();
+    // No state saved on refresh
+    window.addEventListener('load', function() {
+      nemesisInput.value = "";
+      showGhostInput();
     });
-    inputBox.addEventListener('blur', () => {
-      if (!inputBox.value) showGhost();
-    });
-    inputBox.addEventListener('input', () => {
-      if (inputBox.value.length) {
-        hideGhost();
-      } else {
-        showGhost();
-      }
-    });
-
-    // ======== INITIAL GHOST LOAD ========
-    showGhost();
-
-    // ======== BUTTON INTERACTION ========
-    const revealBtn = document.getElementById('revealBtn');
-    const processingRow = document.getElementById('processingRow');
-    const vulnerabilityBox = document.getElementById('vulnerabilityBox');
-    const nextBtn = document.getElementById('nextBtn');
-
-    let processed = false;
-    revealBtn.onclick = function() {
-      if (processed) return;
-      inputBox.disabled = true;
-      inputBox.classList.add('disabled');
-      revealBtn.disabled = true;
-      revealBtn.classList.add('disabled');
-      processingRow.style.display = 'flex';
-      inputBox.style.border = "1.4px solid #e0e1e9";
-      timerPaused = true;
-      // Random delay (4–12s)
-      let delay = 4000 + Math.floor(Math.random()*8000);
-      setTimeout(() => {
-        processingRow.style.display = 'none';
-        vulnerabilityBox.classList.add('visible');
-        nextBtn.style.display = 'block';
-        processed = true;
-      }, delay);
-    };
-
-    // ======== NEXT BUTTON LOGIC ========
-    nextBtn.onclick = () => { window.location.href = 'page3.html'; };
-
-    // ======== GHOST TEXT INITIAL POSITIONING ========
-    function updateGhostPos() {
-      // Ensure ghost text matches textarea font
-      const rect = inputBox.getBoundingClientRect();
-      ghostText.style.width = rect.width + 'px';
-      ghostText.style.height = rect.height + 'px';
-    }
-    setTimeout(updateGhostPos, 200);
-    window.addEventListener('resize', updateGhostPos);
-
-    // ======== MATRIX STATIC CANVAS ========
-    function matrixStatic(canvas) {
-      let ctx = canvas.getContext('2d');
-      let w = canvas.width = 260;
-      let h = canvas.height = 185;
-      function draw() {
-        ctx.clearRect(0, 0, w, h);
-        for (let i = 0; i < 30; i++) {
-          let x = Math.random() * w;
-          let y = Math.random() * h;
-          let len = Math.random() * 14 + 8;
-          ctx.globalAlpha = 0.08 + Math.random()*0.08;
-          ctx.strokeStyle = Math.random() > 0.96 ? '#aaa9dd' : '#323043';
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x, y+len);
-          ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-      }
-      setInterval(draw, 200);
-    }
-    setTimeout(() => {
-      const canvas = document.getElementById('matrix-canvas');
-      if (canvas) matrixStatic(canvas);
-    }, 500);
-
-    // ======== NO STATE SAVED ON REFRESH ========
-    window.onbeforeunload = function(){ return undefined; };
   </script>
 </body>
 </html>
