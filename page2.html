@@ -2,708 +2,546 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Project Nemesis: Initiation Protocol — Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=1024, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="icon" href="silhouette.png" />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+  <title>Initiation Protocol: Psychological Fingerprinting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <style>
+    /* === RESET & FONTS === */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #0e1012 0%, #16181a 100%);
-      color: #e9f4ff;
-      font-family: 'JetBrains Mono', monospace;
+      background: linear-gradient(135deg, #0a0a0b 0%, #141317 100%);
+      color: #f8f9fb;
+      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      min-height: 100vh;
+      width: 100vw;
       overflow: hidden;
       user-select: none;
     }
-
-    body.blocked {
-      pointer-events: none;
-      filter: grayscale(1) blur(1.5px) brightness(0.7);
+    @font-face {
+      font-family: 'JetBrains Mono';
+      src: local('JetBrains Mono'), local('Fira Mono'), monospace;
     }
 
-    /* Glitch/Static overlay effect */
-    #glitch {
-      pointer-events: none;
+    /* === SECURITY: BLOCK SELECTION/COPY/CONTEXT === */
+    body, input, textarea, button {
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      caret-color: #f8f9fb;
+    }
+    ::selection { background: none; }
+    body::-webkit-scrollbar { display: none; }
+
+    /* === SECURITY: BLOCK SCROLL === */
+    html, body { overflow: hidden !important; }
+
+    /* === SECURITY: BLOCK CONTEXT MENU === */
+    body { pointer-events: auto; }
+
+    /* === BLOCK MOBILE === */
+    #mobile-block {
+      display: none;
       position: fixed;
-      z-index: 2;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      opacity: 0.08;
-      background: url('data:image/svg+xml;utf8,<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="200" height="200" fill="black"/><g><rect x="0" y="0" width="40" height="10" fill="white" opacity="0.03"/><rect x="60" y="40" width="60" height="12" fill="white" opacity="0.06"/><rect x="120" y="100" width="80" height="7" fill="white" opacity="0.06"/><rect x="10" y="120" width="180" height="4" fill="white" opacity="0.07"/><rect x="30" y="170" width="40" height="20" fill="white" opacity="0.03"/></g></svg>');
-      animation: staticShift 1.5s infinite linear;
-      background-size: 200px 200px;
-    }
-    @keyframes staticShift {
-      0% { background-position: 0 0;}
-      25% { background-position: 50px 100px;}
-      50% { background-position: 120px 60px;}
-      75% { background-position: 80px 180px;}
-      100% { background-position: 0 0;}
+      inset: 0;
+      z-index: 99999;
+      background: #0a0a0b;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2vw;
+      letter-spacing: 0.01em;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
-    /* Ghostly corner glyphs */
-    .glyph {
+    /* === HEADER / TIMER === */
+    .header {
+      width: 100vw;
+      text-align: center;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin-top: 2.2vh;
+      color: #ececf0;
+      text-shadow: 0 0 6px #16181b70;
+    }
+    .timer {
       position: absolute;
-      font-size: 3.2em;
-      opacity: 0.06;
-      pointer-events: none;
-      animation: drift 13s infinite alternate ease-in-out;
-    }
-    .glyph.g1 { left: 3vw; top: 2vh; transform: rotate(-15deg);}
-    .glyph.g2 { right: 5vw; top: 5vh; animation-delay: 2s;}
-    .glyph.g3 { left: 2vw; bottom: 3vh; animation-delay: 6s;}
-    .glyph.g4 { right: 4vw; bottom: 1vh; transform: rotate(12deg); animation-delay: 11s;}
-    @keyframes drift {
-      0% { filter: blur(0.5px);}
-      100% { transform: translateY(-18px) scale(1.02) rotate(4deg);}
+      top: 2.2vh;
+      right: 3vw;
+      font-size: 1.1rem;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      color: #e7e9ed;
+      border: 1px solid #232427;
+      border-radius: 6px;
+      padding: 3px 18px;
+      background: rgba(13,13,14,0.55);
+      box-shadow: 0 0 10px 1px #181a1e20;
+      text-align: right;
+      min-width: 82px;
+      transition: border 0.2s;
     }
 
-    /* Main layout */
-    .main-container {
+    /* === MAIN WRAPPER === */
+    .main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 89vh;
+      width: 100vw;
+      padding-bottom: 30px;
+      position: relative;
+    }
+
+    /* === SILHOUETTE === */
+    .silhouette-wrap {
+      margin-top: 1.2vh;
+      margin-bottom: 2.5vh;
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .silhouette-bg-matrix {
       position: absolute;
       inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      z-index: 3;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.27;
+      filter: blur(0.7px);
     }
-
-    .nemesis-header {
-      font-size: 1.5em;
-      letter-spacing: 0.02em;
-      text-align: center;
-      margin-bottom: 36px;
-      color: #70c2ff;
-      font-weight: 700;
-      text-shadow: 0 0 8px #00ffee88, 0 0 2px #ffffff55;
-      animation: headerGlow 2.2s infinite alternate;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-    }
-    @keyframes headerGlow {
-      0% { text-shadow: 0 0 6px #00ffee66, 0 0 2px #fff; }
-      100% { text-shadow: 0 0 18px #7dfaffee, 0 0 8px #00ffeeee; }
-    }
-
-    .silhouette-box {
-      position: relative;
-      margin-bottom: 30px;
-    }
-
     .silhouette-img {
-      display: block;
-      width: 320px;
-      max-width: 58vw;
-      margin: 0 auto;
-      filter: drop-shadow(0 0 35px #89f7ff66) blur(0.5px);
-      border-radius: 16px;
-      background: linear-gradient(120deg, #21223988 0%, #232c4180 100%);
-      box-shadow: 0 0 48px 0 #6d4eff66, 0 0 24px 0 #00f0ff44;
-      z-index: 3;
-    }
-
-    /* Animated speech bubbles */
-    .bubble {
-      position: absolute;
-      color: #c5d7fa;
-      background: rgba(28,31,40,0.98);
-      border: 1.5px solid #636c7b70;
-      box-shadow: 0 1px 10px #37379944, 0 0 0px #b8f6ff33;
-      border-radius: 18px 18px 18px 5px;
-      padding: 8px 18px;
-      font-size: 0.98em;
+      max-width: 265px;
+      max-height: 38vh;
+      min-width: 170px;
+      min-height: 150px;
+      border-radius: 2vw;
+      filter: drop-shadow(0 0 38px #17172588) blur(0.7px);
+      box-shadow: 0 0 35px #1b122d44;
+      z-index: 2;
+      background: #0a0a0b;
+      object-fit: contain;
+      user-drag: none;
       pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.7s, transform 0.5s;
-      z-index: 4;
-      filter: blur(0.3px);
-      font-family: inherit;
-      animation: bubbleFade 7s linear infinite;
-    }
-    @keyframes bubbleFade {
-      0%   { opacity: 0; }
-      5%   { opacity: 0.8; }
-      10%  { opacity: 1; }
-      80%  { opacity: 1; }
-      95%  { opacity: 0.8;}
-      100% { opacity: 0; }
     }
 
-    /* Input area */
-    .nemesis-input-section {
-      width: 390px;
-      max-width: 92vw;
-      margin: 0 auto;
-      background: rgba(22,26,28,0.8);
-      border-radius: 17px;
-      box-shadow: 0 0 12px #00faff2c, 0 2px 14px #39268d2a;
-      padding: 28px 28px 22px 28px;
+    /* === QUESTION === */
+    .question {
+      font-size: 1.18rem;
+      color: #fafbfc;
+      font-family: inherit;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      text-align: center;
+      margin-bottom: 2.2vh;
+      margin-top: 0.5vh;
+      text-shadow: 0 0 5px #18181e45;
+      transition: color 0.12s;
+    }
+
+    /* === INPUT === */
+    .input-area {
+      width: 100%;
+      max-width: 500px;
+      min-width: 220px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
-    .ghost-textarea {
+    textarea {
+      font-family: 'JetBrains Mono', 'Fira Mono', monospace;
       width: 100%;
-      height: 94px;
+      min-height: 90px;
+      max-height: 150px;
+      background: #111217;
+      border: 1.3px solid #232227;
+      border-radius: 8px;
+      color: #f8f9fb;
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 18px 20px 18px 20px;
       resize: none;
-      font-family: inherit;
-      font-size: 1.12em;
-      color: #bfe8f6;
-      background: linear-gradient(96deg,#16181a 90%, #27283d 100%);
-      border: 2.4px solid #394e678f;
-      border-radius: 12px;
-      padding: 13px 18px;
+      box-shadow: 0 0 8px #23243318;
+      transition: border 0.2s, box-shadow 0.2s;
       outline: none;
-      box-shadow: 0 0 10px 1.5px #00ffee29;
-      margin-bottom: 18px;
-      transition: border 0.2s, box-shadow 0.22s;
-      caret-color: #7dfaff;
+      caret-color: #f8f9fb;
+      letter-spacing: 0.02em;
+      margin-bottom: 22px;
+      z-index: 3;
+      opacity: 1;
       position: relative;
-      letter-spacing: 0.03em;
-      filter: blur(0) brightness(1.04);
     }
-    .ghost-textarea.pulse {
-      border: 2.7px solid #70c2ffcc;
-      box-shadow: 0 0 18px #00ffeec7, 0 0 3px #32b6e3a7;
-      animation: textareaPulse 0.22s;
+    textarea:focus {
+      border: 1.3px solid #bdbcf6;
+      box-shadow: 0 0 10px #9b9cf720;
     }
-    @keyframes textareaPulse {
-      0% { box-shadow: 0 0 5px #00ffee99;}
-      100% { box-shadow: 0 0 18px #00ffeec7;}
+    textarea.disabled, textarea:disabled {
+      background: #171821;
+      color: #999;
+      border: 1.2px solid #dd344490;
+      cursor: not-allowed;
     }
-    .ghost-overlay {
-      pointer-events: none;
-      color: #6fa3d9c2;
+    .ghost-text {
       position: absolute;
-      left: 32px; top: 38px;
-      z-index: 2;
-      width: 85%;
-      font-size: 1em;
-      opacity: 0.78;
-      transition: opacity 0.34s;
+      top: 19px;
+      left: 26px;
+      color: #7e808d;
+      opacity: 0.6;
+      pointer-events: none;
+      font-size: 1rem;
+      white-space: pre-line;
       font-family: inherit;
-      letter-spacing: 0.03em;
+      user-select: none;
+      z-index: 4;
+      transition: opacity 0.23s, filter 0.19s;
+      filter: blur(0.2px);
+      text-shadow: 0 0 1.5px #1a1b2055;
+      animation: ghostin 1.2s;
+    }
+    @keyframes ghostin {
+      0% { opacity: 0; filter: blur(2px);}
+      100% { opacity: 0.6; filter: blur(0.2px);}
+    }
+    .ghost-glitch {
+      animation: ghostglitch 0.28s;
+    }
+    @keyframes ghostglitch {
+      0% { opacity: 0.6; filter: blur(0.2px);}
+      55% { opacity: 0.15; filter: blur(2.8px);}
+      80% { opacity: 0.45; filter: blur(0.7px);}
+      100% { opacity: 0; filter: blur(0.1px);}
+    }
+
+    /* === BUTTONS === */
+    .btn {
+      display: block;
+      width: 100%;
+      max-width: 390px;
+      margin: 0 auto;
+      margin-bottom: 12px;
+      padding: 15px 0;
+      background: #232227;
+      color: #fafbfc;
+      font-family: inherit;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 0 15px #17172715;
+      cursor: pointer;
+      transition: border 0.18s, background 0.18s, color 0.16s;
+      outline: none;
+      position: relative;
+    }
+    .btn:focus {
+      border: 1.7px solid #e0e0ef88;
+    }
+    .btn:hover:enabled {
+      border: 1.3px solid #bdbcf6;
+      background: #23232d;
+      color: #f7f8ff;
+    }
+    .btn:disabled, .btn.disabled {
+      opacity: 0.52;
+      cursor: not-allowed;
+    }
+    .btn.sharper {
+      border-radius: 5px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      box-shadow: 0 0 7px #1a1a2313;
+    }
+
+    /* === PROCESSING STATE === */
+    .processing-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 22px;
+      gap: 14px;
+    }
+    .gear {
+      width: 24px;
+      height: 24px;
+      animation: spin 0.88s linear infinite;
+      opacity: 0.77;
+      filter: grayscale(1) brightness(1.13);
+      margin-right: 8px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0);}
+      100% { transform: rotate(360deg);}
+    }
+    .processing-txt {
+      font-size: 0.99rem;
+      color: #f3f3f8;
+      font-family: inherit;
+      letter-spacing: 0.025em;
+      font-weight: 500;
+      opacity: 0.88;
+      margin-left: 1px;
       user-select: none;
     }
 
-    /* Button Styles */
-    .nemesis-btn {
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 1.13em;
-      padding: 12px 30px;
-      border-radius: 13px;
-      border: none;
-      color: #1d1e25;
-      background: linear-gradient(90deg,#67ffec 5%,#73a6f7 98%);
-      box-shadow: 0 0 18px #00ffee66, 0 2px 8px #011a2240;
-      margin-top: 7px;
-      letter-spacing: 0.06em;
-      cursor: pointer;
-      transition: filter 0.18s, box-shadow 0.16s, background 0.24s;
-      text-shadow: 0 1px 10px #00ffee17;
-      outline: none;
-    }
-    .nemesis-btn:active {
-      filter: brightness(1.03) saturate(1.12);
-      box-shadow: 0 0 24px #00ffeecc;
-    }
-    .nemesis-btn[disabled] {
-      background: #404353 !important;
-      color: #aaa !important;
-      cursor: not-allowed;
-      opacity: 0.6;
-      box-shadow: none;
-    }
-
-    /* Timer top right */
-    .nemesis-timer {
-      position: fixed;
-      top: 30px;
-      right: 42px;
-      background: #16181aef;
-      border-radius: 13px;
-      padding: 10px 18px;
-      font-size: 1.13em;
-      color: #d9edff;
-      letter-spacing: 0.04em;
-      box-shadow: 0 0 12px #2ce5ff44, 0 1px 5px #3a224d2f;
-      z-index: 10;
-      font-family: inherit;
-      border: 1.4px solid #32b6e3b0;
-      font-weight: 600;
-    }
-    .nemesis-timer.paused {
-      color: #a1b6ca;
-      background: #202228f7;
-      border-color: #2d2d33b6;
-      opacity: 0.7;
-      animation: timerPulse 0.6s alternate infinite;
-    }
-    @keyframes timerPulse {
-      0% { filter: brightness(1.1);}
-      100% { filter: brightness(0.86);}
-    }
-
-    /* Loader overlay */
-    .nemesis-loader {
-      position: fixed;
-      z-index: 12;
-      left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(18,22,28,0.98);
+    /* === VULNERABILITY REVEAL === */
+    .vulnerability {
+      position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      transition: opacity 0.44s;
-    }
-    .loader-spinner {
-      width: 54px; height: 54px;
-      border: 6px solid #212b42;
-      border-top: 6px solid #00ffeecc;
-      border-radius: 50%;
-      animation: spin 1.1s linear infinite;
-      margin-bottom: 24px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg);}
-      100% { transform: rotate(360deg);}
-    }
-    .loader-text {
-      font-size: 1.23em;
-      color: #c6f8f9;
-      text-shadow: 0 0 12px #00ffee66;
-      letter-spacing: 0.03em;
+      justify-content: flex-start;
+      width: 98%;
+      max-width: 430px;
+      margin: 28px auto 8px auto;
+      padding: 12px 18px 12px 24px;
+      background: #101012ef;
+      border-left: 3.5px solid #f7f7fb;
+      border-radius: 8px;
+      box-shadow: 0 2px 22px #10101515;
       font-family: inherit;
-      margin-bottom: 7px;
-      text-align: center;
-      opacity: 0.88;
-    }
-
-    /* Vulnerability annotation */
-    .vuln-reveal {
-      position: fixed;
-      bottom: 32px; right: 52px;
-      background: #282c39d8;
-      color: #f6f7fe;
-      font-size: 1.12em;
-      border-radius: 12px 24px 14px 6px;
-      padding: 17px 25px;
-      box-shadow: 0 0 18px #8fc3ff4d;
-      z-index: 20;
-      letter-spacing: 0.05em;
-      opacity: 0;
-      animation: vulnFade 1.3s 0.2s forwards, glitchText 1.2s 2.1s infinite alternate;
-      font-weight: 700;
-      border: 1.7px solid #6d97d9d9;
-      text-shadow: 0 2px 8px #68ffe633;
-      filter: blur(0.4px);
-    }
-    @keyframes vulnFade {
-      from { opacity: 0; transform: scale(0.96);}
-      to { opacity: 1; transform: scale(1);}
-    }
-    @keyframes glitchText {
-      0% { text-shadow: 0 0 2px #70c2ff, 0 0 0 #00ffee;}
-      60% { text-shadow: 1.5px 0 #00ffee88, -2px 2px #ca81fc55;}
-      100% { text-shadow: -2px 2px #70c2ff, 2px 1px #efc3ff44;}
-    }
-
-    .next-btn {
-      position: fixed;
-      right: 60px;
-      bottom: 24px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: #f7f7fb;
+      letter-spacing: 0.01em;
       opacity: 0;
       pointer-events: none;
-      z-index: 22;
-      animation: fadeInNext 1.5s 1.4s forwards;
-      background: linear-gradient(90deg,#8afeff 5%,#5b91f3 98%);
+      transform: translateY(18px);
+      transition: opacity 0.23s, transform 0.25s;
+      z-index: 10;
     }
-    @keyframes fadeInNext {
-      from { opacity: 0;}
-      to { opacity: 1; pointer-events: all;}
+    .vulnerability.visible {
+      opacity: 0.93;
+      pointer-events: auto;
+      transform: translateY(0);
+      animation: scanline 0.9s linear;
     }
-
-    /* Blocked overlay for mobile */
-    .block-mobile-overlay {
-      position: fixed;
-      inset: 0;
-      background: #0e1012ee;
-      color: #fff;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      font-family: inherit;
-      font-size: 1.28em;
-      letter-spacing: 0.05em;
-      text-align: center;
-      padding: 32px;
-    }
-    .block-mobile-overlay strong {
-      color: #00ffee;
-      font-size: 1.1em;
-      display: block;
-      margin: 12px 0;
-    }
-    .warning {
-      color: #ff3355;
-      font-size: 0.96em;
-      margin-top: 8px;
+    @keyframes scanline {
+      0% { filter: brightness(0.6) blur(1.8px);}
+      85% { filter: brightness(1.04) blur(0);}
+      100% { filter: brightness(1.18) blur(0);}
     }
 
-    /* Hide scroll */
-    ::-webkit-scrollbar { width: 0 !important; }
-    body { -ms-overflow-style: none; scrollbar-width: none;}
+    /* === NEXT BUTTON === */
+    .btn.next {
+      margin-top: 15px;
+      background: #232227;
+      border: 1.7px solid #fafbfc40;
+      color: #fafbfc;
+      border-radius: 5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      font-size: 1.08rem;
+      box-shadow: 0 0 10px #18182518;
+      transition: border 0.16s, color 0.16s, background 0.16s;
+    }
+    .btn.next:hover:enabled {
+      border: 1.7px solid #eaeaea99;
+      color: #ffffff;
+      background: #232237;
+    }
+
+    /* === SECURITY: BLOCK BACK NAV === */
+    #back-block {
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <div id="glitch"></div>
-  <div class="glyph g1">&#9883;</div>
-  <div class="glyph g2">&#9762;</div>
-  <div class="glyph g3">&#9775;</div>
-  <div class="glyph g4">&#9906;</div>
-
-  <!-- Timer -->
-  <div class="nemesis-timer" id="nemesis-timer">07:00</div>
-
-  <div class="main-container" id="main-container">
-    <div class="nemesis-header">
-      🧠 Question 1: What’s the worst thing someone could say about you publicly?
-    </div>
-    <div class="silhouette-box">
-      <img src="silhouette.png" alt="Silhouette" class="silhouette-img" id="silhouette-img">
-      <!-- Speech bubbles -->
-      <div class="bubble" style="top:20px;left:-90px;">fraud</div>
-      <div class="bubble" style="top:0px;right:-120px;">wannabe</div>
-      <div class="bubble" style="top:130px;left:-65px;">phony</div>
-      <div class="bubble" style="bottom:20px;left:-100px;">poser</div>
-      <div class="bubble" style="top:90px;right:-100px;">overrated</div>
-    </div>
-    <form class="nemesis-input-section" autocomplete="off" onsubmit="return false;">
-      <div style="width:100%;position:relative;">
-        <textarea
-          class="ghost-textarea"
-          id="ghost-textarea"
-          maxlength="256"
-          spellcheck="false"
-          autocomplete="off"
-          autocorrect="off"
-          rows="4"
-          required
-          onfocus="ghostShatter()" 
-          oninput="handleInput()"
-        ></textarea>
-        <div class="ghost-overlay" id="ghost-overlay"></div>
-      </div>
-      <button type="button" class="nemesis-btn" id="submit-btn">Reveal My Vulnerability</button>
-    </form>
-  </div>
-
-  <!-- Loader, hidden by default -->
-  <div class="nemesis-loader" id="nemesis-loader" style="display:none;">
-    <div class="loader-spinner"></div>
-    <div class="loader-text" id="loader-text">Analyzing cognitive response…<br>Compiling adversarial profile…</div>
-  </div>
-
-  <!-- Vulnerability reveal -->
-  <div class="vuln-reveal" id="vuln-reveal" style="display:none;">
-    → Core Vulnerability: Reputation Fragility
-  </div>
-  <button class="nemesis-btn next-btn" id="next-btn" style="display:none;">Advance to Next Adversary Trial</button>
-
-  <!-- Block mobile overlay -->
-  <div id="block-mobile-overlay" class="block-mobile-overlay" style="display:none;">
+  <div id="mobile-block">
     <div>
-      <strong>Device Not Supported</strong>
-      This experience is only for laptop/desktop or tablet.<br>
-      <span class="warning">Mobile and small screens are strictly blocked.</span>
+      This simulation is only accessible on desktop and tablet.<br>
+      <span style="font-size: 1.3vw;opacity:.5;display:block;margin-top:15px;">Project Nemesis Initiation Protocol</span>
     </div>
   </div>
-  <audio id="type-sound" src="https://cdn.pixabay.com/audio/2022/11/16/audio_12c6bda21a.mp3" preload="auto"></audio>
-  <audio id="beep-sound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12d0bfe91d.mp3" preload="auto"></audio>
+
+  <div id="back-block"></div>
+  <div class="header">Question 1: What’s the worst thing someone could say about you publicly?</div>
+  <div class="timer" id="timer">07:00</div>
+  <div class="main">
+    <div class="silhouette-wrap">
+      <!-- Simulated matrix static effect using canvas -->
+      <canvas class="silhouette-bg-matrix" id="matrix-canvas"></canvas>
+      <img src="silhouette.png" alt="Silhouette" class="silhouette-img" draggable="false" />
+    </div>
+
+    <div class="input-area" style="position:relative;">
+      <textarea id="inputBox" maxlength="300" autocomplete="off" spellcheck="false" rows="3" aria-label="Reveal your core vulnerability"></textarea>
+      <div id="ghostText" class="ghost-text"></div>
+      <button class="btn" id="revealBtn">REVEAL VULNERABILITY</button>
+    </div>
+
+    <div class="processing-row" id="processingRow" style="display:none;">
+      <svg class="gear" viewBox="0 0 32 32" fill="none">
+        <g>
+          <circle cx="16" cy="16" r="11.5" stroke="#f7f7fb" stroke-width="2" opacity="0.65"/>
+          <path d="M16 4V2M16 30v-2M4 16H2m28 0h-2M8.22 8.22l-1.41-1.41m18.38 18.38-1.41-1.41M8.22 23.78l-1.41 1.41m18.38-18.38-1.41 1.41" stroke="#f7f7fb" stroke-width="2" stroke-linecap="round"/>
+        </g>
+      </svg>
+      <span class="processing-txt">Processing...</span>
+    </div>
+
+    <div class="vulnerability" id="vulnerabilityBox">
+      &rarr; Core Vulnerability: <span style="margin-left:8px;">Reputation Fragility</span>
+    </div>
+    <button class="btn next sharper" id="nextBtn" style="display:none;">ADVANCE TO NEXT ADVERSARY TRIAL</button>
+  </div>
 
   <script>
-    // --- MOBILE/TABLET BLOCK ---
-    function isMobileDevice() {
-      return (typeof window.orientation !== "undefined") || navigator.userAgent.match(/Android|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i);
+    // ======== MOBILE BLOCKER ========
+    function isMobile() {
+      return (window.innerWidth < 600) || /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
-    function blockMobileIfNeeded() {
-      const minW = 768;
-      if (isMobileDevice() || window.innerWidth < minW) {
-        document.getElementById('block-mobile-overlay').style.display = 'flex';
-        document.body.classList.add('blocked');
-      } else {
-        document.getElementById('block-mobile-overlay').style.display = 'none';
-        document.body.classList.remove('blocked');
-      }
+    function showMobileBlock() {
+      document.getElementById('mobile-block').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      document.querySelectorAll('body > *:not(#mobile-block)').forEach(el => { if (el.id !== "mobile-block") el.style.display = "none"; });
     }
-    window.addEventListener('resize', blockMobileIfNeeded);
-    window.addEventListener('DOMContentLoaded', blockMobileIfNeeded);
+    if (isMobile()) showMobileBlock();
+    window.addEventListener('resize', () => { if (isMobile()) showMobileBlock(); });
 
-    // --- GHOST TYPING ---
-    const ghostLines = [
-      "He’s just a brand, not a builder.",
-      "Everything he made was hype — no substance."
-    ];
-    let ghostActive = true;
-    let ghostIndex = 0;
-    let ghostChar = 0;
-    let ghostTypingTimer;
-    let ghostRestoring = false;
-
-    const ghostOverlay = document.getElementById('ghost-overlay');
-    const ghostTextarea = document.getElementById('ghost-textarea');
-
-    function renderGhostText() {
-      ghostOverlay.innerHTML = ghostLines.join("<br>");
-    }
-
-    function startGhostTyping() {
-      ghostOverlay.innerHTML = "";
-      ghostActive = true;
-      ghostIndex = 0;
-      ghostChar = 0;
-      ghostOverlay.style.opacity = "0.8";
-      ghostTypingTimer = setInterval(() => {
-        let txt = "";
-        for(let i=0;i<ghostLines.length;i++) {
-          if (i < ghostIndex) {
-            txt += ghostLines[i] + "<br>";
-          } else if (i === ghostIndex) {
-            txt += ghostLines[i].substring(0, ghostChar) + "<span class='ghost-cursor'>|</span><br>";
-          }
-        }
-        ghostOverlay.innerHTML = txt;
-        ghostChar++;
-        if(ghostChar > ghostLines[ghostIndex].length) {
-          ghostIndex++;
-          ghostChar = 0;
-        }
-        if(ghostIndex >= ghostLines.length) {
-          clearInterval(ghostTypingTimer);
-          ghostOverlay.innerHTML = ghostLines.join("<br>");
-          ghostActive = false;
-        }
-      }, 42);
-    }
-    // On load, show ghost text
-    document.addEventListener("DOMContentLoaded", () => {
-      renderGhostText();
-      // Place the ghost text in the textarea as well (for shatter/fade effect)
-      ghostTextarea.value = ghostLines.join('\n');
+    // ======== SECURITY: BLOCK CONTEXT MENU, COPY, PASTE, PRINTSCREEN ========
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    document.addEventListener('cut', e => e.preventDefault());
+    document.addEventListener('paste', e => e.preventDefault());
+    document.addEventListener('keydown', function(e) {
+      // Block Print Screen, Ctrl+P, Ctrl+S, Ctrl+U, Ctrl+C/V/X
+      if (e.key === "PrintScreen" ||
+        ((e.ctrlKey || e.metaKey) && ['p','s','u','c','v','x','a'].includes(e.key.toLowerCase()))
+      ) { e.preventDefault(); }
+      // Block back navigation
+      if (e.key === "Backspace" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) e.preventDefault();
     });
 
-    function ghostShatter() {
-      if (ghostActive || ghostOverlay.style.opacity > 0) {
-        ghostOverlay.style.opacity = "0";
-        setTimeout(() => { ghostOverlay.innerHTML = ""; }, 250);
-        ghostTextarea.value = "";
-        ghostActive = false;
-      }
-    }
-    function handleInput() {
-      // Border pulse
-      ghostTextarea.classList.add("pulse");
-      setTimeout(()=>ghostTextarea.classList.remove("pulse"), 210);
+    // ======== SECURITY: BLOCK NAVIGATION / BACK ========
+    history.pushState(null, null, location.href);
+    window.onpopstate = function() {
+      history.pushState(null, null, location.href);
+      document.getElementById('back-block').style.display = 'block';
+      setTimeout(() => {document.getElementById('back-block').style.display = 'none';}, 4000);
+    };
 
-      // Prevent pasting/copying
-      ghostTextarea.onpaste = (e)=>{ e.preventDefault(); return false; }
-      ghostTextarea.oncopy = (e)=>{ e.preventDefault(); return false; }
-      ghostTextarea.oncut = (e)=>{ e.preventDefault(); return false; }
-
-      if (ghostTextarea.value.length === 0 && !ghostRestoring) {
-        // Animate ghost text back in
-        ghostRestoring = true;
-        ghostOverlay.style.opacity = "0.8";
-        ghostTextarea.blur();
-        setTimeout(()=> {
-          ghostTextarea.value = "";
-          startGhostTyping();
-          setTimeout(()=>{ ghostRestoring = false; }, 1600);
-        }, 450);
-      }
-    }
-    ghostTextarea.addEventListener('keydown', function(e) {
-      if (["v","V","c","C"].includes(e.key) && (e.ctrlKey || e.metaKey)) e.preventDefault();
-    });
-
-    // --- SPEECH BUBBLES (random fade) ---
-    function animateBubbles() {
-      const bubbles = document.querySelectorAll('.bubble');
-      let del = 0;
-      bubbles.forEach((bub, i) => {
-        setTimeout(() => {
-          bub.style.opacity = 1;
-          bub.style.transform = "translateY(-10px) scale(1.05)";
-          setTimeout(() => {
-            bub.style.opacity = 0.2;
-            bub.style.transform = "translateY(10px) scale(0.97)";
-          }, 4100 + 900*Math.random());
-        }, del + Math.random()*1000);
-        del += 130;
-      });
-      setTimeout(animateBubbles, 5000);
-    }
-    document.addEventListener('DOMContentLoaded', animateBubbles);
-
-    // --- TIMER ---
-    let timerSec = 420;
-    let timerRunning = true;
+    // ======== TIMER ========
+    let time = 420; // 7 minutes
+    let timerInt = setInterval(updateTimer, 1000);
     let timerPaused = false;
-    const timerElem = document.getElementById('nemesis-timer');
+    function updateTimer() {
+      if (timerPaused) return;
+      if (time <= 0) return;
+      time--;
+      let min = String(Math.floor(time / 60)).padStart(2, '0');
+      let sec = String(time % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${min}:${sec}`;
+    }
 
-    function pad(x) { return String(x).padStart(2,'0'); }
-    function renderTimer() {
-      const min = Math.floor(timerSec/60);
-      const sec = timerSec%60;
-      timerElem.textContent = pad(min)+":"+pad(sec);
-      if(timerSec <= 0) {
-        timerElem.textContent = "00:00";
-        timerElem.style.color = "#ff3b44";
-        timerElem.classList.add('paused');
-        timerRunning = false;
+    // ======== GHOST TEXT LOGIC ========
+    const inputBox = document.getElementById('inputBox');
+    const ghostText = document.getElementById('ghostText');
+    const ghostContent = `He’s just a brand, not a builder.\nEverything he made was hype — no substance.`;
+
+    function showGhost() {
+      ghostText.textContent = ghostContent;
+      ghostText.style.opacity = 0.6;
+      ghostText.classList.remove('ghost-glitch');
+    }
+    function hideGhost() {
+      ghostText.classList.add('ghost-glitch');
+      setTimeout(() => { ghostText.style.opacity = 0; }, 130);
+    }
+    inputBox.addEventListener('focus', () => {
+      if (!inputBox.value) hideGhost();
+    });
+    inputBox.addEventListener('blur', () => {
+      if (!inputBox.value) showGhost();
+    });
+    inputBox.addEventListener('input', () => {
+      if (inputBox.value.length) {
+        hideGhost();
+      } else {
+        showGhost();
       }
-    }
-    function startTimer() {
-      renderTimer();
-      if(!timerRunning) return;
-      setTimeout(()=> {
-        if(timerRunning && !timerPaused) {
-          timerSec--;
-          renderTimer();
-          startTimer();
-        }
-      }, 1000);
-    }
-    startTimer();
+    });
 
-    function pauseTimer() {
+    // ======== INITIAL GHOST LOAD ========
+    showGhost();
+
+    // ======== BUTTON INTERACTION ========
+    const revealBtn = document.getElementById('revealBtn');
+    const processingRow = document.getElementById('processingRow');
+    const vulnerabilityBox = document.getElementById('vulnerabilityBox');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let processed = false;
+    revealBtn.onclick = function() {
+      if (processed) return;
+      inputBox.disabled = true;
+      inputBox.classList.add('disabled');
+      revealBtn.disabled = true;
+      revealBtn.classList.add('disabled');
+      processingRow.style.display = 'flex';
+      inputBox.style.border = "1.4px solid #e0e1e9";
       timerPaused = true;
-      timerElem.classList.add("paused");
-    }
-    function resumeTimer() {
-      timerPaused = false;
-      timerElem.classList.remove("paused");
-    }
-
-    // --- SIMULATED SUBMISSION FLOW ---
-    const submitBtn = document.getElementById('submit-btn');
-    const loader = document.getElementById('nemesis-loader');
-    const vulnReveal = document.getElementById('vuln-reveal');
-    const nextBtn = document.getElementById('next-btn');
-
-    submitBtn.addEventListener('click', async function() {
-      // Validation
-      if (ghostTextarea.value.trim().length < 5) {
-        ghostTextarea.focus();
-        ghostTextarea.classList.add("pulse");
-        return;
-      }
-      // Lock input
-      ghostTextarea.readOnly = true;
-      submitBtn.disabled = true;
-      pauseTimer();
-
-      // Show loader, random delay
-      loader.style.display = "flex";
-      let dots = 0;
-      let phase = 1;
-      const loaderText = document.getElementById('loader-text');
-      const phases = [
-        "Analyzing cognitive response…",
-        "Compiling adversarial profile…"
-      ];
-      let totalTime = 4000 + Math.random()*8000; // 4-12 seconds
-      let elapsed = 0;
-      const intv = setInterval(() => {
-        loaderText.innerHTML = phases[phase-1] + '<br>' + '.'.repeat((dots%4)+1);
-        dots++;
-        if (dots % 7 === 0 && phase < phases.length) phase++;
-        elapsed += 340;
-        if (elapsed > totalTime) {
-          clearInterval(intv);
-          loader.style.display = "none";
-          revealVulnerability();
-        }
-      }, 340);
-    });
-
-    function revealVulnerability() {
-      // Show annotation
-      vulnReveal.style.display = "block";
-      // Animate in the "Next" button
-      nextBtn.style.display = "block";
-      nextBtn.style.opacity = 1;
-      nextBtn.style.pointerEvents = 'all';
+      // Random delay (4–12s)
+      let delay = 4000 + Math.floor(Math.random()*8000);
       setTimeout(() => {
-        nextBtn.focus();
-      }, 1500);
+        processingRow.style.display = 'none';
+        vulnerabilityBox.classList.add('visible');
+        nextBtn.style.display = 'block';
+        processed = true;
+      }, delay);
+    };
+
+    // ======== NEXT BUTTON LOGIC ========
+    nextBtn.onclick = () => { window.location.href = 'page3.html'; };
+
+    // ======== GHOST TEXT INITIAL POSITIONING ========
+    function updateGhostPos() {
+      // Ensure ghost text matches textarea font
+      const rect = inputBox.getBoundingClientRect();
+      ghostText.style.width = rect.width + 'px';
+      ghostText.style.height = rect.height + 'px';
     }
+    setTimeout(updateGhostPos, 200);
+    window.addEventListener('resize', updateGhostPos);
 
-    // --- NEXT BUTTON LOGIC ---
-    nextBtn.addEventListener('click', function() {
-      window.location.href = "page3.html";
-    });
-
-    // --- SECURITY/RESTRICTION LOGIC ---
-    // Block context menu, clipboard, back navigation, etc.
-    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
-    document.addEventListener('copy', function(e) { e.preventDefault(); });
-    document.addEventListener('paste', function(e) { e.preventDefault(); });
-    document.addEventListener('cut', function(e) { e.preventDefault(); });
-    document.addEventListener('selectstart', function(e) { if(e.target.tagName !== "TEXTAREA") e.preventDefault(); });
-
-    // Disable PrintScreen as much as possible (focus loss overlay)
-    let lastActive = Date.now();
-    window.onblur = () => {
-      document.body.classList.add('blocked');
-      setTimeout(()=>{document.body.classList.remove('blocked');},1100);
-    }
-    window.onfocus = () => { document.body.classList.remove('blocked'); };
-
-    // Block navigation (back/forward)
-    history.pushState(null, null, document.URL);
-    window.addEventListener('popstate', function () {
-      history.pushState(null, null, document.URL);
-    });
-
-    // Disable save/refresh memory
-    window.onbeforeunload = function(){ return undefined; }
-
-    // Try to block print screen and other screenshot shortcuts (limited by browser security)
-    document.addEventListener('keyup', function(e) {
-      if(e.key === "PrintScreen" || (e.ctrlKey && e.key === "p")) {
-        document.body.classList.add('blocked');
-        setTimeout(()=>{document.body.classList.remove('blocked');},1100);
-        alert("Screenshots are not permitted in this simulation.");
-      }
-    });
-
-    // --- SOUNDS (optional ambient typing/console beep) ---
-    let typeSound = document.getElementById('type-sound');
-    let beepSound = document.getElementById('beep-sound');
-    ghostTextarea.addEventListener('keydown', function(e){
-      if (!e.metaKey && !e.ctrlKey && !ghostRestoring) {
-        if(typeSound && typeSound.currentTime < 0.1) {
-          typeSound.currentTime = 0;
-          typeSound.play();
+    // ======== MATRIX STATIC CANVAS ========
+    function matrixStatic(canvas) {
+      let ctx = canvas.getContext('2d');
+      let w = canvas.width = 260;
+      let h = canvas.height = 185;
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < 30; i++) {
+          let x = Math.random() * w;
+          let y = Math.random() * h;
+          let len = Math.random() * 14 + 8;
+          ctx.globalAlpha = 0.08 + Math.random()*0.08;
+          ctx.strokeStyle = Math.random() > 0.96 ? '#aaa9dd' : '#323043';
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y+len);
+          ctx.stroke();
         }
+        ctx.globalAlpha = 1;
       }
-    });
+      setInterval(draw, 200);
+    }
+    setTimeout(() => {
+      const canvas = document.getElementById('matrix-canvas');
+      if (canvas) matrixStatic(canvas);
+    }, 500);
 
-    // --- AMBIENT SOUND TOGGLE (optional) ---
-    // Could add a mute/unmute button if desired.
-    // Skipped for brevity.
-
+    // ======== NO STATE SAVED ON REFRESH ========
+    window.onbeforeunload = function(){ return undefined; };
   </script>
 </body>
 </html>
