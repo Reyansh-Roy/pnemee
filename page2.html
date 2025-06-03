@@ -3,123 +3,211 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nemesis Interrogation — Question 1</title>
+  <title>Nemesis: Deep Profile Initiation</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #101113;
-      --glass: rgba(23,24,28,0.96);
-      --glow: #e9ecef;
-      --bubble: transparent;
-      --timer: #fcfcfc;
-      --timer-label: #fcfcfc;
-      --timer-shadow: #eaeaea42;
+      --glass: rgba(24,28,33,0.95);
+      --card-border: #09f7ffdd;
+      --neon: #00e0ff;
+      --timer: #14f6ff;
+      --timer-shadow: #00e0ff1c;
       --accent-red: #ff334b;
       --accent-cyan: #00e0ff;
-      --accent-white: #eaeaea;
-      --mono: 'JetBrains Mono', monospace;
+      --offwhite: #eaeaea;
+      --bubble: #eaeaeaee;
+      --bubbletxt: #0b202a;
       --input: #191b1f;
+      --mono: 'JetBrains Mono', monospace;
+      --progress-bg: #22282f;
+      --progress: #09f7ff;
+      --shadow: #10e4ff23;
+      --glow-red: #ff335040;
     }
     html, body {
-      margin: 0; padding: 0; min-height: 100vh; min-width: 100vw;
-      background: var(--bg); color: var(--accent-white); font-family: var(--mono);
+      margin: 0; padding: 0;
+      min-width: 100vw; min-height: 100vh;
+      background: var(--bg);
+      font-family: var(--mono);
+      color: var(--offwhite);
       overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
+      height: 100vh;
     }
-    body::before {
-      content:""; pointer-events:none; z-index:0;position:fixed;top:0;left:0;right:0;bottom:0;
-      background: repeating-linear-gradient(to bottom, #fff1 0px, #fff1 1px, transparent 6px, transparent 12px);
-      opacity:0.07;
-      mix-blend-mode:lighten;
-      animation:scanlines 2.5s linear infinite;
+    body {
+      position: relative;
+    }
+    /* Scanline + Data Rain effect layers */
+    #databg-canvas, #scanline-overlay {
+      position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;
+    }
+    #scanline-overlay {
+      background: repeating-linear-gradient(
+        to bottom, #ffffff0e 0px, #ffffff0e 1.5px, transparent 6px, transparent 12px
+      );
+      opacity: 0.10;
+      animation: scanlines 3s linear infinite;
+      z-index: 2;
     }
     @keyframes scanlines { 0%{background-position-y:0;}100%{background-position-y:12px;} }
+
+    /* Header bar */
     .timer-bar {
-      position:fixed;top:0;left:0;width:100vw;height:40px;background:var(--bg);z-index:100;
-      display:flex;align-items:center;font-family:var(--mono);font-size:1.2rem;color:var(--timer);border-bottom:2.5px solid var(--timer);
-      box-shadow:0 2px 24px var(--timer-shadow);
-      transition:background 0.3s;
+      position:fixed;top:0;left:0;width:100vw;height:54px;
+      background:linear-gradient(to bottom, #0f1d24c8 90%,transparent);
+      z-index:100;display:flex;align-items:center;font-family:var(--mono);
+      font-size:1.38rem;color:var(--timer);box-shadow:0 2px 24px var(--timer-shadow);
+      border-bottom:2.5px solid var(--timer);
+      padding-left: max(3vw, 32px); padding-right: max(3vw, 32px);
+      letter-spacing: 0.03em;
     }
-    .timer-bar-progress {
-      position:absolute;left:0;top:0;height:4px;width:100vw;background:var(--timer);box-shadow:0 0 18px var(--timer);z-index:101;transition:width 0.5s;
+    .timer-time {
+      font-size:2em;
+      color:var(--timer);
+      font-weight: bold;
+      text-shadow: 0 0 16px var(--timer),0 0 2px #fff;
+      margin-right:18px;
+      filter: blur(0.5px) brightness(1.3);
+      letter-spacing:0.09em;
     }
-    .timer-bar-inner {
-      margin-left:34px;display:flex;align-items:center;gap:17px;font-family:var(--mono);
+    .timer-label, .session-id, .session-progress {
+      color:var(--timer);font-size:1.14em;text-shadow:0 0 14px var(--timer-shadow),0 0 2px #fff;
+      opacity: 0.91;
+      margin-left:18px;letter-spacing:0.13em;
     }
-    .timer-time {font-size:1.28em;color:var(--timer);text-shadow:0 2px 12px #fff8,0 1px 0 #ccc5;}
-    .timer-label {font-size:1.07em;color:var(--timer-label);margin-left:18px;letter-spacing:0.13em;text-shadow:0 2px 9px #fff7;}
-    .session-id {
-      margin-left:auto; margin-right:34px; color:var(--accent-cyan); font-size:1em;
-      letter-spacing:0.13em; opacity:0.72; font-family:var(--mono);
-      animation:flickerId 2.2s infinite alternate;
+    .session-progress {
+      margin-left:32px; font-size:1.09em; color: var(--neon);
     }
-    @keyframes flickerId {0%{opacity:0.82;}35%{opacity:1;}67%{opacity:0.6;}100%{opacity:0.98;}}
-    .main {
-      width:100vw;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;position:relative;padding-top:88px;
-      background:radial-gradient(ellipse 70% 42% at 50% 7%,#3033360e 60%,#101113 100%);
+    .timer-progressbar-bg {
+      position:absolute;bottom:0;left:0;height:5px;width:100vw;background:var(--progress-bg);
+      z-index:101;
     }
-    .card {
-      width:570px;max-width:98vw;background:var(--glass);
-      border-radius:32px;box-shadow:0 8px 64px #090e134a,0 1.5px 0 #242e3615,0 0 0 2.5px var(--glow);
-      padding:52px 38px 42px 38px;display:flex;flex-direction:column;align-items:center;gap:0;
-      position:relative;z-index:3;backdrop-filter:blur(7px) brightness(1.1);
-      border:2.7px solid #e9ecef42;
-      overflow:visible;
-      animation:slideUp 1.15s cubic-bezier(.23,1.7,.49,.97);
+    .timer-progressbar {
+      position:absolute;bottom:0;left:0;height:5px;width:100vw;background:var(--progress);z-index:102;
+      box-shadow:0 0 16px var(--progress);
+      transition:width 0.5s;
+    }
+
+    /* Card Layout */
+    .main-flex {
+      width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    }
+    .nemesis-card {
+      width:60vw;min-width:340px;max-width:950px;min-height:75vh;
+      background:var(--glass);
+      border-radius:40px;box-shadow:0 8px 88px #1fc6ff21,0 1.5px 0 #242e3615,0 0 0 2.5px var(--card-border);
+      display:grid;grid-template-columns:1fr 1.2fr;gap:0;
+      align-items:stretch;z-index:3;
+      margin-top:40px;overflow:visible;backdrop-filter:blur(12px) brightness(1.11);
+      border:2.9px solid #09f7ff39;
+      animation:slideUp 1.13s cubic-bezier(.23,1.7,.49,.97);
+      position:relative;
     }
     @keyframes slideUp {0%{transform:translateY(42px) scale(0.96);opacity:0;}80%{opacity:0.97;}100%{transform:none;opacity:1;}}
-    .silhouette-box {width:388px;max-width:90vw;height:298px;margin:0 auto 14px auto;position:relative;}
-    .sillu-img {
-      width:100%;height:auto;display:block;user-select:none;pointer-events:none;filter:drop-shadow(0 10px 44px #eafcff22);
-      opacity:0.97;
-      animation:bubbleIn 1.05s cubic-bezier(.44,1.6,.6,.99);
+    /* Mobile Card Stack */
+    @media (max-width:900px) {
+      .nemesis-card{grid-template-columns:1fr;min-width:0;width:98vw;max-width:99vw;min-height:97vh;border-radius:20px;padding:0;}
     }
-    @keyframes bubbleIn {0%{opacity:0;transform:scale(0.84);}100%{opacity:0.97;transform:scale(1);}}
-    .card-header {
-      font-size:2.22rem;font-family:var(--mono);font-weight:700;letter-spacing:0.04em;margin-bottom:15px;color:var(--accent-white);width:100%;text-align:left;
-      text-shadow:0 2px 13px #fff2,0 1px 0 #10181a09;
-      display:flex;align-items:center;gap:13px;
+
+    /* Left: Silhouette + speech bubbles */
+    .nemesis-visual {
+      display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:220px;height:100%;position:relative;
+      padding:0 0 0 0;
+      background: none;
+    }
+    .sillu-img {
+      width:90%;max-width:410px;min-width:170px;
+      filter:drop-shadow(0 20px 90px #14e2ff33) brightness(0.96) grayscale(0.10);
+      opacity:0.97;z-index:5;display:block;
+      margin-top:36px;
+      animation:threatPulse 2.9s cubic-bezier(.36,1.2,.73,.87) infinite alternate;
+    }
+    @keyframes threatPulse {
+      0%{filter:drop-shadow(0 0 16px #09f7ff99) brightness(1.05);}
+      65%{filter:drop-shadow(0 0 32px #09f7ff44) brightness(0.96);}
+      100%{filter:drop-shadow(0 0 40px #ff335022) brightness(1.07);}
+    }
+
+    /* Right: Interrogation / Input */
+    .nemesis-content {
+      display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%;padding:2vw 3vw 3vw 0;position:relative;
+    }
+    @media (max-width:900px) {
+      .nemesis-content{padding:2vw 2vw 8vw 2vw;}
+      .nemesis-visual{min-width:0;}
+      .main-flex{padding-bottom:48px;}
+    }
+    .nemesis-question {
+      font-size:2.35rem;font-family:var(--mono);font-weight:800;letter-spacing:0.04em;margin-bottom:0.8em;
+      color:var(--offwhite);width:100%;text-align:left;position:relative;line-height:1.12;
+      text-shadow:0 2px 12px #00e0ff25,0 1px 0 #10181a13;
+      margin-top:4vw;
+      margin-bottom:22px;
+    }
+    .nemesis-question .highlight {
+      color:var(--accent-red);text-shadow:0 0 13px #ff334b30;
+      background: linear-gradient(90deg,#ff334b18 10%,#00e0ff18 90%);
+      border-radius:4px;padding:0 7px 1px 6px;display:inline-block;
+      font-weight: bold;
+      font-size:1.14em;
     }
     .subtitle {
-      font-size:1.09rem;font-family:var(--mono);color:#ccc;opacity:0.86;margin-bottom:33px;text-align:left;width:100%;padding-left:3px;
+      font-size:1.04rem;font-family:var(--mono);color:#eee;opacity:0.81;margin-bottom:20px;text-align:left;width:100%;padding-left:3px;
+      letter-spacing:0.01em;
     }
     .input-area {width:100%;margin:0 auto;position:relative;}
-    .sim-placeholder {position:absolute;left:22px;top:21px;right:15px;font-family:var(--mono);color:#a9ecfc;opacity:0.33;font-size:1.13rem;pointer-events:none;z-index:9;white-space:pre-line;user-select:none;}
-    .response-box {
-      width:100%;min-height:110px;max-height:260px;background:var(--input);border-radius:16px;border:2px solid #e9ecef77;color:var(--accent-white);font-size:1.18rem;font-family:var(--mono);padding:21px 14px 18px 22px;box-sizing:border-box;resize:vertical;outline:none;margin-bottom:0;margin-top:0;box-shadow:0 2px 17px 0 #eafcff17;z-index:7;
-      transition:box-shadow 0.2s, border 0.2s;
-      animation:typeIn 1.12s cubic-bezier(.44,1.6,.6,.99);
+    .sim-placeholder {
+      position:absolute;left:19px;top:15px;right:15px;font-family:var(--mono);
+      color:#a9ecfc;opacity:0.37;font-size:1.07rem;pointer-events:none;z-index:9;white-space:pre-line;user-select:none;
     }
-    .response-box:focus {border:2.4px solid var(--accent-cyan);box-shadow:0 0 17px #00e0ff46;}
-    .input-warning {color:#ff334b;font-size:1.07rem;margin-top:9px;min-height:17px;display:block;text-align:left;font-family:var(--mono);}
+    .response-box {
+      width:100%;min-height:86px;max-height:260px;background:var(--input);border-radius:16px;border:2px solid #09f7ff33;color:var(--offwhite);
+      font-size:1.17rem;font-family:var(--mono);padding:21px 14px 18px 22px;box-sizing:border-box;resize:vertical;outline:none;margin-bottom:0;margin-top:0;
+      box-shadow:0 2px 17px 0 #00e0ff16;z-index:7;transition:box-shadow 0.2s, border 0.2s;
+      caret-color: var(--accent-cyan);
+    }
+    .response-box:focus {border:2.4px solid var(--accent-cyan);box-shadow:0 0 17px #00e0ff36;}
+    .input-warning {
+      color:var(--accent-red);font-size:1.09rem;margin-top:12px;min-height:16px;display:block;text-align:left;font-family:var(--mono);letter-spacing:0.02em;
+      text-shadow: 0 1px 7px #ff334b60;
+    }
     .submit-btn, .next-btn {
-      display:none;margin:34px 0 0 0;padding:15px 54px;font-size:1.19rem;font-family:var(--mono);font-weight:700;
+      display:none;margin:32px 0 0 0;padding:16px 62px;font-size:1.19rem;font-family:var(--mono);font-weight:700;
       letter-spacing:0.15em;cursor:pointer;z-index:99;
-      border-radius:10px;border:none;outline:none;box-shadow:0 2px 30px #ff334b26;
+      border-radius:10px;border:none;outline:none;
       transition:box-shadow 0.18s, filter 0.13s, background 0.12s;
     }
     .submit-btn {
       background:linear-gradient(90deg,var(--accent-red) 15%,#c92435 100%);
-      color:#fff;text-shadow:0 2px 14px #222,0 1px 0 #fff1; border:2px solid #ff334b60;
-      box-shadow:0 2px 28px #ff334b44, 0 0 8px #fff3;
+      color:#fff;text-shadow:0 2px 14px #222,0 1px 0 #fff1; border:2px solid #ff334b70;
+      box-shadow:0 2px 28px #ff334b29, 0 0 8px #fff3;
       animation:pulseBtn 2s infinite alternate;
     }
-    .submit-btn:hover,.submit-btn:focus {box-shadow:0 3px 38px #ff334bbb, 0 0 7px #fff8;filter:brightness(1.06);}
-    @keyframes pulseBtn {0%{box-shadow:0 2px 19px #ff334b1c;}100%{box-shadow:0 2px 38px #ff334baa, 0 0 7px #fff8;}}
+    .submit-btn:hover, .submit-btn:focus {box-shadow:0 3px 44px #ff334b99, 0 0 8px #fff8;filter:brightness(1.08);}
     .next-btn {
       background:linear-gradient(90deg,#00e0ff 0%,#3ff4fe 100%);
-      color:#122126;text-shadow:0 2px 14px #fff2,0 1px 0 #10181a13;
-      border:2px solid #00e0ff70;box-shadow:0 2px 34px #00e0ff33;
+      color:#192126;text-shadow:0 2px 14px #fff2,0 1px 0 #10181a13;
+      border:2px solid #00e0ff77;box-shadow:0 2px 34px #00e0ff33;
       animation:slideInRight 0.7s cubic-bezier(.35,2,.69,.87);
     }
-    .next-btn:focus,.next-btn:hover {filter:brightness(1.09);box-shadow:0 4px 36px #00e0ffb8,0 0 9px #fff;}
+    .next-btn:focus, .next-btn:hover {filter:brightness(1.10);box-shadow:0 4px 46px #00e0ffb8,0 0 13px #fff;}
+    @keyframes pulseBtn {0%{box-shadow:0 2px 14px #ff334b1c;}100%{box-shadow:0 2px 48px #ff334baa, 0 0 8px #fff9;}}
     @keyframes slideInRight {0%{opacity:0;transform:translateX(44px);}100%{opacity:1;transform:none;}}
-    .loader-bar {width:99%;margin:38px auto 0 auto;display:flex;align-items:center;justify-content:center;height:44px;flex-direction:column;}
-    .loader-spinner {border:5px solid #c4f3fb2b;border-top:5px solid var(--accent-cyan);border-radius:50%;width:44px;height:44px;animation:spin 0.9s linear infinite;margin-bottom:9px;}
+
+    .loader-bar {width:99%;margin:40px auto 0 auto;display:flex;align-items:center;justify-content:center;height:46px;flex-direction:column;}
+    .loader-spinner {border:5px solid #c4f3fb2b;border-top:5px solid var(--accent-cyan);border-radius:50%;width:46px;height:46px;animation:spin 0.9s linear infinite;margin-bottom:10px;}
     @keyframes spin {100%{transform:rotate(360deg);}}
-    .system-label {font-size:1.11rem;color:var(--accent-cyan);font-family:var(--mono);opacity:0.76;margin-bottom:7px;text-align:center;letter-spacing:0.11em;}
+    .system-label {font-size:1.14rem;color:var(--accent-cyan);font-family:var(--mono);opacity:0.81;margin-bottom:8px;text-align:center;letter-spacing:0.11em;}
+    .scanline-analyze {
+      height:4px;background:linear-gradient(90deg,#fff2,#00e0ff 50%,#fff2);border-radius:3px;
+      margin:24px 0 20px 0;box-shadow:0 0 22px #00e0ff50;
+      animation:moveScan 1.4s linear 1;
+    }
+    @keyframes moveScan {0%{margin-left:-90%;width:10%;opacity:0.4;}50%{margin-left:30%;width:80%;opacity:1;}100%{margin-left:99%;width:10%;opacity:0.4;}}
+
     .annotation-bottom {
-      margin:42px 0 0 0;font-family:var(--mono);color:var(--accent-cyan);font-size:1.27rem;background:#172a2eeb;border-radius:12px 19px 19px 12px;padding:18px 35px 18px 60px;box-shadow:0 0 40px #00f5ff22;border-left:6px solid var(--accent-cyan);letter-spacing:0.10em;opacity:0.98;z-index:40;animation:flickerAnno 0.72s cubic-bezier(.3,1.5,.47,.93);
+      margin:47px 0 0 0;font-family:var(--mono);color:var(--accent-cyan);font-size:1.31rem;background:#162a2eea;
+      border-radius:13px 20px 20px 13px;padding:18px 44px 18px 62px;box-shadow:0 0 44px #00f5ff30;border-left:7px solid var(--accent-cyan);letter-spacing:0.10em;opacity:0.98;z-index:40;animation:flickerAnno 0.76s cubic-bezier(.3,1.5,.47,.93);
       text-align:left;position:relative;min-width:258px;
       background-image: linear-gradient(100deg, #20394133 25%, #182e335c 100%);
       transition: box-shadow 0.2s;
@@ -127,59 +215,99 @@
     .annotation-bottom::before {
       content: "⚠️";
       position: absolute;
-      left: 18px; top: 17px; font-size: 1.38em; opacity: 0.88;
+      left: 19px; top: 17px; font-size: 1.39em; opacity: 0.85;
       filter: drop-shadow(0 1px 2px #fff6);
       animation:eyeFlicker 2.2s infinite alternate;
     }
     @keyframes eyeFlicker {0%{opacity:0.68;}100%{opacity:0.97;}}
     @keyframes flickerAnno {0%{opacity:0;filter:blur(10px) brightness(1.7);}80%{opacity:0.97;filter:blur(0.7px) brightness(1.18);}100%{opacity:0.98;filter:none;}}
+    .anno-tooltip {
+      font-size:1em; color: #fff; opacity:0.7; padding: 0 0 0 9px; cursor: pointer; text-decoration: underline dashed #00e0ff;
+      position: absolute; right:10px; top:7px; z-index: 111;
+    }
+    .anno-tip-box {
+      display: none; position: absolute; right: 10px; bottom: 54px; width:260px; background: #12252fa0;
+      color: #fff; font-size: 1.05em; padding: 18px 18px 12px 18px; border-radius: 12px; box-shadow: 0 4px 28px #00e0ff2a; z-index:2222;
+      border:2px solid #00e0ff71;
+      animation: fadeInAnno .6s;
+    }
     @media (max-width:650px) {
-      .main{padding-top:37px;}
-      .card{padding:14vw 2vw 10vw 2vw;width:99vw;min-width:0;}
+      .nemesis-card {padding:2vw 2vw 10vw 2vw;width:99vw;}
       .silhouette-box{width:99vw;height:auto;}
       .sillu-img{width:99vw;}
-      .card-header{font-size:1.23rem;}
+      .nemesis-question{font-size:1.13rem;}
       .response-box{font-size:1.03rem;}
-      .annotation-bottom{font-size:0.96rem;}
+      .annotation-bottom{font-size:1.01rem;}
       .submit-btn,.next-btn{font-size:1.03rem;padding:14px 8vw;}
+      .anno-tooltip, .anno-tip-box{right:5vw;}
     }
+    @media (max-width:500px) {.main-flex{padding-bottom:16vw;}.nemesis-card{width:99vw;min-width:0;}}
     @media print {body,html{display:none!important;}}
   </style>
 </head>
 <body>
+<canvas id="databg-canvas"></canvas>
+<div id="scanline-overlay"></div>
   <div class="timer-bar">
-    <div class="timer-bar-progress" id="timer-bar-progress"></div>
-    <div class="timer-bar-inner">
-      <span style="font-size:1.15em;vertical-align:middle;line-height:0;">⏳</span>
-      <span class="timer-time" id="timer-text">7:00</span>
-      <span class="timer-label">Total time remaining</span>
-    </div>
+    <span class="timer-time" id="timer-text">7:00</span>
+    <span class="timer-label">Time remaining</span>
     <span class="session-id" id="session-id"></span>
+    <span class="session-progress" id="session-progress"></span>
+    <div class="timer-progressbar-bg"></div>
+    <div class="timer-progressbar" id="timer-bar-progress"></div>
   </div>
-  <div class="main">
-    <div class="card" id="main-card">
-      <div class="silhouette-box"><img class="sillu-img" src="silhouette.png" alt="Nemesis Silhouette Crowd"/></div>
-      <div class="card-header" id="qheader">
-        Question 1: What’s the worst thing someone could say about you publicly?
+  <div class="main-flex">
+    <div class="nemesis-card" id="main-card">
+      <!-- Silhouette & bubbles -->
+      <div class="nemesis-visual">
+        <div class="silhouette-box">
+          <img class="sillu-img" src="silhouette.png" alt="Nemesis Silhouette Crowd"/>
+        </div>
       </div>
-      <div class="subtitle">Answer honestly. Emotional inconsistencies will be used against you.</div>
-      <div class="input-area" id="input-area">
-        <div class="sim-placeholder" id="sim-placeholder"></div>
-        <textarea class="response-box" id="response-box" placeholder="" autocomplete="off"></textarea>
-        <span class="input-warning" id="input-warning"></span>
-        <button class="submit-btn" id="submit-btn">Submit Confession</button>
-        <div id="loader-area"></div>
+      <!-- Question, input, analysis -->
+      <div class="nemesis-content">
+        <div class="nemesis-question" id="qheader">
+          Question 1: What’s the <span class="highlight">worst thing</span> someone could say about you publicly?
+        </div>
+        <div class="subtitle">Answer honestly. Emotional inconsistencies will be used against you.</div>
+        <div class="input-area" id="input-area">
+          <div class="sim-placeholder" id="sim-placeholder"></div>
+          <textarea class="response-box" id="response-box" placeholder="Type your nightmare headline…" autocomplete="off"></textarea>
+          <span class="input-warning" id="input-warning"></span>
+          <button class="submit-btn" id="submit-btn">Submit Confession</button>
+          <div id="loader-area"></div>
+        </div>
+        <button class="next-btn" id="next-btn">Proceed to Next Interrogation</button>
       </div>
-      <button class="next-btn" id="next-btn">Proceed to Next Interrogation</button>
     </div>
   </div>
+  <!-- SFX stubs (hook your audio file paths to src) -->
+  <audio id="ping" src="ping.mp3" preload="auto"></audio>
+  <audio id="scan" src="scan.mp3" preload="auto"></audio>
+  <audio id="crack" src="crack.mp3" preload="auto"></audio>
+  <audio id="tick" src="tick.mp3" preload="auto"></audio>
+  <audio id="amb" src="ambience.mp3" loop preload="auto"></audio>
   <script>
-    // Session ID for immersion
+    // Ambient synth hum
+    let ambientOn = true;
+    function playSound(id) {
+      try {
+        if (id==="amb") {
+          if(ambientOn) document.getElementById('amb')?.play();
+        } else {
+          document.getElementById(id)?.currentTime = 0;
+          document.getElementById(id)?.play();
+        }
+      } catch(e){}
+    }
+    playSound('amb');
+    // Session code & progress
     let sid = "Session #NEM-" + (Math.floor(Math.random()*90000)+10000);
     document.getElementById("session-id").textContent = sid;
+    document.getElementById("session-progress").textContent = "1/5";
 
-    // Timer
-    let totalSeconds = 7 * 60;
+    // Timer logic
+    let totalSeconds = 7 * 60, origSecs = totalSeconds;
     let timerDisplay = document.getElementById('timer-text');
     let timerBar = document.getElementById('timer-bar-progress');
     function formatTime(secs) {
@@ -189,12 +317,41 @@
     }
     function updateTimer() {
       timerDisplay.textContent = formatTime(totalSeconds);
-      timerBar.style.width = (totalSeconds/(7*60)*100) + "%";
+      timerBar.style.width = ((origSecs-totalSeconds)/origSecs*100) + "%";
+      if(totalSeconds <= 10) playSound('tick');
       totalSeconds--;
       if (totalSeconds >= 0) setTimeout(updateTimer, 1000);
-      else { timerDisplay.textContent = "0:00"; timerBar.style.width = "0%"; }
+      else { timerDisplay.textContent = "0:00"; timerBar.style.width = "100%"; }
     }
     updateTimer();
+
+    // Data Rain/Eye Canvas Animation
+    function dataRain(){
+      const canvas = document.getElementById("databg-canvas");
+      if (!canvas) return;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const ctx = canvas.getContext("2d");
+      const chars = "░▒▓█01△◇◆■✖▇▉▊▌▍▎▁▂▃▄▅▆▇◼▣◻◽";
+      let drops = [];
+      for(let i=0;i<canvas.width/22;i++) drops[i]=Math.random()*canvas.height;
+      function draw(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.globalAlpha=0.14;
+        ctx.fillStyle="#0ff";
+        ctx.shadowBlur=10;ctx.shadowColor="#fff";
+        for(let i=0;i<drops.length;i++){
+          let text=chars[Math.floor(Math.random()*chars.length)];
+          ctx.fillText(text,i*22,drops[i]*24);
+          drops[i]+=0.65+Math.random();
+          if(drops[i]*24>canvas.height && Math.random()>0.998) drops[i]=0;
+        }
+        ctx.shadowBlur=0;
+      }
+      setInterval(draw,60);
+    }
+    dataRain();
+    window.addEventListener('resize',dataRain);
 
     // Simulated input
     const simExamples = `"He’s just a brand, not a builder."
@@ -211,7 +368,7 @@
       let lines = val.split("\n").filter(l=>l.trim().length>0);
       if (val.length < 40 || lines.length < 2) {
         submitBtn.style.display = "none";
-        warningEl.textContent = "Enter at least two lines (min 40 chars) for analysis.";
+        warningEl.textContent = "Invalid — You must confess something real (2+ lines, 40+ chars).";
       } else {
         warningEl.textContent = "";
         submitBtn.style.display = "block";
@@ -219,7 +376,7 @@
     }
     respBox.value = "";
     respBox.addEventListener('focus', function() {
-      if (respBox.value.length === 0) simPlaceholder.style.opacity = 0.12;
+      if (respBox.value.length === 0) simPlaceholder.style.opacity = 0.13;
     });
     respBox.addEventListener('input', function() {
       if (respBox.value.length > 0) simPlaceholder.style.display = "none";
@@ -232,6 +389,11 @@
       respBox.addEventListener(evt, e => e.preventDefault());
     });
 
+    // Mobile haptics on button
+    function vibrate(ms){if("vibrate" in navigator)navigator.vibrate(ms);}
+    submitBtn.addEventListener('touchstart',()=>vibrate(25));
+    nextBtn.addEventListener('touchstart',()=>vibrate(18));
+
     // Prevent screenshots (not 100% foolproof)
     document.addEventListener('visibilitychange', function() {
       if(document.hidden) { document.body.style.filter = "blur(18px) brightness(0.68)"; }
@@ -243,12 +405,6 @@
         setTimeout(()=>{document.body.style.filter=""}, 1200);
       }
     });
-
-    // SFX (stub, plug in your sound files if you want)
-    function playSound(id){
-      // Use: <audio id="ping" src="ping.mp3"></audio>
-      // document.getElementById(id)?.play();
-    }
 
     // Gemini key (obfuscated)
     function getGeminiKey() {
@@ -274,7 +430,7 @@ Use this style for all future analyses.
 Analyze this: """${text}"""`;
       let body = JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.72, maxOutputTokens: 36 }
+        generationConfig: { temperature: 0.74, maxOutputTokens: 36 }
       });
       let key = getGeminiKey();
       let endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`;
@@ -291,7 +447,6 @@ Analyze this: """${text}"""`;
         if (!result || result.length < 3 || /advice|suggest|should|try|could|improve|recommend|consider/i.test(result)) {
           return "Reputation Fragility";
         }
-        // 3-6 words enforced
         let words = result.split(/\s+/);
         if (words.length > 7) result = words.slice(0,7).join(' ');
         return result;
@@ -303,25 +458,50 @@ Analyze this: """${text}"""`;
     // SUBMIT/ANALYZE/SHOW
     submitBtn.addEventListener('click', async function(){
       respBox.disabled = true; submitBtn.style.display = "none";
-      document.getElementById('input-warning').textContent = "";
+      warningEl.textContent = "";
       let loaderArea = document.getElementById("loader-area");
-      loaderArea.innerHTML = `<div class="loader-bar"><div class="loader-spinner"></div><div class="system-label">system: analyzing confession…</div></div>`;
-      playSound('ping');
-      let wait = Math.floor(Math.random()*13)+8;
+      // Scan animation
+      loaderArea.innerHTML = `<div class="scanline-analyze"></div>
+        <div class="loader-bar"><div class="loader-spinner"></div><div class="system-label">system: analyzing confession…</div></div>`;
+      playSound('scan');
+      vibrate(35);
+      // Random wait 8–20s for drama
+      let wait = Math.floor(Math.random()*12)+8;
       let userText = respBox.value.trim();
       setTimeout(async ()=>{
+        playSound('crack');
+        vibrate(65);
         let vuln = await fetchGeminiVulnerability(userText);
         sessionStorage.setItem('nemesis_core_vulnerability', vuln);
-        loaderArea.innerHTML = `<div class="annotation-bottom">Core Vulnerability: ${vuln}</div>`;
+        loaderArea.innerHTML = `
+        <div class="annotation-bottom" id="anno-bottom">
+          Core Vulnerability: ${vuln}
+          <span class="anno-tooltip" tabindex="0" id="anno-tip">?</span>
+          <div class="anno-tip-box" id="anno-tipbox" style="display:none;">
+            <b>This label will shape your adversary’s tactics.</b><br>
+            The more precise your confession, the more accurately Nemesis will target your psychological blind spots.
+          </div>
+        </div>
+        `;
         nextBtn.style.display = "block";
-        playSound('crack');
+        // Tooltip logic
+        setTimeout(()=>{
+          let tip = document.getElementById('anno-tip');
+          let tipbox = document.getElementById('anno-tipbox');
+          if(tip && tipbox) {
+            tip.onmouseenter = tip.onfocus = ()=>{ tipbox.style.display="block";}
+            tip.onmouseleave = tip.onblur = ()=>{ tipbox.style.display="none";}
+            tip.onclick = ()=>{tipbox.style.display=tipbox.style.display==="block"?"none":"block";}
+          }
+        },200);
       }, wait*1000);
     });
 
     nextBtn.addEventListener('click', function() {
       playSound('whoosh');
-      document.getElementById('main-card').style.filter = "blur(15px) brightness(0.4)";
-      setTimeout(()=>{window.location.href='page3.html'},500);
+      vibrate(28);
+      document.getElementById('main-card').style.filter = "blur(13px) brightness(0.7)";
+      setTimeout(()=>{window.location.href='page3.html'},530);
     });
   </script>
 </body>
