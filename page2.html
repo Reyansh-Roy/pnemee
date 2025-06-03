@@ -2,520 +2,158 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Initiation Protocol: Psychological Fingerprinting</title>
-  <meta name="viewport" content="width=1200"> <!-- No mobile support -->
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    html, body {
+    body, html {
+      background: #111;
+      color: #b0c4de;
+      font-family: 'Fira Mono', monospace;
       margin: 0;
       padding: 0;
-      background: #111;
-      color: #bcd0df;
-      font-family: 'Fira Mono', 'Roboto Mono', Menlo, Consolas, monospace;
-      height: 100%;
-      width: 100vw;
+      height: 100vh;
       overflow: hidden;
-      user-select: none;
-    }
-
-    body {
-      width: 100vw;
-      min-height: 100vh;
       position: relative;
-      overflow: hidden;
-      letter-spacing: 0.02em;
     }
-
-    /* HEADER */
     .header {
       text-align: center;
-      margin-top: 38px;
-      font-size: 2.15rem;
-      font-weight: 400;
-      color: #bcd0df;
-      letter-spacing: 0.08em;
       text-transform: uppercase;
-      font-family: 'Fira Mono', 'Roboto Mono', Menlo, Consolas, monospace;
-      position: relative;
-      z-index: 2;
+      padding-top: 20px;
+      font-size: 18px;
     }
-
-    /* SESSION TIMER */
-    .timer-box {
+    .session-timer {
       position: absolute;
-      top: 40px;
-      right: 60px;
-      background: rgba(17,17,17,0.88);
-      border: 1.3px solid #EF5350;
-      padding: 7px 19px 7px 19px;
-      border-radius: 5px;
-      font-family: 'Fira Mono', 'Roboto Mono', monospace;
+      top: 20px;
+      right: 20px;
       color: #EF5350;
-      font-size: 1.05rem;
       font-weight: bold;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      z-index: 20;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      border: 1px solid #EF5350;
+      padding: 2px 8px;
     }
-
-    .timer-label {
-      letter-spacing: 0.11em;
-      margin-right: 7px;
-    }
-    .timer-digits {
-      letter-spacing: 0.11em;
-      font-variant-numeric: tabular-nums;
-      font-weight: 700;
-    }
-
-    /* MAIN QUESTION */
-    .main-q {
-      margin-top: 60px;
+    .question {
       text-align: center;
-      font-size: 1.68rem;
-      font-family: inherit;
-      color: #bcd0df;
-      letter-spacing: 0.05em;
-      font-weight: 400;
-      z-index: 2;
-      position: relative;
+      margin-top: 40px;
+      font-size: 24px;
     }
-
-    /* SILHOUETTE IMAGE */
-    .silhouette-bg {
+    .input-box {
+      margin: 20px auto;
+      width: 70%;
+      background: #222;
+      color: #b0c4de;
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 4px;
+    }
+    .btn-submit, .btn-next, .btn-red {
+      display: inline-block;
+      cursor: pointer;
+      padding: 10px 20px;
+      font-size: 14px;
+      text-transform: uppercase;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: opacity 0.3s;
+    }
+    .btn-submit {
+      color: #EF5350;
+      border: 1px solid #EF5350;
+      margin-left: 15%;
+    }
+    .btn-next {
+      color: #b0c4de;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      display: none;
+    }
+    .analysis {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #EF5350;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+    .vuln-box {
+      border: 1px solid #EF5350;
+      padding: 6px;
+      margin-top: 10px;
+      display: inline-block;
+    }
+    .overlay-text {
+      position: absolute;
+      opacity: 0.2;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      user-select: none;
+    }
+    .silhouette {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 55vw;
-      max-width: 820px;
-      min-width: 520px;
       opacity: 0.65;
-      z-index: 1;
+      width: 55%;
       pointer-events: none;
-      user-select: none;
-    }
-
-    /* FLOATING WORDS */
-    .word-fraud {
-      position: absolute;
-      left: 13vw;
-      top: 44vh;
-      font-size: 2.45rem;
-      color: #fff;
-      opacity: 0.24;
-      font-weight: bold;
-      pointer-events: none;
-      z-index: 3;
-      letter-spacing: 0.08em;
-    }
-    .word-overrated {
-      position: absolute;
-      right: 16vw;
-      top: 36vh;
-      font-size: 1.55rem;
-      color: #EF5350;
-      opacity: 0.61;
-      font-weight: bold;
-      z-index: 3;
-      pointer-events: none;
-      letter-spacing: 0.08em;
-    }
-    .word-faker1 {
-      position: absolute;
-      right: 15vw;
-      top: 59vh;
-      font-size: 1.14rem;
-      color: #eee;
-      opacity: 0.32;
-      font-weight: 700;
-      pointer-events: none;
-      z-index: 3;
-      letter-spacing: 0.08em;
-    }
-    .word-faker2 {
-      position: absolute;
-      left: 20vw;
-      bottom: 21vh;
-      font-size: 1.09rem;
-      color: #ddd;
-      opacity: 0.21;
-      font-weight: 600;
-      pointer-events: none;
-      z-index: 3;
-      letter-spacing: 0.08em;
-    }
-    .word-faker3 {
-      position: absolute;
-      right: 20vw;
-      bottom: 20vh;
-      font-size: 1.22rem;
-      color: #fff;
-      opacity: 0.16;
-      font-weight: 500;
-      pointer-events: none;
-      z-index: 3;
-      letter-spacing: 0.08em;
-    }
-
-    /* FAKE TEXT INPUT */
-    .fake-input {
-      display: block;
-      margin: 53px auto 0 auto;
-      width: 63vw;
-      min-width: 500px;
-      max-width: 840px;
-      background: #23252d;
-      border-radius: 8px;
-      border: 1.5px solid #313742;
-      font-family: inherit;
-      color: #bcd0df;
-      font-size: 1.16rem;
-      padding: 24px 32px;
-      letter-spacing: 0.01em;
-      box-sizing: border-box;
-      box-shadow: 0 0 0 2px #15181c inset;
-      resize: none;
-      pointer-events: none;
-      outline: none;
-      white-space: pre-line;
-      text-align: left;
-      line-height: 1.62;
-      min-height: 61px;
-      transition: opacity 0.25s;
-      z-index: 9;
-      opacity: 1;
-    }
-
-    /* BUTTONS */
-    .actions-row {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 0;
-      margin: 33px auto 0 auto;
-      width: 63vw;
-      min-width: 500px;
-      max-width: 840px;
-      position: relative;
-      z-index: 9;
-    }
-
-    .submit-btn {
-      border: 1.5px solid #EF5350;
-      color: #EF5350;
-      font-family: inherit;
-      background: transparent;
-      padding: 19px 41px 18px 41px;
-      border-radius: 6px;
-      font-size: 1.09rem;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.16s, color 0.13s, box-shadow 0.13s;
-      outline: none;
-      margin-left: 0;
-      margin-top: 0;
-      margin-bottom: 0;
-      box-shadow: 0 0 0 2px transparent;
-      opacity: 1;
-    }
-    .submit-btn:hover, .submit-btn:focus {
-      background: rgba(239,83,80,0.10);
-      box-shadow: 0 0 0 2px #EF5350;
-    }
-    .submit-btn:active {
-      background: rgba(239,83,80,0.17);
-    }
-
-    /* NEMESIS ANALYSIS (Hidden until analysis phase) */
-    .nemesis-analysis {
-      position: absolute;
-      left: 50%;
-      top: 56%;
-      transform: translate(-50%, -50%);
-      font-size: 1.32rem;
-      color: #EF5350;
-      font-family: inherit;
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      opacity: 0;
-      transition: opacity 0.7s;
-      z-index: 10;
-      text-align: center;
-      text-shadow: 0 2px 16px #14050566;
-      pointer-events: none;
-    }
-    .nemesis-analysis.visible {
-      opacity: 1;
-    }
-
-    /* REPETATION FRAGTITY BOX (Hidden until after nemesis analysis) */
-    .frag-box {
-      position: absolute;
-      left: 50%;
-      top: 65%;
-      transform: translate(-50%, 0);
-      background: rgba(25, 10, 10, 0.44);
-      border: 2px solid #EF5350;
-      padding: 17px 38px 13px 38px;
-      border-radius: 8px;
-      font-family: inherit;
-      color: #EF5350;
-      font-size: 1.11rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      text-align: center;
-      opacity: 0;
-      transition: opacity 0.5s;
-      z-index: 10;
-      box-shadow: 0 0 16px 0 #EF535033;
-      pointer-events: none;
-    }
-    .frag-box.visible {
-      opacity: 1;
-    }
-
-    /* FACE NEXT TRUTH BUTTON */
-    .next-btn {
-      position: absolute;
-      right: 62px;
-      bottom: 49px;
-      font-family: inherit;
-      color: #cbefff;
-      background: transparent;
-      border: none;
-      font-size: 1.23rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      cursor: pointer;
-      z-index: 20;
-      opacity: 0;
-      transition: opacity 0.33s;
-      padding: 0 0 0 0;
-      outline: none;
-    }
-    .next-btn.visible {
-      opacity: 1;
-      text-shadow: 0 2px 18px #174e635a;
-    }
-    .next-btn:active {
-      color: #96d5f0;
-    }
-    .next-btn:focus {
-      text-decoration: underline;
-    }
-
-    /* MOBILE BLOCKER */
-    #mobile-blocker {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0; top: 0; right: 0; bottom: 0;
-      background: #111;
-      color: #EF5350;
-      font-family: inherit;
-      font-size: 2.1rem;
-      text-align: center;
-      padding: 180px 24px;
-      line-height: 1.6;
-      font-weight: 700;
-      letter-spacing: 0.09em;
-    }
-    /* DISABLED OVERLAY (PrintScreen/CtrlC/etc) */
-    #disabled-overlay {
-      display: none;
-      position: fixed;
-      z-index: 10001;
-      left: 0; top: 0; right: 0; bottom: 0;
-      background: rgba(23, 31, 33, 0.72);
-      backdrop-filter: blur(7.5px);
-      -webkit-backdrop-filter: blur(7.5px);
-      color: #bcd0df;
-      font-family: inherit;
-      font-size: 2.09rem;
-      text-align: center;
-      padding: 180px 24px;
-      line-height: 1.58;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      pointer-events: none;
-      user-select: none;
-    }
-    /* NO SELECTION, CONTEXT MENU, CLIPBOARD */
-    body, .fake-input {
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
     }
   </style>
 </head>
 <body>
-  <!-- MOBILE BLOCKER -->
-  <div id="mobile-blocker">
-    This experience is only available on desktop.<br><br>
-    Please switch to a desktop device.
-  </div>
-  <!-- DISABLED OVERLAY -->
-  <div id="disabled-overlay">
-    Function temporarily disabled
-  </div>
-  <!-- HEADER -->
-  <div class="header">
-    INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING
-  </div>
-  <!-- SESSION TIMER -->
-  <div class="timer-box" id="timerBox">
-    <span class="timer-label">SESSION TIMER</span>
-    <span class="timer-digits" id="timerDigits">00:00 MIN</span>
-  </div>
-  <!-- MAIN QUESTION -->
-  <div class="main-q">
-    What's the worst thing someone could say about you publicly?
-  </div>
-  <!-- SILHOUETTE BACKGROUND -->
-  <img src="assets/silhouette.png" alt="" class="silhouette-bg" draggable="false">
 
-  <!-- FLOATING WORDS -->
-  <div class="word-fraud">fraud</div>
-  <div class="word-overrated">overrated</div>
-  <div class="word-faker1">faker</div>
-  <div class="word-faker2">faker</div>
-  <div class="word-faker3">faker</div>
+  <div class="header">INITIATION PROTOCOL: PSYCHOLOGICAL FINGERPRINTING</div>
+  <div class="session-timer">SESSION TIMER 00:00 MIN</div>
 
-  <!-- FAKE INPUT (read-only simulation) -->
-  <div id="input-container">
-    <div class="fake-input" id="fakeInput">
-      'He’s just a brand, not a builder.<br>Everything he made was hype – no substance'
-    </div>
-    <div class="actions-row" id="actionsRow">
-      <button class="submit-btn" id="submitBtn">SUBMIT TO ADVERSARY</button>
-    </div>
-  </div>
+  <div class="question">What's the worst thing someone could say about you publicly?</div>
 
-  <!-- NEMESIS ANALYSIS / FRAGTITY (hidden until submit) -->
-  <div class="nemesis-analysis" id="nemesisAnalysis">
+  <div class="input-box">'He's just a brand, not a builder. Everything he made was hype – no substance'</div>
+
+  <div class="btn-submit">SUBMIT TO ADVERSARY</div>
+
+  <img src="assets/silhouette.png" class="silhouette">
+
+  <div class="overlay-text" style="top:40%;left:10%;">fraud</div>
+  <div class="overlay-text" style="top:60%;right:10%;color:#EF5350;">overrated</div>
+  <div class="overlay-text" style="bottom:20%;left:20%;">faker</div>
+
+  <div class="analysis">
     Nemesis Analysis: Scanning Vulnerabilities...
+    <div class="vuln-box">REPETATION FRAGTITY</div>
   </div>
-  <div class="frag-box" id="fragBox">
-    REPETATION FRAGTITY
-  </div>
-  <button class="next-btn" id="nextBtn">FACE NEXT TRUTH</button>
 
-  <script>
-    // === MOBILE BLOCKER ===
-    function isMobile() {
-      return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-        || window.innerWidth < 820 || window.innerHeight < 600;
-    }
-    function showMobileBlocker() {
-      document.getElementById('mobile-blocker').style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
-    function hideMobileBlocker() {
-      document.getElementById('mobile-blocker').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-    if (isMobile()) showMobileBlocker();
-    window.addEventListener('resize', function () {
-      if (isMobile()) showMobileBlocker();
-      else hideMobileBlocker();
-    });
+  <div class="btn-next">FACE NEXT TRUTH</div>
 
-    // === DISABLE CONTEXT MENU, CLIPBOARD, PRINTSCREEN ===
-    function showDisabledOverlay() {
-      const el = document.getElementById('disabled-overlay');
-      el.style.display = 'block';
-      setTimeout(() => el.style.display = 'none', 2000);
-    }
+<script>
+  const submitBtn = document.querySelector('.btn-submit');
+  const analysisDiv = document.querySelector('.analysis');
+  const nextBtn = document.querySelector('.btn-next');
+  const inputBox = document.querySelector('.input-box');
 
-    document.addEventListener('contextmenu', e => { e.preventDefault(); showDisabledOverlay(); });
-    document.addEventListener('keydown', e => {
-      if ((e.ctrlKey && ['c', 'v', 'x', 'p'].includes(e.key.toLowerCase())) || e.key === "PrintScreen") {
-        e.preventDefault();
-        showDisabledOverlay();
-      }
-      if (e.key === "PrintScreen") showDisabledOverlay();
-    });
-    document.addEventListener('copy', e => { e.preventDefault(); showDisabledOverlay(); });
-    document.addEventListener('cut', e => { e.preventDefault(); showDisabledOverlay(); });
-    document.addEventListener('paste', e => { e.preventDefault(); showDisabledOverlay(); });
-    // Dragging
-    document.addEventListener('dragstart', e => { e.preventDefault(); showDisabledOverlay(); });
+  submitBtn.onclick = () => {
+    submitBtn.style.display = 'none';
+    inputBox.style.display = 'none';
 
-    // === TIMER LOGIC ===
-    let seconds = 0, minutes = 0;
-    let timerInterval = null, timerPaused = false;
-    function updateTimerDisplay() {
-      const pad = n => (n < 10 ? '0' + n : n);
-      document.getElementById('timerDigits').textContent = pad(minutes) + ':' + pad(seconds) + ' MIN';
-    }
-    function timerTick() {
-      if (timerPaused) return;
-      seconds++;
-      if (seconds === 60) { minutes++; seconds = 0; }
-      updateTimerDisplay();
-    }
-    function startTimer() {
-      timerInterval = setInterval(timerTick, 1000);
-    }
-    function pauseTimer() {
-      timerPaused = true;
-    }
-    function resumeTimer() {
-      timerPaused = false;
-    }
-    startTimer();
-
-    // === SUBMIT/ANALYSIS FLOW ===
-    const submitBtn = document.getElementById('submitBtn');
-    const fakeInput = document.getElementById('input-container');
-    const nemesisAnalysis = document.getElementById('nemesisAnalysis');
-    const fragBox = document.getElementById('fragBox');
-    const nextBtn = document.getElementById('nextBtn');
-    const actionsRow = document.getElementById('actionsRow');
-
-    let analysisStarted = false;
-
-    submitBtn.onclick = function() {
-      // Hide input & button
-      fakeInput.style.transition = 'opacity 0.36s';
-      fakeInput.style.opacity = '0';
-      setTimeout(() => fakeInput.style.display = 'none', 350);
-
-      // Pause timer
-      pauseTimer();
-
-      // After random delay (4-12s), show analysis
-      const analysisDelay = 4000 + Math.floor(Math.random() * 8000); // 4000..12000ms
+    const delay = Math.random() * 8000 + 4000;
+    setTimeout(() => {
+      analysisDiv.style.display = 'block';
       setTimeout(() => {
-        nemesisAnalysis.classList.add('visible');
-        // After 1s, show frag box
-        setTimeout(() => {
-          fragBox.classList.add('visible');
-          // Show next button
-          setTimeout(() => {
-            nextBtn.classList.add('visible');
-          }, 800);
-        }, 1000);
-      }, analysisDelay);
-    };
+        nextBtn.style.display = 'block';
+      }, 1000);
+    }, delay);
+  };
 
-    nextBtn.onclick = function() {
-      window.location.href = "page3.html";
-    };
+  nextBtn.onclick = () => {
+    window.location.href = 'page3.html';
+  };
 
-    // Prevent tabbing to input
-    document.addEventListener('keydown', e => {
-      if (["Tab"].includes(e.key)) e.preventDefault();
-    });
-  </script>
+  document.oncontextmenu = () => false;
+  document.onkeydown = e => {
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'x')) e.preventDefault();
+  };
+</script>
+
 </body>
 </html>
