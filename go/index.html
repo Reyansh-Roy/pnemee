@@ -2,100 +2,121 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PenseeWeb Studios | Projects & Contact</title>
+  <title>PenseeWeb Studios | Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #181818;
-      color: #fff;
-      min-height: 100vh;
+    html, body {
+      background: #121212;
+      height: 100%;
       margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      color: #fff;
     }
-    .links-list {
+    body {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 2.2rem;
-      width: 92vw;
-      max-width: 360px;
-      background: #1c1c1c;
-      padding: 2.3rem 1.4rem 2rem 1.4rem;
-      border-radius: 1.6rem;
-      box-shadow: 0 4px 36px 0 #000b;
+      justify-content: center;
+      align-items: center;
     }
-    .link-item {
+    .container {
+      background: rgba(20,20,20,0.82);
+      border: 1.5px solid #2cffe1;
+      box-shadow: 0 6px 32px #0ff3, 0 1.5px 0 #2cffe1 inset;
+      border-radius: 1.1rem;
+      padding: 2.4rem 1.1rem 1.7rem 1.1rem;
+      max-width: 370px;
+      width: 92vw;
       display: flex;
       flex-direction: column;
       align-items: stretch;
+      gap: 2.4rem;
     }
-    .link-title {
-      font-size: 1.19rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-      letter-spacing: 0.05em;
-      color: #fff;
-      text-shadow: 0 1px 8px #0007;
-    }
-    .btn-link {
-      display: inline-block;
-      background: linear-gradient(90deg, #00d8ff 0%, #5755f6 100%);
-      color: #181818;
-      font-size: 1.09rem;
-      font-weight: 600;
-      padding: 0.92rem 1.4rem;
-      border-radius: 0.88rem;
-      box-shadow: 0 2px 24px 0 #2229;
-      text-decoration: none;
+    .header {
       text-align: center;
-      letter-spacing: 0.03em;
-      transition: transform 0.11s, box-shadow 0.18s, background 0.3s;
-      outline: none;
-      border: none;
-      margin-bottom: 0.12rem;
-      position: relative;
-      overflow: hidden;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      margin-bottom: 1.3rem;
+      color: #2cffe1;
+      text-shadow: 0 1.5px 8px #00fff740;
+      user-select: none;
     }
-    .btn-link:active {
-      transform: scale(0.97);
-      box-shadow: 0 1px 12px 0 #0af7;
+    .link-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      align-items: stretch;
     }
-    .btn-link:hover, .btn-link:focus {
-      background: linear-gradient(90deg, #5755f6 0%, #00d8ff 100%);
+    .label {
+      font-size: 1.13rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       color: #fff;
-      box-shadow: 0 3px 18px 0 #00d9;
-      text-decoration: none;
+      margin-bottom: 0.11rem;
+      text-shadow: 0 1.5px 10px #00fff755;
+      user-select: none;
     }
-    @media (max-width: 400px) {
-      .links-list {
-        padding: 1.1rem 0.3rem;
-        border-radius: 1.1rem;
+    .brutal-btn {
+      width: 100%;
+      padding: 1.11rem 0;
+      border: 1.5px solid #2cffe1;
+      border-radius: 0.5rem;
+      background: rgba(30,30,30,0.97);
+      color: #2cffe1;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.17s, color 0.17s, border 0.19s, box-shadow 0.19s;
+      box-shadow: 0 2px 16px 0 #00fff720, 0 1.5px 0 #2cffe1 inset;
+      text-shadow: 0 2px 20px #2cffe190;
+      margin-bottom: 2px;
+    }
+    .brutal-btn:hover, .brutal-btn:focus {
+      background: #2cffe1;
+      color: #181818;
+      border: 1.5px solid #fff;
+      box-shadow: 0 0px 28px #2cffe1cc, 0 1.5px 0 #fff inset;
+      text-shadow: none;
+    }
+    @media (max-width: 450px) {
+      .container {
+        padding: 1.2rem 0.2rem;
+        border-radius: 0.7rem;
+        gap: 1.3rem;
       }
-      .btn-link {
-        padding: 0.82rem 0.6rem;
+      .header {
+        font-size: 1.3rem;
+      }
+      .brutal-btn {
+        padding: 0.8rem 0;
+        font-size: 1.03rem;
+      }
+      .label {
         font-size: 1rem;
-      }
-      .link-title {
-        font-size: 1.05rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="links-list">
-    <div class="link-item">
-      <span class="link-title">PenseeWeb</span>
-      <a class="btn-link" href="https://penseeweb.site/" target="_blank">Visit Website</a>
+  <div class="container">
+    <div class="header">PenseeWeb Studios</div>
+    <div class="link-block">
+      <div class="label">PenseeWeb</div>
+      <a class="brutal-btn" href="https://penseeweb.site/" target="_blank">ENTER</a>
     </div>
-    <div class="link-item">
-      <span class="link-title">Project Nemesis</span>
-      <a class="btn-link" href="https://www.projectnemesis.live/" target="_blank">Explore Nemesis</a>
+    <div class="link-block">
+      <div class="label">Project Nemesis</div>
+      <a class="brutal-btn" href="https://www.projectnemesis.live/" target="_blank">SIMULATE</a>
     </div>
-    <div class="link-item">
-      <span class="link-title">LinkedIn</span>
-      <a class="btn-link" href="https://www.linkedin.com/in/vikram-tamilselvan-394732258?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">Connect on LinkedIn</a>
+    <div class="link-block">
+      <div class="label">LinkedIn</div>
+      <a class="brutal-btn" href="https://www.linkedin.com/in/vikram-tamilselvan-394732258?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">CONNECT</a>
     </div>
   </div>
 </body>
