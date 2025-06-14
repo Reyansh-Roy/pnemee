@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>PenseeWeb Studios | Projects & Contact</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
@@ -17,34 +18,68 @@
     .links-list {
       display: flex;
       flex-direction: column;
-      gap: 2rem;
-      width: 320px;
-      background: #232323;
-      padding: 2rem;
-      border-radius: 1.2rem;
-      box-shadow: 0 2px 24px 0 #000c;
+      gap: 2.2rem;
+      width: 92vw;
+      max-width: 360px;
+      background: #1c1c1c;
+      padding: 2.3rem 1.4rem 2rem 1.4rem;
+      border-radius: 1.6rem;
+      box-shadow: 0 4px 36px 0 #000b;
     }
     .link-item {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
     }
     .link-title {
-      font-size: 1.3rem;
+      font-size: 1.19rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.05em;
+      color: #fff;
+      text-shadow: 0 1px 8px #0007;
+    }
+    .btn-link {
+      display: inline-block;
+      background: linear-gradient(90deg, #00d8ff 0%, #5755f6 100%);
+      color: #181818;
+      font-size: 1.09rem;
       font-weight: 600;
-      margin-bottom: 0.2rem;
-      letter-spacing: 0.04em;
-    }
-    .link-url a {
-      color: #00d8ff;
-      font-size: 1rem;
+      padding: 0.92rem 1.4rem;
+      border-radius: 0.88rem;
+      box-shadow: 0 2px 24px 0 #2229;
       text-decoration: none;
-      word-break: break-all;
-      transition: color 0.2s;
+      text-align: center;
+      letter-spacing: 0.03em;
+      transition: transform 0.11s, box-shadow 0.18s, background 0.3s;
+      outline: none;
+      border: none;
+      margin-bottom: 0.12rem;
+      position: relative;
+      overflow: hidden;
     }
-    .link-url a:hover {
-      color: #71f7ff;
-      text-decoration: underline;
+    .btn-link:active {
+      transform: scale(0.97);
+      box-shadow: 0 1px 12px 0 #0af7;
+    }
+    .btn-link:hover, .btn-link:focus {
+      background: linear-gradient(90deg, #5755f6 0%, #00d8ff 100%);
+      color: #fff;
+      box-shadow: 0 3px 18px 0 #00d9;
+      text-decoration: none;
+    }
+    @media (max-width: 400px) {
+      .links-list {
+        padding: 1.1rem 0.3rem;
+        border-radius: 1.1rem;
+      }
+      .btn-link {
+        padding: 0.82rem 0.6rem;
+        font-size: 1rem;
+      }
+      .link-title {
+        font-size: 1.05rem;
+      }
     }
   </style>
 </head>
@@ -52,15 +87,15 @@
   <div class="links-list">
     <div class="link-item">
       <span class="link-title">PenseeWeb</span>
-      <span class="link-url"><a href="https://penseeweb.site/" target="_blank">https://penseeweb.site/</a></span>
+      <a class="btn-link" href="https://penseeweb.site/" target="_blank">Visit Website</a>
     </div>
     <div class="link-item">
       <span class="link-title">Project Nemesis</span>
-      <span class="link-url"><a href="https://www.projectnemesis.live/" target="_blank">https://www.projectnemesis.live/</a></span>
+      <a class="btn-link" href="https://www.projectnemesis.live/" target="_blank">Explore Nemesis</a>
     </div>
     <div class="link-item">
       <span class="link-title">LinkedIn</span>
-      <span class="link-url"><a href="https://www.linkedin.com/in/vikram-tamilselvan-394732258?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">https://www.linkedin.com/in/vikram-tamilselvan-394732258</a></span>
+      <a class="btn-link" href="https://www.linkedin.com/in/vikram-tamilselvan-394732258?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank">Connect on LinkedIn</a>
     </div>
   </div>
 </body>
