@@ -5,14 +5,14 @@
   <title>PenseeWeb Studios | Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap');
     html, body {
-      background: #121212;
+      background: #111418;
       height: 100%;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
       font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
-      color: #fff;
+      color: #f4f4f4;
     }
     body {
       min-height: 100vh;
@@ -22,83 +22,93 @@
       align-items: center;
     }
     .container {
-      background: rgba(20,20,20,0.82);
-      border: 1.5px solid #2cffe1;
-      box-shadow: 0 6px 32px #0ff3, 0 1.5px 0 #2cffe1 inset;
-      border-radius: 1.1rem;
+      background: rgba(19, 22, 27, 0.95);
+      border: 2px solid #00fff7;
+      box-shadow: 0 0 38px #0ff5, 0 2px 0 #2cffe1 inset;
+      border-radius: 1.4rem;
       padding: 2.4rem 1.1rem 1.7rem 1.1rem;
       max-width: 370px;
       width: 92vw;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      gap: 2.4rem;
+      align-items: center;
+      gap: 1.8rem;
     }
     .header {
       text-align: center;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 800;
-      letter-spacing: 0.06em;
-      margin-bottom: 1.3rem;
-      color: #2cffe1;
-      text-shadow: 0 1.5px 8px #00fff740;
+      letter-spacing: 0.07em;
+      margin-bottom: 1.1rem;
+      color: #00fff7;
+      text-shadow: 0 1.5px 18px #00fff74c;
       user-select: none;
     }
     .link-block {
+      width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 0.85rem;
-      align-items: stretch;
+      align-items: center;
+      gap: 0.3rem;
     }
     .label {
-      font-size: 1.13rem;
+      font-size: 1.11rem;
       font-weight: 600;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.01em;
       color: #fff;
-      margin-bottom: 0.11rem;
-      text-shadow: 0 1.5px 10px #00fff755;
+      margin-bottom: 0.19rem;
+      text-align: center;
       user-select: none;
+      text-shadow: 0 1px 10px #00fff755;
     }
     .brutal-btn {
+      display: block;
       width: 100%;
-      padding: 1.11rem 0;
-      border: 1.5px solid #2cffe1;
-      border-radius: 0.5rem;
-      background: rgba(30,30,30,0.97);
-      color: #2cffe1;
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
+      padding: 1.12rem 0;
+      background: #191b20;
+      color: #00fff7;
+      font-size: 1.17rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
+      border: none;
+      border-radius: 0.72rem;
+      text-align: center;
       cursor: pointer;
       outline: none;
-      transition: background 0.17s, color 0.17s, border 0.19s, box-shadow 0.19s;
-      box-shadow: 0 2px 16px 0 #00fff720, 0 1.5px 0 #2cffe1 inset;
-      text-shadow: 0 2px 20px #2cffe190;
-      margin-bottom: 2px;
+      margin-top: 0.2rem;
+      box-shadow: 0 0 0 #00fff770;
+      text-shadow: 0 2px 20px #2cffe180;
+      text-transform: uppercase;
+      transition: 
+        box-shadow 0.18s,
+        background 0.18s,
+        color 0.18s,
+        letter-spacing 0.11s;
+      text-decoration: none;
     }
-    .brutal-btn:hover, .brutal-btn:focus {
-      background: #2cffe1;
-      color: #181818;
-      border: 1.5px solid #fff;
-      box-shadow: 0 0px 28px #2cffe1cc, 0 1.5px 0 #fff inset;
+    .brutal-btn:hover,
+    .brutal-btn:focus {
+      background: #00fff7;
+      color: #191b20;
+      box-shadow: 0 0 22px #00fff7cc;
+      letter-spacing: 0.13em;
       text-shadow: none;
     }
-    @media (max-width: 450px) {
+    @media (max-width: 420px) {
       .container {
-        padding: 1.2rem 0.2rem;
-        border-radius: 0.7rem;
-        gap: 1.3rem;
+        padding: 1.1rem 0.2rem;
+        border-radius: 0.9rem;
+        gap: 1.2rem;
       }
       .header {
-        font-size: 1.3rem;
+        font-size: 1.17rem;
       }
       .brutal-btn {
         padding: 0.8rem 0;
-        font-size: 1.03rem;
+        font-size: 1.02rem;
       }
       .label {
-        font-size: 1rem;
+        font-size: 0.98rem;
       }
     }
   </style>
